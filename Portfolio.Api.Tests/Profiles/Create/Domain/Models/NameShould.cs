@@ -30,5 +30,18 @@ public class NameShould
                     .Message.ShouldBe("Name cannot be empty")
             );
     }
+
+    [Fact]
+    public void DoNotCreateIfTheCharacterLimitIsExceeded()
+    {
+        var givenName = new string('a', 120);;
+        
+        Name.Create(givenName)
+            .Match(
+                name => name.ShouldBeNull(),
+                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                    .Message.ShouldBe("The name cannot exceed 100 characters")
+            );
+    }
     
 }
