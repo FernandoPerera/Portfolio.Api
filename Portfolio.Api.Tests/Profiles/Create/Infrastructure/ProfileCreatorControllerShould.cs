@@ -1,17 +1,19 @@
 using Microsoft.AspNetCore.Http.HttpResults;
-using Portfolio.Api.Profile.Create.Application.UseCases;
-using Portfolio.Api.Profile.Create.Infrastructure.Controllers;
-using Portfolio.Api.Profile.Create.Infrastructure.Dtos;
+using Portfolio.Api.Profiles.Create.Application.UseCases;
+using Portfolio.Api.Profiles.Create.Infrastructure.Adapters;
+using Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
+using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
 using Shouldly;
 
-namespace Portfolio.Api.Tests.Profile.Create.Infrastructure;
+namespace Portfolio.Api.Tests.Profiles.Create.Infrastructure;
 
 public class ProfileCreatorControllerShould
 {
     [Fact]
     public async Task CreateProfile()
     {
-        var creator = new ProfileCreator();
+        var repository = new SqlServerProfileCreatorAdapter();
+        var creator = new ProfileCreator(repository);
         var controller = new ProfileCreatorController(creator);
         var request = new CreateProfileRequest(
             "Fernando",

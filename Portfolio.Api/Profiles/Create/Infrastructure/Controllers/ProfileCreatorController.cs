@@ -1,10 +1,10 @@
 using LanguageExt;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Profile.Create.Application.Dtos;
-using Portfolio.Api.Profile.Create.Application.UseCases;
-using Portfolio.Api.Profile.Create.Infrastructure.Dtos;
+using Portfolio.Api.Profiles.Create.Application.Dtos;
+using Portfolio.Api.Profiles.Create.Application.UseCases;
+using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
 
-namespace Portfolio.Api.Profile.Create.Infrastructure.Controllers;
+namespace Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 
 [ApiController]
 [Route("v1/profile")]
