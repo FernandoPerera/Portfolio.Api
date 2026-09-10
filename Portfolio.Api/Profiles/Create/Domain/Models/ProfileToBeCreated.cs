@@ -25,4 +25,12 @@ public class ProfileToBeCreated
             name, presentation, role, enterprise
         );
     }
+
+    public string GetName() => _name;
+
+    public string GetPresentation() => _presentation;
+
+    public string GetRole() => _role;
+
+    public string GetEnterprise() => _enterprise;
 }
