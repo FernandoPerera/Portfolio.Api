@@ -11,21 +11,28 @@ namespace Portfolio.Api.Tests.Profiles.Create.Application.UseCases;
 
 public class ProfileCreatorShould
 {
+    private readonly IProfileCreatorRepository _repository;
+    private readonly ProfileCreator _creator;
+
+    public ProfileCreatorShould()
+    {
+        _repository = Substitute.For<IProfileCreatorRepository>();
+        _creator = new ProfileCreator(_repository);
+    }
+
     [Fact]
     public async Task CreateProfile()
     {
-        var repository = Substitute.For<IProfileCreatorRepository>();
-        var creator = new ProfileCreator(repository);
         var creatorInfo = new ProfileCreatorInfo(
             Name: "Fernando",
             Role: "Beer software architect",
             Presentation: "Mucho gusto :)",
             Enterprise: "Lean Mind"
         );
-        repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
+        _repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
 
         (
-            await creator.Execute(creatorInfo)
+            await _creator.Execute(creatorInfo)
         ).Match(
             unit => unit.ShouldBeUnit(),
             error => error.ShouldBeNull()
