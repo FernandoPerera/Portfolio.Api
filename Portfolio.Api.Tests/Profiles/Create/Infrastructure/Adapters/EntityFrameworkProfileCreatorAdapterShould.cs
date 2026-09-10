@@ -1,8 +1,8 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Portfolio.Api.Profiles.Create.Infrastructure.Adapters;
+using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Create.Domain.Builders;
@@ -35,7 +35,7 @@ public class EntityFrameworkProfileCreatorAdapterShould
         _idGenerator.Generate().Returns(profileId);
 
         var result = await _creator.CreateProfile(profileToBeCreated);
-        
+
         await result.MatchAsync(
             RightAsync: async unit =>
             {
@@ -48,6 +48,22 @@ public class EntityFrameworkProfileCreatorAdapterShould
                 error.ShouldBeNull();
                 return Unit.Default;
             }
+        );
+    }
+
+    [Fact]
+    public async Task NotCreateProfileWhenErrorOccurs()
+    {
+        var profileToBeCreated = ProfileToBeCreatedBuilder.Build();
+        var profileId = Guid.NewGuid();
+        _idGenerator.Generate().Returns(profileId);
+        await _appDbContext.DisposeAsync();
+
+        var result = await _creator.CreateProfile(profileToBeCreated);
+
+        result.Match(
+            Right: unit => unit.ShouldBeEquivalentTo(null),
+            Left: error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
         );
     }
 }
