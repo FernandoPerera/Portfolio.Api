@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Profiles.Create.Application.UseCases;
 using Portfolio.Api.Profiles.Create.Infrastructure.Adapters;
@@ -37,6 +38,6 @@ public class ProfileCreatorControllerShould
 
         var response = await _controller.Create(request);
 
-        response.ShouldBeOfType<Created>();
+        response.ShouldBeOfType<CreatedAtActionResult>();
     }
 }
