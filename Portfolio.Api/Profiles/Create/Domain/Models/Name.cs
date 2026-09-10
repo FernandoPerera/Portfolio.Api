@@ -6,6 +6,8 @@ namespace Portfolio.Api.Profiles.Create.Domain.Models;
 
 public class Name
 {
+    private const int CharacterLimit = 100;
+    
     private readonly string _name;
 
     private Name(string name)
@@ -18,6 +20,11 @@ public class Name
         if (string.IsNullOrWhiteSpace(name))
         {
             return Error.New(new ValidationException("Name cannot be empty"));
+        }
+
+        if (name.Length > CharacterLimit)
+        {
+            return Error.New(new ValidationException("The name cannot exceed 100 characters"));
         }
         return new Name(name);
     }
