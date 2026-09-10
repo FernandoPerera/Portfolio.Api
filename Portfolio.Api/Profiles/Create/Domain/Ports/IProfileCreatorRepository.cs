@@ -6,5 +6,5 @@ namespace Portfolio.Api.Profiles.Create.Domain.Ports;
 
 public interface IProfileCreatorRepository
 {
-    Task<Either<Error, Unit>> CreateProfile(Profile profile);
+    Task<Either<Error, Unit>> CreateProfile(ProfileToBeCreated profileToBeCreated);
 }

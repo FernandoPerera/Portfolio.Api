@@ -22,7 +22,7 @@ public class ProfileCreatorShould
             Presentation: "Mucho gusto :)",
             Enterprise: "Lean Mind"
         );
-        repository.CreateProfile(Arg.Any<Profile>()).Returns(Unit.Default);
+        repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
 
         (
             await creator.Execute(creatorInfo)

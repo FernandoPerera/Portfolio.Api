@@ -11,7 +11,7 @@ public class ProfileCreator(IProfileCreatorRepository creator)
     public async Task<Either<Error, Unit>> Execute(ProfileCreatorInfo profileCreatorInfo)
     {
         return await (
-            from profile in Profile.Create(
+            from profile in ProfileToBeCreated.Create(
                 profileCreatorInfo.Name,
                 profileCreatorInfo.Presentation,
                 profileCreatorInfo.Role,

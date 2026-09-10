@@ -7,7 +7,7 @@ namespace Portfolio.Api.Profiles.Create.Infrastructure.Adapters;
 
 public class SqlServerProfileCreatorAdapter: IProfileCreatorRepository
 {
-    public Task<Either<Error, Unit>> CreateProfile(Profile profile)
+    public Task<Either<Error, Unit>> CreateProfile(ProfileToBeCreated profileToBeCreated)
     {
         throw new NotImplementedException();
     }
