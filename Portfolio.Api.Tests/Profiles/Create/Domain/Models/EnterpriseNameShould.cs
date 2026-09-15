@@ -8,7 +8,7 @@ public class EnterpriseNameShould
     [Fact]
     public void BeCreated()
     {
-        const string givenEnterprise = "Beer software architect";
+        const string givenEnterprise = "Lean Mind";
 
         EnterpriseName.Create(givenEnterprise).Match(
             name => name.ToString().ShouldBe(givenEnterprise),
