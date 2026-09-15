@@ -22,7 +22,7 @@ public class ProfileToBeCreated
         string givenName,
         string givenPresentation,
         string givenJobRole,
-        string givenEnterpriseName
+        string? givenEnterpriseName
     ) =>
         from name in Name.Create(givenName)
         from presentation in Presentation.Create(givenPresentation)

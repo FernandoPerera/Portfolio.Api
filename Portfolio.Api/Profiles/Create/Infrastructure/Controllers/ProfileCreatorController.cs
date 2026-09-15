@@ -16,7 +16,7 @@ public class ProfileCreatorController(ProfileCreator creator) : ControllerBase
     {
         return await (
             from _ in creator.Execute(
-                new ProfileCreatorInfo(request.Name, request.Role, request.Presentation, request.Enterprise)
+                new ProfileCreatorInfo(request.Name, request.JobRole, request.Presentation, request.EnterpriseName)
             ).ToAsync()
             select Unit.Default
         ).Match<ActionResult>(

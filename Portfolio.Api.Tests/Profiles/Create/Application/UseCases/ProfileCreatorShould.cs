@@ -25,9 +25,9 @@ public class ProfileCreatorShould
     {
         var creatorInfo = new ProfileCreatorInfo(
             Name: "Fernando",
-            Role: "Beer software architect",
+            JobRole: "Beer software architect",
             Presentation: "Mucho gusto :)",
-            Enterprise: "Lean Mind"
+            EnterpriseName: "Lean Mind"
         );
         _repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
 

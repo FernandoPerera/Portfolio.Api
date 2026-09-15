@@ -1,3 +1,3 @@
 namespace Portfolio.Api.Profiles.Create.Application.Dtos;
 
-public record ProfileCreatorInfo(string Name, string Role, string Presentation, string Enterprise);
+public record ProfileCreatorInfo(string Name, string JobRole, string Presentation, string? EnterpriseName);

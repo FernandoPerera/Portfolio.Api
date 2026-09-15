@@ -14,8 +14,8 @@ public class ProfileCreator(IProfileCreatorRepository creator)
             from profile in ProfileToBeCreated.Create(
                 profileCreatorInfo.Name,
                 profileCreatorInfo.Presentation,
-                profileCreatorInfo.Role,
-                profileCreatorInfo.Enterprise
+                profileCreatorInfo.JobRole,
+                profileCreatorInfo.EnterpriseName
             ).ToAsync()
             from _ in creator.CreateProfile(profile).ToAsync()
             select Unit.Default
