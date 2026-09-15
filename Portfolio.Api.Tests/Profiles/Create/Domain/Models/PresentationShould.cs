@@ -28,4 +28,16 @@ public class PresentationShould
                 .Message.ShouldBe("Presentation cannot be empty")
         );
     }
+
+    [Fact]
+    public void DoNotCreateIfTheCharacterLimitIsExceeded()
+    {
+        var givenPresentation = new string('a', 751);
+        
+        Presentation.Create(givenPresentation).Match(
+            presentation => presentation.ShouldBeNull(),
+            error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                .Message.ShouldBe("The presentation cannot exceed 750 characters")
+        );
+    }
 }
