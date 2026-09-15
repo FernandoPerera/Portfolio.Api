@@ -16,5 +16,5 @@ public class EnterpriseName
             : new EnterpriseName(enterpriseName);
     }
 
-    public override string? ToString() => _value;
+    public override string ToString() => _value;
 }
