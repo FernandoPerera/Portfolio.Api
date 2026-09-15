@@ -19,6 +19,11 @@ public class Presentation
             return Error.New(new ValidationException("Presentation cannot be empty"));
         }
         
+        if (presentation.Length > CharacterLimit)
+        {
+            return Error.New(new ValidationException($"The presentation cannot exceed {CharacterLimit} characters"));
+        }
+        
         return new Presentation(presentation);
     }
 
