@@ -34,7 +34,7 @@ public class NameShould
     [Fact]
     public void DoNotCreateIfTheCharacterLimitIsExceeded()
     {
-        var givenName = new string('a', 120);;
+        var givenName = new string('a', 120);
         
         Name.Create(givenName)
             .Match(
