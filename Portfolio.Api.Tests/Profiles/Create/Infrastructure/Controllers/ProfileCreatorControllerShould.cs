@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Profiles.Create.Application.UseCases;
 using Portfolio.Api.Profiles.Create.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
+using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Shouldly;
 
