@@ -6,7 +6,7 @@ This document defines the architecture, code conventions, design patterns, and w
 
 ## 1. Philosophy and Architectural Style
 
-The application follows a combination of:
+The application is built on **.NET 10** with **C# 14** and follows a combination of:
 1. **Vertical Slice Architecture / Screaming Architecture (Feature-First per Action):** Code is organized around use cases and concrete business actions, not in horizontal monolithic layers.
 2. **Hexagonal Architecture (Ports & Adapters) / Clean Architecture:** Total isolation of the domain from infrastructure details.
 3. **Typed Functional Programming with LanguageExt:** Error handling and control flow through `Either<Error, T>`, `Option<T>`, and `Unit` monads, eliminating unhandled exceptions in the business flow.
@@ -310,32 +310,27 @@ public class EntityFrameworkProfileCreatorAdapter(
 
 ---
 
-### Mandatory Structure: Given - When - Then
-All test methods must be explicitly structured following the three blocks of the **Given-When-Then** (or Arrange-Act-Assert) pattern:
-
-1. **`// Given` (Arrange):**
-   - Scenario setup, preparation of valid/invalid data using **Domain Builders**, and stub/mock initialization with `NSubstitute`.
-2. **`// When` (Act):**
-   - Single execution of the action, use case invocation, or call to the method under test.
-3. **`// Then` (Assert):**
-   - Verification of the expected result, assertions with `Shouldly` on return types (`Either<Error, T>`, expected domain exception types), and verification of secondary dependency calls when applicable.
+### Mandatory Rule: No Comments in Test Code
+Do NOT use comments (`// Given`, `// When`, `// Then` or any other comments) in test code. Structure test methods clearly with logical separation / blank lines if desired, but keep the code clean and comment-free.
 
 ---
 
-### Test Naming: Business Scenario-Oriented (BDD)
-Test names **must describe the expected behavior and scenario in business language / ubiquitous language**, avoiding empty technical names (such as `Test1`, `Execute`, `Success`, `CreateProfile`).
+### Mandatory Rule: Inline When and Then for Synchronous Actions
+For synchronous actions (e.g. Value Objects and Domain Models creation, synchronous validation), inline the execution and assertion directly (e.g. `Name.Create(givenName).Match(...)`), avoiding intermediate variable assignments.
 
-**Standard naming patterns:**
-- `Should_{expected_behavior}_when_{business_scenario_or_condition}`
-- `{Expected_behavior}_when_{business_scenario_or_condition}`
-- `{Expected_result}_given_{specific_context}`
+---
+
+### Test Naming: CamelCase / Business Scenario-Oriented
+Test names must be written in **CamelCase / PascalCase** (no underscores), describing the scenario or expected behavior in ubiquitous language:
 
 **Recommended examples:**
-* `Create_profile_successfully_when_valid_data_is_provided()`
-* `Return_validation_error_when_name_is_empty(string givenName)`
-* `Fail_when_character_limit_is_exceeded()`
-* `Return_service_unavailable_error_when_database_fails_to_save_profile()`
-* `Return_created_at_action_when_profile_is_successfully_created()`
+* `CreateProfileSuccessfullyWhenValidDataIsProvided()`
+* `ReturnValidationErrorWhenNameIsEmptyOrWhitespace(string givenName)`
+* `FailWhenCharacterLimitIsExceeded()`
+* `ReturnServiceUnavailableErrorWhenDatabaseFailsToSaveProfile()`
+* `ReturnCreatedAtActionWhenProfileIsSuccessfullyCreated()`
+* `BeCreated()`
+* `NotAllowEmptyValue()`
 
 ---
 
@@ -346,52 +341,41 @@ Test names **must describe the expected behavior and scenario in business langua
 public class NameShould
 {
     [Fact]
-    public void Be_created_successfully_when_valid_name_is_provided()
+    public void BeCreated()
     {
-        // Given
         const string givenName = "Fernando";
 
-        // When
-        var result = Name.Create(givenName);
-
-        // Then
-        result.Match(
-            name => name.ToString().ShouldBe(givenName),
-            error => error.ShouldBeNull()
-        );
+        Name.Create(givenName)
+            .Match(
+                name => name.ToString().ShouldBe(givenName),
+                error => error.ShouldBeNull()
+            );
     }
 
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void Return_validation_error_when_name_is_empty_or_whitespace(string givenName)
+    public void NotAllowEmptyValue(string givenName)
     {
-        // When
-        var result = Name.Create(givenName);
-
-        // Then
-        result.Match(
-            name => name.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ValidationException>()
-                .Message.ShouldBe("Name cannot be empty")
-        );
+        Name.Create(givenName)
+            .Match(
+                name => name.ShouldBeNull(),
+                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                    .Message.ShouldBe("Name cannot be empty")
+            );
     }
 
     [Fact]
-    public void Return_validation_error_when_character_limit_is_exceeded()
+    public void DoNotCreateIfTheCharacterLimitIsExceeded()
     {
-        // Given
         var givenName = new string('a', 120);
 
-        // When
-        var result = Name.Create(givenName);
-
-        // Then
-        result.Match(
-            name => name.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ValidationException>()
-                .Message.ShouldBe("The name cannot exceed 100 characters")
-        );
+        Name.Create(givenName)
+            .Match(
+                name => name.ShouldBeNull(),
+                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                    .Message.ShouldBe("The name cannot exceed 100 characters")
+            );
     }
 }
 ```
@@ -429,7 +413,6 @@ public class ProfileCreatorShould
     [Fact]
     public async Task Create_profile_successfully_when_valid_data_is_provided()
     {
-        // Given
         var creatorInfo = new ProfileCreatorInfo(
             Name: "Fernando",
             JobRole: "Beer software architect",
@@ -438,10 +421,8 @@ public class ProfileCreatorShould
         );
         _repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
 
-        // When
         var result = await _creator.Execute(creatorInfo);
 
-        // Then
         result.Match(
             unit => unit.ShouldBeUnit(),
             error => error.ShouldBeNull()
@@ -451,15 +432,12 @@ public class ProfileCreatorShould
     [Fact]
     public async Task Return_repository_error_when_profile_persistence_fails()
     {
-        // Given
         var creatorInfo = new ProfileCreatorInfo("Fernando", "Architect", "Bio", "Lean Mind");
         var expectedError = Error.New(new ServiceUnavailableException("Database unavailable"));
         _repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(expectedError);
 
-        // When
         var result = await _creator.Execute(creatorInfo);
 
-        // Then
         result.Match(
             unit => throw new InvalidOperationException("Should have failed"),
             error => error.ShouldBe(expectedError)
@@ -489,15 +467,12 @@ public class EntityFrameworkProfileCreatorAdapterShould
     [Fact]
     public async Task Save_profile_in_database_successfully_when_valid_domain_model_is_provided()
     {
-        // Given
         var generatedId = Guid.NewGuid();
         _generatorIdentifier.Generate().Returns(generatedId);
         var domainModel = ProfileToBeCreatedBuilder.Build();
 
-        // When
         var result = await _adapter.CreateProfile(domainModel);
 
-        // Then
         result.Match(
             unit => unit.ShouldBeUnit(),
             error => error.ShouldBeNull()
@@ -511,14 +486,11 @@ public class EntityFrameworkProfileCreatorAdapterShould
     [Fact]
     public async Task Return_service_unavailable_error_when_database_fails()
     {
-        // Given
         var domainModel = ProfileToBeCreatedBuilder.Build();
-        await _dbContext.DisposeAsync(); // Simulates DB failure
+        await _dbContext.DisposeAsync();
 
-        // When
         var result = await _adapter.CreateProfile(domainModel);
 
-        // Then
         result.Match(
             unit => throw new InvalidOperationException("Should have failed"),
             error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
@@ -534,7 +506,6 @@ public class ProfileCreatorControllerShould
     [Fact]
     public async Task Return_created_at_action_when_profile_is_successfully_created()
     {
-        // Given
         var repository = Substitute.For<IProfileCreatorRepository>();
         repository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
         var creator = new ProfileCreator(repository);
@@ -542,10 +513,8 @@ public class ProfileCreatorControllerShould
 
         var request = new CreateProfileRequest("Fernando", "Architect", "Bio", "Lean Mind");
 
-        // When
         var response = await controller.Create(request);
 
-        // Then
         var createdAtResult = response.ShouldBeOfType<CreatedAtActionResult>();
         createdAtResult.Value.ShouldBe(request);
     }

@@ -1,6 +1,6 @@
 # Assistant Guidelines and Project Rules (Portfolio.Api)
 
-This repository implements a rigorous architecture oriented towards Vertical Slices and Hexagonal / Ports & Adapters, with Typed Functional Programming (LanguageExt) and Tactical DDD.
+This repository is built on **.NET 10** with **C# 14** and implements a rigorous architecture oriented towards Vertical Slices and Hexagonal / Ports & Adapters, with Typed Functional Programming (LanguageExt) and Tactical DDD.
 
 ---
 
@@ -12,7 +12,8 @@ Before generating any work plan (`/plan`), proposing design changes, writing app
 ---
 
 ## 2. Testing Standards Summary
-* **Mandatory Given-When-Then structure:** Every test method must explicitly divide its flow with `// Given`, `// When`, `// Then` comments.
-* **Business scenario-oriented naming (BDD):** Tests must be named based on the expected behavior and the business condition/scenario (e.g., `Create_profile_successfully_when_valid_data_is_provided`, `Return_validation_error_when_name_is_empty`).
+* **No comments in test code:** Do NOT write comments in test code (no `// Given`, `// When`, `// Then` or any other comments). Structure tests clearly with blank lines if needed, but without comments.
+* **Inline When and Then for synchronous actions:** For synchronous actions (such as Value Objects and Domain Models creation), inline the execution and assertion directly (e.g. `Name.Create(givenName).Match(...)`), avoiding intermediate variable assignments.
+* **Test method naming in CamelCase:** Tests must be named using CamelCase / PascalCase describing the scenario without underscores (e.g., `BeCreated`, `NotAllowEmptyValue`, `ReturnValidationErrorWhenNameIsEmptyOrWhitespace`, `CreateProfileSuccessfullyWhenValidDataIsProvided`).
 * **Libraries:** `xUnit`, `Shouldly`, and `NSubstitute`.
 * **LanguageExt:** Verify `Right` and `Left` branches using `.Match(...)` and typed extensions.
