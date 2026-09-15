@@ -15,4 +15,16 @@ public class EnterpriseNameShould
             error => error.ShouldBeNull()
         );
     }
+    
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void BeCreatedWithEmptyValues(string? givenEnterpriseName)
+    {
+        EnterpriseName.Create(givenEnterpriseName).Match(
+            name => name.ToString().ShouldBe(string.Empty),
+            error => error.ShouldBeNull()
+        );
+    }
 }
