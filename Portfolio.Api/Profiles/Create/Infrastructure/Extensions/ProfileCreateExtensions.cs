@@ -8,7 +8,7 @@ public static class ProfileCreateExtensions
 {
     public static void AddProfileCreate(this IServiceCollection services)
     {
-        services.AddScoped<IProfileCreatorRepository, EntityFrameworkProfileCreatorAdapter>();
         services.AddScoped<ProfileCreator>();
+        services.AddScoped<IProfileCreatorRepository, EntityFrameworkProfileCreatorAdapter>();
     }
 }
