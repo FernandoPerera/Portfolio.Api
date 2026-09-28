@@ -8,9 +8,9 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 
 namespace Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 
-public class EntityFrameworkLanguageFinderAdapter(AppDbContext dbContext) : ILanguageFinderRepository
+public class EntityFrameworkLanguageExistenceAdapter(AppDbContext dbContext) : ILanguageExistenceRepository
 {
-    public async Task<Either<Error, Unit>> Find(LanguageCode languageCode)
+    public async Task<Either<Error, Unit>> Exists(LanguageCode languageCode)
     {
         try
         {

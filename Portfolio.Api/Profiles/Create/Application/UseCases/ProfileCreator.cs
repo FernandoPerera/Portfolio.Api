@@ -9,7 +9,7 @@ namespace Portfolio.Api.Profiles.Create.Application.UseCases;
 
 public class ProfileCreator(
     IProfileCreatorRepository creator,
-    ILanguageFinderRepository languageFinder
+    ILanguageExistenceRepository languageExistence
 )
 {
     public async Task<Either<Error, Unit>> Execute(ProfileCreatorInfo profileCreatorInfo)
@@ -22,7 +22,7 @@ public class ProfileCreator(
                 profileCreatorInfo.EnterpriseName,
                 profileCreatorInfo.LanguageCode
             ).ToAsync()
-            from _ in languageFinder.Find(profile.GetLanguageCodeModel()).ToAsync()
+            from _ in languageExistence.Exists(profile.GetLanguageCodeModel()).ToAsync()
             from result in creator.CreateProfile(profile).ToAsync()
             select result
         );

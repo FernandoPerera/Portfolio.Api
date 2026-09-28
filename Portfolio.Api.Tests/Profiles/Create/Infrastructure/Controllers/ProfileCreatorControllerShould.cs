@@ -26,7 +26,7 @@ public class ProfileCreatorControllerShould
         _appDbContext = new AppDbContext(options);
         var generatorIdentifier = new GuidGeneratorIdentifier();
         var creatorRepository = new EntityFrameworkProfileCreatorAdapter(_appDbContext, generatorIdentifier);
-        var languageFinderRepository = new EntityFrameworkLanguageFinderAdapter(_appDbContext);
+        var languageFinderRepository = new EntityFrameworkLanguageExistenceAdapter(_appDbContext);
         var creator = new ProfileCreator(creatorRepository, languageFinderRepository);
         _controller = new ProfileCreatorController(creator);
     }

@@ -16,12 +16,12 @@ namespace Portfolio.Api.Tests.Profiles.Create.Application.UseCases;
 public class ProfileCreatorShould
 {
     private readonly IProfileCreatorRepository _creatorRepository = Substitute.For<IProfileCreatorRepository>();
-    private readonly ILanguageFinderRepository _languageFinderRepository = Substitute.For<ILanguageFinderRepository>();
+    private readonly ILanguageExistenceRepository _languageExistenceRepository = Substitute.For<ILanguageExistenceRepository>();
     private readonly ProfileCreator _creator;
 
     public ProfileCreatorShould()
     {
-        _creator = new ProfileCreator(_creatorRepository, _languageFinderRepository);
+        _creator = new ProfileCreator(_creatorRepository, _languageExistenceRepository);
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class ProfileCreatorShould
             EnterpriseName: "Lean Mind",
             LanguageCode: "es"
         );
-        _languageFinderRepository.Find(Arg.Any<LanguageCode>()).Returns(Unit.Default);
+        _languageExistenceRepository.Exists(Arg.Any<LanguageCode>()).Returns(Unit.Default);
         _creatorRepository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
 
         var result = await _creator.Execute(creatorInfo);
@@ -55,7 +55,7 @@ public class ProfileCreatorShould
             EnterpriseName: "Lean Mind",
             LanguageCode: "fr"
         );
-        _languageFinderRepository.Find(Arg.Any<LanguageCode>())
+        _languageExistenceRepository.Exists(Arg.Any<LanguageCode>())
             .Returns(Error.New(new NotFoundException("Language 'fr' was not found")));
 
         var result = await _creator.Execute(creatorInfo);
@@ -76,7 +76,7 @@ public class ProfileCreatorShould
             EnterpriseName: "Lean Mind",
             LanguageCode: "es"
         );
-        _languageFinderRepository.Find(Arg.Any<LanguageCode>())
+        _languageExistenceRepository.Exists(Arg.Any<LanguageCode>())
             .Returns(Error.New(new ServiceUnavailableException("Database is unavailable")));
 
         var result = await _creator.Execute(creatorInfo);

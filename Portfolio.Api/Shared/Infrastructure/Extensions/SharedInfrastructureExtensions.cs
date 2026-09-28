@@ -12,7 +12,7 @@ public static class SharedInfrastructureExtensions
     public static void AddSharedInfrastructure(this IServiceCollection services)
     {
         services.AddSingleton<IGeneratorIdentifier, GuidGeneratorIdentifier>();
-        services.AddScoped<ILanguageFinderRepository, EntityFrameworkLanguageFinderAdapter>();
+        services.AddScoped<ILanguageExistenceRepository, EntityFrameworkLanguageExistenceAdapter>();
 
         services.AddDbContext<AppDbContext>(options =>
         {

@@ -4,7 +4,7 @@ using Portfolio.Api.Profiles.Shared.Domain.Models;
 
 namespace Portfolio.Api.Profiles.Shared.Domain.Ports;
 
-public interface ILanguageFinderRepository
+public interface ILanguageExistenceRepository
 {
-    Task<Either<Error, Unit>> Find(LanguageCode languageCode);
+    Task<Either<Error, Unit>> Exists(LanguageCode languageCode);
 }

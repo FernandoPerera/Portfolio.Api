@@ -12,7 +12,7 @@ namespace Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Adapters;
 public class EntityFrameworkLanguageFinderAdapterShould
 {
     private readonly AppDbContext _appDbContext;
-    private readonly EntityFrameworkLanguageFinderAdapter _finder;
+    private readonly EntityFrameworkLanguageExistenceAdapter _existence;
 
     public EntityFrameworkLanguageFinderAdapterShould()
     {
@@ -21,7 +21,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
             .Options;
 
         _appDbContext = new AppDbContext(options);
-        _finder = new EntityFrameworkLanguageFinderAdapter(_appDbContext);
+        _existence = new EntityFrameworkLanguageExistenceAdapter(_appDbContext);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
         var languageCode = LanguageCode.Create("es")
             .IfLeft(_ => throw new InvalidOperationException());
 
-        var result = await _finder.Find(languageCode);
+        var result = await _existence.Exists(languageCode);
 
         result.Match(
             unit => unit.ShouldBeUnit(),
@@ -51,7 +51,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
         var languageCode = LanguageCode.Create("en")
             .IfLeft(_ => throw new InvalidOperationException());
 
-        var result = await _finder.Find(languageCode);
+        var result = await _existence.Exists(languageCode);
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
@@ -66,7 +66,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
             .IfLeft(_ => throw new InvalidOperationException());
         await _appDbContext.DisposeAsync();
 
-        var result = await _finder.Find(languageCode);
+        var result = await _existence.Exists(languageCode);
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
