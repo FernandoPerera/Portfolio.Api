@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Profiles.Create.Application.Dtos;
 using Portfolio.Api.Profiles.Create.Application.UseCases;
 using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 
@@ -16,12 +17,33 @@ public class ProfileCreatorController(ProfileCreator creator) : ControllerBase
     {
         return await (
             from _ in creator.Execute(
-                new ProfileCreatorInfo(request.Name, request.JobRole, request.Presentation, request.EnterpriseName)
+                new ProfileCreatorInfo(
+                    request.Name,
+                    request.JobRole,
+                    request.Presentation,
+                    request.EnterpriseName,
+                    request.LanguageCode
+                )
             ).ToAsync()
             select Unit.Default
         ).Match<ActionResult>(
             _ => CreatedAtAction(nameof(Create), request),
-            error => Problem()
+            error => error.Exception.Case switch
+            {
+                NotFoundException => NotFound(new ProblemDetails
+                {
+                    Title = "Not Found",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status404NotFound
+                }),
+                ValidationException => BadRequest(new ProblemDetails
+                {
+                    Title = "Bad Request",
+                    Detail = error.Message,
+                    Status = StatusCodes.Status400BadRequest
+                }),
+                _ => Problem()
+            }
         );
     }
 }

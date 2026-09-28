@@ -40,7 +40,16 @@ public class EntityFrameworkProfileCreatorAdapterShould
             RightAsync: async unit =>
             {
                 unit.ShouldBeUnit();
-                await _appDbContext.Profiles.FirstOrDefaultAsync(profile => profile.Id == profileId);
+                var saved = await _appDbContext.Profiles.Include(p => p.Translations)
+                    .FirstOrDefaultAsync(profile => profile.Id == profileId);
+                saved.ShouldNotBeNull();
+                saved.Name.ShouldBe(profileToBeCreated.GetName());
+                saved.Enterprise.ShouldBe(profileToBeCreated.GetEnterprise());
+                saved.Translations.Count.ShouldBe(1);
+                var translation = saved.Translations.First();
+                translation.LanguageCode.ShouldBe(profileToBeCreated.GetLanguageCode());
+                translation.Presentation.ShouldBe(profileToBeCreated.GetPresentation());
+                translation.Role.ShouldBe(profileToBeCreated.GetRole());
                 return Unit.Default;
             },
             Left: error =>

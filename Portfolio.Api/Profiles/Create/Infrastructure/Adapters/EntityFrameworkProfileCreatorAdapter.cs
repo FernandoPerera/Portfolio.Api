@@ -18,13 +18,22 @@ public class EntityFrameworkProfileCreatorAdapter(
     {
         try
         {
+            var profileId = generatorIdentifier.Generate();
             var entity = new ProfileEntity
             {
-                Id = generatorIdentifier.Generate(),
+                Id = profileId,
                 Name = profileToBeCreated.GetName(),
-                Presentation = profileToBeCreated.GetPresentation(),
-                Role = profileToBeCreated.GetRole(),
-                Enterprise = profileToBeCreated.GetEnterprise()
+                Enterprise = profileToBeCreated.GetEnterprise(),
+                Translations = new List<ProfileTranslationEntity>
+                {
+                    new()
+                    {
+                        ProfileId = profileId,
+                        LanguageCode = profileToBeCreated.GetLanguageCode(),
+                        Presentation = profileToBeCreated.GetPresentation(),
+                        Role = profileToBeCreated.GetRole()
+                    }
+                }
             };
 
             await dbContext.Profiles.AddAsync(entity);
