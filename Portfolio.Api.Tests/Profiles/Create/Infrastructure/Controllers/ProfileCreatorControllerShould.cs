@@ -4,6 +4,7 @@ using Portfolio.Api.Profiles.Create.Application.UseCases;
 using Portfolio.Api.Profiles.Create.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
+using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;

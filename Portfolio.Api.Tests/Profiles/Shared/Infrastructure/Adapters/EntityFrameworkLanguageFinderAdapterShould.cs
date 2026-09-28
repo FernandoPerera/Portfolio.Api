@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Extensions;
+using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Adapters;
 
