@@ -84,6 +84,7 @@ public class ProfileToBeCreated
 ---
 #### C. Ports
 - Interfaces located in Domain/Ports/.
+- Domain ports that query or search must receive a strongly-typed Domain Model or Value Object as parameter, never raw primitive types (e.g. `Find(LanguageCode languageCode)`).
 - Functional and asynchronous return types: Task<Either<Error, Unit>> or Task<Either<Error, TResult>>.
 
 ```csharp
