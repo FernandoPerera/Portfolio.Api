@@ -24,6 +24,9 @@ Before drafting any plan, inspect:
   - Every step must represent a readable, testable vertical slice.
   - Keep the application compiling cleanly and passing all existing tests.
   - Prevent breaking changes to existing functionality.
+- **Commit Rules:**
+  - Separate code changes from documentation changes (create separate `docs(...)` commits for documentation files).
+  - **NEVER commit the `docs/plans/` directory** or plan files.
 
 ---
 
@@ -36,7 +39,7 @@ Before drafting any plan, inspect:
    - Do NOT print full code diffs in the chat output (the user reviews diffs directly in the IDE).
    - Pause and request the user's review and approval.
 4. **Commit & Automatic Continuation:**
-   - Once the user approves the step, immediately execute the git commit for that step.
+   - Once the user approves the step, immediately execute the git commit for that step (excluding `docs/plans/`).
    - Then automatically proceed to implement the next step in the plan.
 
 ---
