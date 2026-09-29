@@ -12,9 +12,9 @@
 2. **Inline When & Then for Synchronous Actions:** For synchronous operations (e.g., Value Object or Domain Model creation), inline execution and assertion directly (e.g. `Name.Create(givenName).Match(...)`), avoiding intermediate variable assignments.
 3. **PascalCase / CamelCase Naming:** Test method names MUST NOT contain underscores. Use descriptive PascalCase describing the scenario (e.g., `BeCreated`, `NotAllowEmptyValue`, `CreateProfileSuccessfullyWhenValidDataIsProvided`).
 4. **LanguageExt Assertions:** Verify `Right` and `Left` branches using `.Match(...)` and typed extensions (`.ShouldBeUnit()`, `.ShouldBeNull()`).
-5. **Naming**: Test names must describe business behavior and domain rules. Avoid implementation details, technical jargon, or infrastructure terminology (e.g., Database, Entity, Repository...).
-   - Happy Path: [BusinessOutcome] or [DomainAction] ➡️ `ApproveLoan` - `CompleteCheckout` - `RegisterNewCustomer`
-   - Alternative / Edge Cases [Reject | Prevent | Fail][Action]When[BusinessCondition] ➡️ `RejectLoanWhenCreditScoreIsLow` - `PreventCheckoutWhenCartIsEmpty` - `FailRegistrationWhenEmailIsAlreadyInUse`
+5. **Naming**: Test names must describe business behavior, product intent, or direct outcomes. Avoid technical jargon, framework prefixes, or implementation details (e.g. avoid `Return...`, `Is...Exception`, `...ProblemDetails`, `Database`, `Entity`, `Repository...`).
+   - Direct Actions / Outcomes: `MapToNotFound` - `MapToBadRequest` - `ApproveLoan` - `CompleteCheckout` - `RegisterNewCustomer`
+   - Alternative / Edge Cases: [Reject | Prevent | Fail][Action]When[BusinessCondition] ➡️ `RejectLoanWhenCreditScoreIsLow` - `PreventCheckoutWhenCartIsEmpty` - `FailRegistrationWhenEmailIsAlreadyInUse`
 
 ### Examples
 - `Domain`
