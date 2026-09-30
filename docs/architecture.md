@@ -20,6 +20,7 @@ Clean Architecture coupled with Tactical Domain-Driven Design (DDD) and Function
 
 ### 3. Infrastructure Layer
 - **Infrastructure DTOs:** Immutable `record` representing HTTP payloads.
-- **Controllers:** Primary Constructor injecting Use Case. `[ApiController]`, `[Route("v1/...")]`, `[Produces("application/json")]`. Functional result mapping via `.ToAsync().Match<ActionResult>(...)`.
+- **Controllers:** Primary Constructor injecting Use Case and `IErrorResponseMapper`. `[ApiController]`, `[Route("v1/...")]`, `[Produces("application/json")]`. Functional result mapping via `.ToAsync().Match(...)`, delegating errors with `error => errorResponseMapper.ToActionResult(this, error)`. No `switch` on errors in controllers.
+- **Error Mapping:** Port `IErrorResponseMapper` (`Shared/Infrastructure/Ports/`), adapter `ProblemDetailsMapper` (`Shared/Infrastructure/Adapters/`), registered in `SharedInfrastructureExtensions`. Maps domain errors to RFC 7807 `ProblemDetails` responses.
 - **Adapters:** Implement domain ports. Primary Constructor injecting `DbContext` and dependencies. Wrap low-level exception throwing inside `try/catch` and map to `Error.New(new ServiceUnavailableException(...))`.
 - **Canonical Examples:** `src/Infrastructure/Controllers/ProfileCreatorController.cs`, `src/Infrastructure/Adapters/EntityFrameworkProfileCreatorAdapter.cs`.
