@@ -1,31 +1,32 @@
-# Developer Portfolio & Technical Blog API
+# Personal Portfolio & Technical Blog API
 
 ---
-## Context
-This backend API serves as the content engine for a personal developer portfolio and technical blog platform. It handles localized content (Spanish/English), theme synchronization, a timeline, content discovery, and transactional communications.
+## Overview
+Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, and Functional Programming via `LanguageExt`.
 
 ---
 ## Stack
 * **Framework:** .NET 10
 * **Language:** C# 14
-* **Error handling:** LanguageExt
+* **Functional Library:** LanguageExt
+* **Testing:** xUnit, Shouldly, NSubstitute
 
 ---
-## Documentation & Rules
-* [Architecture & Layer Guidelines](./docs/architecture.md) — Tactical DDD patterns and layer implementation guidelines.
-* [Backend Conventions & Rules](./docs/backend.instructions.md) — Coding standards, C# 14 practices, and LanguageExt rules.
-* [Testing Strategy](./docs/testing.md) — Testing conventions, mandatory rules, and layer-by-layer examples.
+## Developer Guidelines
+* **Agent Quick Rules:** Read [`CLAUDE.md`](./CLAUDE.md)
+* **Architecture Rules:** See [`docs/architecture.md`](./docs/architecture.md)
+* **Testing Guidelines:** See [`docs/testing.md`](./docs/testing.md)
+* **Planning Workflow:** See [`docs/planning.md`](./docs/planning.md)
 
 ---
-## Getting Started
+## Quick Start
 
----
-### Run the Application
 ```bash
-dotnet run --project src/Infrastructure/Infrastructure.csproj
-````
----
-### Run Tests
+# Build
+dotnet build
+```
+
+# Run tests
 ```bash
 dotnet test
 ```
