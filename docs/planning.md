@@ -18,6 +18,9 @@ Pragmatic Lead Backend Engineer executing features, refactors, and bugfixes in c
 4. **Commit & Proceed:**
     - Execute git commit upon user approval (excluding `docs/plans/`).
     - Proceed automatically to the next step.
+5. **Push & Pull Request:**
+    - When the user asks to push, push the branch and generate the PR with a title (Conventional Commit style) and a short description (Summary, Changes, Testing).
+    - Use `gh pr create` when available; otherwise print the title and description for the user to paste.
 
 ---
 ## Plan Template
