@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Profiles.Create.Application.Dtos;
 using Portfolio.Api.Profiles.Create.Application.UseCases;
 using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
-using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.Shared.Infrastructure.Ports;
 
 namespace Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 
 [ApiController]
 [Route("v1/profile")]
-public class ProfileCreatorController(ProfileCreator creator) : ControllerBase
+public class ProfileCreatorController(
+    ProfileCreator creator,
+    IErrorResponseMapper errorResponseMapper
+) : ControllerBase
 {
     [HttpPost("create")]
     [Produces("application/json")]
@@ -26,24 +29,9 @@ public class ProfileCreatorController(ProfileCreator creator) : ControllerBase
                 )
             ).ToAsync()
             select Unit.Default
-        ).Match<ActionResult>(
+        ).Match(
             _ => CreatedAtAction(nameof(Create), request),
-            error => error.Exception.Case switch
-            {
-                NotFoundException => NotFound(new ProblemDetails
-                {
-                    Title = "Not Found",
-                    Detail = error.Message,
-                    Status = StatusCodes.Status404NotFound
-                }),
-                ValidationException => BadRequest(new ProblemDetails
-                {
-                    Title = "Bad Request",
-                    Detail = error.Message,
-                    Status = StatusCodes.Status400BadRequest
-                }),
-                _ => Problem()
-            }
+            error => errorResponseMapper.ToActionResult(this, error)
         );
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Profiles.Create.Application.UseCases;
@@ -28,7 +29,8 @@ public class ProfileCreatorControllerShould
         var creatorRepository = new EntityFrameworkProfileCreatorAdapter(_appDbContext, generatorIdentifier);
         var languageFinderRepository = new EntityFrameworkLanguageExistenceAdapter(_appDbContext);
         var creator = new ProfileCreator(creatorRepository, languageFinderRepository);
-        _controller = new ProfileCreatorController(creator);
+        var errorResponseMapper = new ProblemDetailsMapper();
+        _controller = new ProfileCreatorController(creator, errorResponseMapper);
     }
 
     [Fact]
@@ -40,7 +42,6 @@ public class ProfileCreatorControllerShould
             Name = "Spanish"
         });
         await _appDbContext.SaveChangesAsync();
-
         var request = new CreateProfileRequest(
             "Fernando",
             "Beer software architect",
@@ -55,7 +56,7 @@ public class ProfileCreatorControllerShould
     }
 
     [Fact]
-    public async Task ReturnNotFoundWhenLanguageDoesNotExist()
+    public async Task FailWhenLanguageDoesNotExist()
     {
         var request = new CreateProfileRequest(
             "Fernando",
@@ -67,11 +68,13 @@ public class ProfileCreatorControllerShould
 
         var response = await _controller.Create(request);
 
-        response.ShouldBeOfType<NotFoundObjectResult>();
+        var objectResult = response.ShouldBeOfType<ObjectResult>();
+        var problemDetails = objectResult.Value.ShouldBeOfType<ProblemDetails>();
+        problemDetails.Status.ShouldBe(StatusCodes.Status404NotFound);
     }
 
     [Fact]
-    public async Task ReturnBadRequestWhenLanguageCodeIsInvalid()
+    public async Task FailWhenLanguageCodeIsInvalid()
     {
         var request = new CreateProfileRequest(
             "Fernando",
@@ -83,6 +86,8 @@ public class ProfileCreatorControllerShould
 
         var response = await _controller.Create(request);
 
-        response.ShouldBeOfType<BadRequestObjectResult>();
+        var objectResult = response.ShouldBeOfType<ObjectResult>();
+        var problemDetails = objectResult.Value.ShouldBeOfType<ProblemDetails>();
+        problemDetails.Status.ShouldBe(StatusCodes.Status400BadRequest);
     }
 }

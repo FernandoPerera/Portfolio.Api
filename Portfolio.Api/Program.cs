@@ -5,6 +5,7 @@ using Portfolio.Api.Shared.Infrastructure.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 
 // Shared dependencies
 builder.Services.AddSharedInfrastructure();
