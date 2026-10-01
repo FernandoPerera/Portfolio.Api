@@ -16,6 +16,7 @@
 6. **LanguageExt Assertions:** Verify branches using `.Match(...)` or typed extensions (`.ShouldBeUnit()`, `.ShouldBeNull()`).
 7. **Theory for Same Scenario:** When tests only differ in their input and expected values, merge them into a single `[Theory]` with `[InlineData]` instead of repeating `[Fact]` methods (e.g., `BeCreated` and `TrimSurroundingSpaces` become one `BeCreated(given, expected)`).
 8. **No Redundant Tests:** A test must not re-verify a rule already covered by the tests of the Value Objects or collaborators it uses. Models and Use Cases only test their own behavior: composition and invariants across several parts (e.g., `TimelineTranslationShould` does not repeat the invalid language code case already in `LanguageCodeShould`).
+9. **Builders for Valid Instances:** If a test needs a valid Value Object or Model only as setup and has to unwrap the `Either` (`.IfLeft(error => throw ...)`), create a builder in `Builders/` instead of unwrapping inside the test (e.g., `YearMonthBuilder.Build("2023-01")`).
 
 ---
 ## Reference Examples
