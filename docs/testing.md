@@ -15,6 +15,7 @@
 5. **No Technical Jargon in Test Names:** Avoid words like `Return`, `Is...Exception`, `ProblemDetails`, `Repository`, `Database`.
 6. **LanguageExt Assertions:** Verify branches using `.Match(...)` or typed extensions (`.ShouldBeUnit()`, `.ShouldBeNull()`).
 7. **Theory for Same Scenario:** When tests only differ in their input and expected values, merge them into a single `[Theory]` with `[InlineData]` instead of repeating `[Fact]` methods (e.g., `BeCreated` and `TrimSurroundingSpaces` become one `BeCreated(given, expected)`).
+8. **No Redundant Tests:** A test must not re-verify a rule already covered by the tests of the Value Objects or collaborators it uses. Models and Use Cases only test their own behavior: composition and invariants across several parts (e.g., `TimelineTranslationShould` does not repeat the invalid language code case already in `LanguageCodeShould`).
 
 ---
 ## Reference Examples
