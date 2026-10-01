@@ -3,6 +3,7 @@ using Portfolio.Api.Profiles.Create.Infrastructure.Entities;
 using Portfolio.Api.Profiles.Find.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Find.Infrastructure.Adapters;
@@ -34,21 +35,18 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
     public async Task FoundProfile()
     {
         var profileId = Guid.NewGuid();
+        var spanish = ProfileTranslationEntityBuilder.Build(
+            profileId, "es", "Mucho gusto :)", "Arquitecto de software cervecero"
+        );
+        var english = ProfileTranslationEntityBuilder.Build(
+            profileId, "en", "Nice to meet you :)", "Beer software architect"
+        );
         var entity = new ProfileEntity
         {
             Id = profileId,
             Name = "Fernando",
             Enterprise = "Lean Mind",
-            Translations = new List<ProfileTranslationEntity>
-            {
-                new()
-                {
-                    ProfileId = profileId,
-                    LanguageCode = "es",
-                    Presentation = "Mucho gusto :)",
-                    Role = "Beer software architect"
-                }
-            }
+            Translations = [spanish, english]
         };
         await _dbContext.Profiles.AddAsync(entity);
         await _dbContext.SaveChangesAsync();
@@ -58,11 +56,39 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
         result.Match(
             profile =>
             {
-                profile.GetName().ShouldBe("Fernando");
-                profile.GetPresentation().ShouldBe("Mucho gusto :)");
-                profile.GetRole().ShouldBe("Beer software architect");
-                profile.GetEnterprise().ShouldBe("Lean Mind");
+                profile.GetName().ShouldBe(entity.Name);
+                profile.GetEnterprise().ShouldBe(entity.Enterprise);
+                profile.GetTranslations()
+                    .Select(translation => (
+                        translation.GetLanguageCode(),
+                        translation.GetPresentation(),
+                        translation.GetRole()
+                    ))
+                    .ShouldBe(
+                    [
+                        (english.LanguageCode, english.Presentation, english.Role),
+                        (spanish.LanguageCode, spanish.Presentation, spanish.Role)
+                    ]);
             },
+            error => error.ShouldBeNull()
+        );
+    }
+
+    [Fact]
+    public async Task FoundProfileWithoutTranslations()
+    {
+        await _dbContext.Profiles.AddAsync(new ProfileEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Fernando",
+            Enterprise = "Lean Mind"
+        });
+        await _dbContext.SaveChangesAsync();
+
+        var result = await _adapter.FindProfile();
+
+        result.Match(
+            profile => profile.GetTranslations().ShouldBeEmpty(),
             error => error.ShouldBeNull()
         );
     }

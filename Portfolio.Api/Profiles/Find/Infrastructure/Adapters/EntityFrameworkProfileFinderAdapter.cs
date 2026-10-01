@@ -20,13 +20,21 @@ public class EntityFrameworkProfileFinderAdapter(AppDbContext dbContext) : IProf
                 return Error.New(new NotFoundException("Profile was not found"));
             }
 
-            var translation = entity.Translations.FirstOrDefault();
-
-            return ProfileFound.CreateUnsafe(
-                entity.Name,
-                translation?.Presentation ?? string.Empty,
-                translation?.Role ?? string.Empty,
-                entity.Enterprise
+            return (
+                from translations in entity.Translations
+                    .OrderBy(translation => translation.LanguageCode)
+                    .Select(translation => ProfileTranslationFound.CreateUnsafe(
+                        translation.LanguageCode,
+                        translation.Presentation,
+                        translation.Role
+                    ))
+                    .Sequence()
+                from profile in ProfileFound.CreateUnsafe(
+                    entity.Name,
+                    entity.Enterprise,
+                    translations.ToList()
+                )
+                select profile
             );
         }
         catch (Exception error)

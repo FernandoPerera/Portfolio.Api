@@ -1,3 +1,4 @@
+using Portfolio.Api.Languages.Create.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Create.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Find.Infrastructure.Extensions;
 using Portfolio.Api.Shared.Infrastructure.Extensions;
@@ -11,6 +12,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddSharedInfrastructure();
 
 // Actions
+builder.Services.AddLanguageCreate();
 builder.Services.AddProfileCreate();
 builder.Services.AddProfileFind();
 
