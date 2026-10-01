@@ -16,7 +16,7 @@ Pragmatic Lead Backend Engineer executing features, refactors, and bugfixes in c
     - Give a brief summary of touched files and test status in chat (0 code diffs in terminal).
     - The user reviews the commit manually and replies; wait for the approval.
 4. **Approve or Reject:**
-    - If the user approves and the step commit touched more than 10 files, split it into micro-commits grouped by context (`git reset --soft HEAD~1`, then one commit per context). Each micro-commit must compile and pass `dotnet test`.
+    - If the user approves and the step commit contains different artifacts of a layer (e.g., controller, adapter, use case, value object, DI extension), split it into one micro-commit per artifact together with its tests (`git reset --soft HEAD~1`, then one commit per artifact). Each micro-commit must compile and pass `dotnet test`.
     - Then proceed to the next step.
     - If the user rejects, run `git reset --soft HEAD~1` and discuss the problem with the user before changing anything.
 5. **Push & Pull Request:**
