@@ -65,15 +65,16 @@ public class TimelineCreatorShould
     [Fact]
     public async Task FailWhenALanguageDoesNotExist()
     {
+        const string missingLanguage = "fr";
         var creatorInfo = TimelineCreatorInfoBuilder.Build(
             translations:
             [
                 TimelineTranslationInfoBuilder.Build("es"),
-                TimelineTranslationInfoBuilder.Build("fr")
+                TimelineTranslationInfoBuilder.Build(missingLanguage)
             ]
         );
-        _languageExistenceRepository.Exists(Arg.Is<LanguageCode>(code => code.ToString() == "fr"))
-            .Returns(Error.New(new NotFoundException("Language 'fr' was not found")));
+        _languageExistenceRepository.Exists(Arg.Is<LanguageCode>(code => code.ToString() == missingLanguage))
+            .Returns(Error.New(new NotFoundException($"Language '{missingLanguage}' was not found")));
 
         var result = await _creator.Execute(creatorInfo);
 
