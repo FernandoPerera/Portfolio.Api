@@ -6,12 +6,15 @@ public static class ProfileFoundBuilder
 {
     public static ProfileFound Build(
         string name = "Fernando",
-        string jobRole = "Beer software architect",
-        string presentation = "Mucho gusto :)",
-        string? enterprise = "Lean Mind"
+        string? enterprise = "Lean Mind",
+        List<ProfileTranslationFound>? translations = null
     )
     {
-        return ProfileFound.CreateUnsafe(name, presentation, jobRole, enterprise)
+        return ProfileFound.CreateUnsafe(
+                name,
+                enterprise,
+                translations ?? [ProfileTranslationFoundBuilder.Build()]
+            )
             .IfLeft(error => throw new InvalidOperationException($"Error building {nameof(ProfileFound)} in tests: {error}"));
     }
 }

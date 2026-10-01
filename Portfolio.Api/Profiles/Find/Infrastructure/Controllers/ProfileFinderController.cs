@@ -1,42 +1,38 @@
 using LanguageExt;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Profiles.Find.Application.Dtos;
 using Portfolio.Api.Profiles.Find.Application.UseCases;
 using Portfolio.Api.Profiles.Find.Infrastructure.Dtos;
-using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.Shared.Infrastructure.Ports;
 
 namespace Portfolio.Api.Profiles.Find.Infrastructure.Controllers;
 
 [ApiController]
 [Route("v1/profile")]
-public class ProfileFinderController(ProfileFinder finder) : ControllerBase
+public class ProfileFinderController(
+    ProfileFinder finder,
+    IErrorResponseMapper errorResponseMapper
+) : ControllerBase
 {
     [HttpGet]
     [Produces("application/json")]
-    public async Task<ActionResult<ProfileResponse>> Find(
-        [FromHeader(Name = "Accept-Language")] string acceptLanguage = "es"
-    )
+    public async Task<ActionResult<ProfileResponse>> Find()
     {
         return await (
-            from result in finder.Execute(new ProfileFinderInfo(acceptLanguage)).ToAsync()
+            from result in finder.Execute().ToAsync()
             select new ProfileResponse(
                 result.GetName(),
-                result.GetPresentation(),
-                result.GetRole(),
-                result.GetEnterprise()
+                result.GetEnterprise(),
+                result.GetTranslations()
+                    .Select(translation => new ProfileTranslationResponse(
+                        translation.GetLanguageCode(),
+                        translation.GetPresentation(),
+                        translation.GetRole()
+                    ))
+                    .ToList()
             )
         ).Match<ActionResult<ProfileResponse>>(
             profile => Ok(profile),
-            error => error.Exception.Case switch
-            {
-                NotFoundException => NotFound(new ProblemDetails
-                {
-                    Title = "Not Found",
-                    Detail = error.Message,
-                    Status = StatusCodes.Status404NotFound
-                }),
-                _ => Problem()
-            }
+            error => errorResponseMapper.ToActionResult(this, error)
         );
     }
 }
