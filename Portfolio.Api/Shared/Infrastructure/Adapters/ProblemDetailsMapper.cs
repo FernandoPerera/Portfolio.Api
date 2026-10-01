@@ -26,6 +26,13 @@ public class ProblemDetailsMapper : IErrorResponseMapper
                 "https://http.cat/400",
                 error.Message
             ),
+            ConflictException => CreateProblemResult(
+                controller,
+                StatusCodes.Status409Conflict,
+                "Conflict",
+                "https://http.cat/409",
+                error.Message
+            ),
             ServiceUnavailableException => CreateProblemResult(
                 controller,
                 StatusCodes.Status503ServiceUnavailable,

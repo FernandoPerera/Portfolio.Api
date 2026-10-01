@@ -47,6 +47,22 @@ public class ProblemDetailsMapperShould
     }
 
     [Fact]
+    public void MapToConflict()
+    {
+        var error = Error.New(new ConflictException("Language already exists"));
+
+        var result = _mapper.ToActionResult(_controller, error);
+
+        var objectResult = result.ShouldBeOfType<ObjectResult>();
+        objectResult.StatusCode.ShouldBe(StatusCodes.Status409Conflict);
+        var problemDetails = objectResult.Value.ShouldBeOfType<ProblemDetails>();
+        problemDetails.Title.ShouldBe("Conflict");
+        problemDetails.Detail.ShouldBe("Language already exists");
+        problemDetails.Status.ShouldBe(StatusCodes.Status409Conflict);
+        problemDetails.Type.ShouldBe("https://http.cat/409");
+    }
+
+    [Fact]
     public void MapToServiceUnavailable()
     {
         var error = Error.New(new ServiceUnavailableException("Database connection timeout"));
