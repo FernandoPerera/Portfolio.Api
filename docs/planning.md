@@ -11,13 +11,13 @@ Pragmatic Lead Backend Engineer executing features, refactors, and bugfixes in c
 2. **Step Execution (1 Step = 1 Commit):**
     - Implement code and tests for the step.
     - Run `dotnet test` via terminal tool. Ensure everything compiles and passes.
-3. Step Execution & Review (1 Step = 1 Commit)
-   - Present a brief summary of touched files and test status in chat (0 code diffs in terminal — user reviews diffs in IDE diff viewer).
-   - Propose Conventional Commit message.
-   - Request user approval before executing the git commit and moving to the next step.
-4. **Commit & Proceed:**
-    - Execute git commit upon user approval (excluding `docs/plans/`).
-    - Proceed automatically to the next step.
+3. **Commit & Review (1 Step = 1 Commit):**
+    - Once the step compiles and `dotnet test` passes, commit it right away with a Conventional Commit message (excluding `docs/plans/`).
+    - Open the review with `git difftool -y HEAD~1 HEAD` and wait for the user's review (0 code diffs in terminal).
+    - Give a brief summary of touched files and test status in chat.
+4. **Approve or Reject:**
+    - If the user approves, proceed to the next step.
+    - If the user rejects, run `git reset --soft HEAD~1` and discuss the problem with the user before changing anything.
 5. **Push & Pull Request:**
     - When the user asks to push, push the branch and generate the PR with a title (Conventional Commit style) and a short description (Summary, Changes, Testing).
     - Use `gh pr create` when available; otherwise print the title and description for the user to paste.
