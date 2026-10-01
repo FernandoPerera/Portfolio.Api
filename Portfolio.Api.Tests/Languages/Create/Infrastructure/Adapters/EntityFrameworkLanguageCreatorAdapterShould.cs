@@ -46,17 +46,20 @@ public class EntityFrameworkLanguageCreatorAdapterShould
     [Fact]
     public async Task KeepExistingLanguageWhenCodeAlreadyExists()
     {
-        await _appDbContext.Languages.AddAsync(new LanguageEntity { LanguageCode = "es", Name = "Spanish" });
+        var existing = new LanguageEntity { LanguageCode = "es", Name = "Spanish" };
+        await _appDbContext.Languages.AddAsync(existing);
         await _appDbContext.SaveChangesAsync();
 
-        var result = await _creator.CreateLanguage(LanguageToBeCreatedBuilder.Build(languageCode: "es"));
+        var result = await _creator.CreateLanguage(
+            LanguageToBeCreatedBuilder.Build(languageCode: existing.LanguageCode)
+        );
 
         result.Match(
             unit =>
             {
                 unit.ShouldBeUnit();
                 _appDbContext.Languages.Count().ShouldBe(1);
-                _appDbContext.Languages.Find("es")!.Name.ShouldBe("Spanish");
+                _appDbContext.Languages.Find(existing.LanguageCode)!.Name.ShouldBe(existing.Name);
             },
             error => error.ShouldBeNull()
         );
