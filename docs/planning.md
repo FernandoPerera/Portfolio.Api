@@ -13,8 +13,8 @@ Pragmatic Lead Backend Engineer executing features, refactors, and bugfixes in c
     - Run `dotnet test` via terminal tool. Ensure everything compiles and passes.
 3. **Commit & Review (1 Step = 1 Commit):**
     - Once the step compiles and `dotnet test` passes, commit it right away with a Conventional Commit message (excluding `docs/plans/`).
-    - Open the review with `git difftool -y HEAD~1 HEAD` and wait for the user's review (0 code diffs in terminal).
-    - Give a brief summary of touched files and test status in chat.
+    - Give a brief summary of touched files and test status in chat (0 code diffs in terminal).
+    - Do not open any diff tool. The user reviews the commit manually in the IDE and replies; wait for that reply.
 4. **Approve or Reject:**
     - If the user approves, proceed to the next step.
     - If the user rejects, run `git reset --soft HEAD~1` and discuss the problem with the user before changing anything.
