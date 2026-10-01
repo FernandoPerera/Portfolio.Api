@@ -10,6 +10,7 @@ Clean Architecture coupled with Tactical Domain-Driven Design (DDD) and Function
 ### 1. Domain Layer
 - **Value Objects:** Immutable, `private` constructor, `public static Either<Error, T> Create(...)`.
 - **Domain Models / Entities:** `private` constructor, monadic LINQ composition from Value Objects. Expose values via explicit `GetX()` getter methods for infrastructure adapters.
+- **Rules Live in Value Objects:** Models only compose Value Objects and keep invariants that span several of them (e.g., end date not before start date). Any rule about a single concept gets its own Value Object instead of a private helper in the model: optional values (`EndDate` wraps `Option<YearMonth>`), and collections with rules such as non-empty or no duplicates (`Technologies`, `TimelineTranslations`).
 - **Ports:** Interfaces in `Domain/Ports/`. Accept strongly-typed Domain Models or Value Objects (never raw primitives). Return `Task<Either<Error, Unit>>` or `Task<Either<Error, TResult>>`.
 - **Canonical Examples:** `src/Domain/ValueObjects/Name.cs`, `src/Domain/Models/ProfileToBeCreated.cs`, `src/Domain/Ports/IProfileCreatorRepository.cs`.
 
