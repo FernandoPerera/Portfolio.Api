@@ -4,6 +4,7 @@ using Portfolio.Api.Profiles.Shared.Domain.Ports;
 using Portfolio.Api.Timeline.Create.Application.Dtos;
 using Portfolio.Api.Timeline.Create.Domain.Models;
 using Portfolio.Api.Timeline.Create.Domain.Ports;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 
 namespace Portfolio.Api.Timeline.Create.Application.UseCases;
 

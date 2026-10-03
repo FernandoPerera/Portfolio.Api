@@ -1,6 +1,7 @@
 using LanguageExt;
 using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 
 namespace Portfolio.Api.Timeline.Create.Domain.Models;
 

@@ -6,6 +6,7 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 using Portfolio.Api.Timeline.Create.Infrastructure.Adapters;
 using Shouldly;
 

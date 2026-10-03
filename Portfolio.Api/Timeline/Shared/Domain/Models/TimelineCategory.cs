@@ -2,7 +2,7 @@ using LanguageExt;
 using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
-namespace Portfolio.Api.Timeline.Create.Domain.Models;
+namespace Portfolio.Api.Timeline.Shared.Domain.Models;
 
 public class TimelineCategory
 {
