@@ -18,6 +18,7 @@
 8. **No Redundant Tests:** A test must not re-verify a rule already covered by the tests of the Value Objects or collaborators it uses. Models and Use Cases only test their own behavior: composition and invariants across several parts (e.g., `TimelineTranslationShould` does not repeat the invalid language code case already in `LanguageCodeShould`).
 9. **Builders for Valid Instances:** If a test needs a valid Value Object or Model only as setup and has to unwrap the `Either` (`.IfLeft(error => throw ...)`), create a builder in `Builders/` instead of unwrapping inside the test (e.g., `StartDateBuilder.Build("2023-01")`).
 10. **No Repeated Setup Data:** When the same object or value (a list of translations, a language code) is needed more than once in a test, such as in the given and in the expected result, create it once in a local variable or `const` and reuse it instead of repeating it.
+11. **No Error Propagation Tests in Use Cases:** Use Cases composed with monadic LINQ (`.ToAsync()`) already propagate the `Left` of a port by construction. Do not test that a port failure comes back unchanged (e.g., `FailWhenEntriesCannotBeRetrieved`). The failure itself is tested where it is produced, in the adapter. Test a failure in a Use Case only when the Use Case creates it, for example from its own rule or a decision on a port result.
 
 ---
 ## Reference Examples
