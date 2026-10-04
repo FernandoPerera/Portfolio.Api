@@ -22,6 +22,16 @@ public class EndDate
         return YearMonth.Create(endDate).Map(yearMonth => new EndDate(yearMonth));
     }
 
+    public static Either<Error, EndDate> CreateUnsafe(DateOnly? endDate)
+    {
+        if (endDate is null)
+        {
+            return new EndDate(Option<YearMonth>.None);
+        }
+
+        return YearMonth.CreateUnsafe(endDate.Value).Map(yearMonth => new EndDate(yearMonth));
+    }
+
     public bool IsBefore(StartDate startDate) =>
         _endDate.Match(endDate => endDate.ToDateOnly() < startDate.ToDateOnly(), () => false);
 

@@ -21,6 +21,11 @@ public class TimelinePeriod
         from _ in EnsureEndIsNotBeforeStart(startDate, endDate)
         select new TimelinePeriod(startDate, endDate);
 
+    public static Either<Error, TimelinePeriod> CreateUnsafe(DateOnly givenStartDate, DateOnly? givenEndDate) =>
+        from startDate in StartDate.CreateUnsafe(givenStartDate)
+        from endDate in EndDate.CreateUnsafe(givenEndDate)
+        select new TimelinePeriod(startDate, endDate);
+
     public DateOnly GetStartDate() => _startDate.ToDateOnly();
 
     public Option<DateOnly> GetEndDate() => _endDate.ToDateOnly();

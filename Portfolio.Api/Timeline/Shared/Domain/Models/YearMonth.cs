@@ -31,6 +31,9 @@ public class YearMonth
         return new YearMonth(date);
     }
 
+    public static Either<Error, YearMonth> CreateUnsafe(DateOnly date) =>
+        new YearMonth(date);
+
     public DateOnly ToDateOnly() => _date;
 
     public override string ToString() => _date.ToString(Format, CultureInfo.InvariantCulture);
