@@ -27,8 +27,8 @@ public class EntityFrameworkTimelineFinderAdapterShould
     {
         var entryId = Guid.NewGuid();
         var endDate = new DateOnly(2023, 6, 1);
-        var spanish = TimelineEntryTranslationEntityBuilder.Build(entryId, "es", "Líder Frontend", "Liderazgo técnico.");
-        var english = TimelineEntryTranslationEntityBuilder.Build(entryId, "en", "Frontend Lead", "Technical leadership.");
+        var spanish = TimelineEntryTranslationEntityBuilder.Build(entryId, "es");
+        var english = TimelineEntryTranslationEntityBuilder.Build(entryId, "en");
         var entity = TimelineEntryEntityBuilder.Build(
             entryId,
             endDate: endDate,

@@ -8,6 +8,7 @@ using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Adapters;
+using Portfolio.Api.Tests.Profiles.Create.Infrastructure.Builders;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Shouldly;
 
@@ -36,19 +37,13 @@ public class ProfileCreatorControllerShould
     [Fact]
     public async Task CreateProfile()
     {
+        var request = CreateProfileRequestBuilder.Build();
         await _appDbContext.Languages.AddAsync(new LanguageEntity
         {
-            LanguageCode = "es",
+            LanguageCode = request.LanguageCode,
             Name = "Spanish"
         });
         await _appDbContext.SaveChangesAsync();
-        var request = new CreateProfileRequest(
-            "Fernando",
-            "Beer software architect",
-            "Mucho gusto :)",
-            "Lean Mind",
-            "es"
-        );
 
         var response = await _controller.Create(request);
 
@@ -58,13 +53,7 @@ public class ProfileCreatorControllerShould
     [Fact]
     public async Task FailWhenLanguageDoesNotExist()
     {
-        var request = new CreateProfileRequest(
-            "Fernando",
-            "Beer software architect",
-            "Mucho gusto :)",
-            "Lean Mind",
-            "fr"
-        );
+        var request = CreateProfileRequestBuilder.Build(languageCode: "fr");
 
         var response = await _controller.Create(request);
 
@@ -76,13 +65,7 @@ public class ProfileCreatorControllerShould
     [Fact]
     public async Task FailWhenLanguageCodeIsInvalid()
     {
-        var request = new CreateProfileRequest(
-            "Fernando",
-            "Beer software architect",
-            "Mucho gusto :)",
-            "Lean Mind",
-            "invalid_code"
-        );
+        var request = CreateProfileRequestBuilder.Build(languageCode: "invalid_code");
 
         var response = await _controller.Create(request);
 

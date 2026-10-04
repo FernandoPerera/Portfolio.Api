@@ -8,6 +8,7 @@ using Portfolio.Api.Profiles.Create.Domain.Ports;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.Tests.Profiles.Create.Application.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Shouldly;
 
@@ -27,13 +28,7 @@ public class ProfileCreatorShould
     [Fact]
     public async Task CreateProfile()
     {
-        var creatorInfo = new ProfileCreatorInfo(
-            Name: "Fernando",
-            JobRole: "Beer software architect",
-            Presentation: "Mucho gusto :)",
-            EnterpriseName: "Lean Mind",
-            LanguageCode: "es"
-        );
+        var creatorInfo = ProfileCreatorInfoBuilder.Build();
         _languageExistenceRepository.Exists(Arg.Any<LanguageCode>()).Returns(Unit.Default);
         _creatorRepository.CreateProfile(Arg.Any<ProfileToBeCreated>()).Returns(Unit.Default);
 
@@ -48,13 +43,7 @@ public class ProfileCreatorShould
     [Fact]
     public async Task FailWhenLanguageDoesNotExist()
     {
-        var creatorInfo = new ProfileCreatorInfo(
-            Name: "Fernando",
-            JobRole: "Beer software architect",
-            Presentation: "Mucho gusto :)",
-            EnterpriseName: "Lean Mind",
-            LanguageCode: "fr"
-        );
+        var creatorInfo = ProfileCreatorInfoBuilder.Build(languageCode: "fr");
         _languageExistenceRepository.Exists(Arg.Any<LanguageCode>())
             .Returns(Error.New(new NotFoundException("Language 'fr' was not found")));
 
@@ -69,13 +58,7 @@ public class ProfileCreatorShould
     [Fact]
     public async Task FailWhenDatabaseUnavailableOnLanguageCheck()
     {
-        var creatorInfo = new ProfileCreatorInfo(
-            Name: "Fernando",
-            JobRole: "Beer software architect",
-            Presentation: "Mucho gusto :)",
-            EnterpriseName: "Lean Mind",
-            LanguageCode: "es"
-        );
+        var creatorInfo = ProfileCreatorInfoBuilder.Build();
         _languageExistenceRepository.Exists(Arg.Any<LanguageCode>())
             .Returns(Error.New(new ServiceUnavailableException("Database is unavailable")));
 

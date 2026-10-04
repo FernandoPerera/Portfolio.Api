@@ -28,17 +28,9 @@ public class ProfileFinderControllerShould
     [Fact]
     public async Task FindTheProfile()
     {
-        var spanish = ProfileTranslationFoundBuilder.Build(
-            "es", "Mucho gusto :)", "Arquitecto de software cervecero"
-        );
-        var english = ProfileTranslationFoundBuilder.Build(
-            "en", "Nice to meet you :)", "Beer software architect"
-        );
-        var domainProfile = ProfileFoundBuilder.Build(
-            name: "Fernando",
-            enterprise: "Lean Mind",
-            translations: [spanish, english]
-        );
+        var spanish = ProfileTranslationFoundBuilder.Build();
+        var english = ProfileTranslationFoundBuilder.Build("en");
+        var domainProfile = ProfileFoundBuilder.Build(translations: [spanish, english]);
         _repository.FindProfile().Returns(domainProfile);
 
         var actionResult = await _controller.Find();
