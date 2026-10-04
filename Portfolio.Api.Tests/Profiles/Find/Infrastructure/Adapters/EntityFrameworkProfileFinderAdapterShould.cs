@@ -35,19 +35,9 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
     public async Task FoundProfile()
     {
         var profileId = Guid.NewGuid();
-        var spanish = ProfileTranslationEntityBuilder.Build(
-            profileId, "es", "Mucho gusto :)", "Arquitecto de software cervecero"
-        );
-        var english = ProfileTranslationEntityBuilder.Build(
-            profileId, "en", "Nice to meet you :)", "Beer software architect"
-        );
-        var entity = new ProfileEntity
-        {
-            Id = profileId,
-            Name = "Fernando",
-            Enterprise = "Lean Mind",
-            Translations = [spanish, english]
-        };
+        var spanish = ProfileTranslationEntityBuilder.Build(profileId);
+        var english = ProfileTranslationEntityBuilder.Build(profileId, "en");
+        var entity = ProfileEntityBuilder.Build(profileId, translations: [spanish, english]);
         await _dbContext.Profiles.AddAsync(entity);
         await _dbContext.SaveChangesAsync();
 
@@ -77,12 +67,7 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
     [Fact]
     public async Task FoundProfileWithoutTranslations()
     {
-        await _dbContext.Profiles.AddAsync(new ProfileEntity
-        {
-            Id = Guid.NewGuid(),
-            Name = "Fernando",
-            Enterprise = "Lean Mind"
-        });
+        await _dbContext.Profiles.AddAsync(ProfileEntityBuilder.Build(Guid.NewGuid()));
         await _dbContext.SaveChangesAsync();
 
         var result = await _adapter.FindProfile();

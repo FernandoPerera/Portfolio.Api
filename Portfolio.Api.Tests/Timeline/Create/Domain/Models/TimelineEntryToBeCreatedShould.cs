@@ -1,5 +1,6 @@
 using LanguageExt;
 using Portfolio.Api.Tests.Timeline.Create.Domain.Builders;
+using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 using Portfolio.Api.Timeline.Create.Domain.Models;
 using Shouldly;
 

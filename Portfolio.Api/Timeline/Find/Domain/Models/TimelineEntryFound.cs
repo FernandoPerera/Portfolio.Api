@@ -1,0 +1,56 @@
+using LanguageExt;
+using LanguageExt.Common;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
+
+namespace Portfolio.Api.Timeline.Find.Domain.Models;
+
+public class TimelineEntryFound
+{
+    private readonly Organization _organization;
+    private readonly TimelineCategory _category;
+    private readonly TimelinePeriod _period;
+    private readonly Technologies _technologies;
+    private readonly TimelineTranslations _translations;
+
+    private TimelineEntryFound(
+        Organization organization,
+        TimelineCategory category,
+        TimelinePeriod period,
+        Technologies technologies,
+        TimelineTranslations translations
+    )
+    {
+        _organization = organization;
+        _category = category;
+        _period = period;
+        _technologies = technologies;
+        _translations = translations;
+    }
+
+    public static Either<Error, TimelineEntryFound> CreateUnsafe(
+        string givenOrganization,
+        string givenCategory,
+        DateOnly givenStartDate,
+        DateOnly? givenEndDate,
+        List<string> givenTechnologies,
+        List<TimelineTranslation> givenTranslations
+    ) =>
+        from organization in Organization.CreateUnsafe(givenOrganization)
+        from category in TimelineCategory.CreateUnsafe(givenCategory)
+        from period in TimelinePeriod.CreateUnsafe(givenStartDate, givenEndDate)
+        from technologies in Technologies.CreateUnsafe(givenTechnologies)
+        from translations in TimelineTranslations.CreateUnsafe(givenTranslations)
+        select new TimelineEntryFound(organization, category, period, technologies, translations);
+
+    public string GetOrganization() => _organization.ToString();
+
+    public string GetCategory() => _category.ToString();
+
+    public string GetStartDate() => _period.GetStartDate().ToString();
+
+    public string? GetEndDate() => _period.GetEndDate().ToString();
+
+    public List<string> GetTechnologies() => _technologies.GetValues();
+
+    public List<TimelineTranslation> GetTranslations() => _translations.GetValues();
+}

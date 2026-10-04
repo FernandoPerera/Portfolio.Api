@@ -1,5 +1,6 @@
 using LanguageExt;
 using LanguageExt.Common;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 
 namespace Portfolio.Api.Timeline.Create.Domain.Models;
 
@@ -45,9 +46,9 @@ public class TimelineEntryToBeCreated
 
     public string GetCategory() => _category.ToString();
 
-    public DateOnly GetStartDate() => _period.GetStartDate();
+    public DateOnly GetStartDate() => _period.GetStartDate().ToDateOnly();
 
-    public Option<DateOnly> GetEndDate() => _period.GetEndDate();
+    public Option<DateOnly> GetEndDate() => _period.GetEndDate().ToDateOnly();
 
     public List<string> GetTechnologies() => _technologies.GetValues();
 
