@@ -26,6 +26,13 @@ public class ProblemDetailsMapper : IErrorResponseMapper
                 "https://http.cat/400",
                 error.Message
             ),
+            UnauthorizedException => CreateProblemResult(
+                controller,
+                StatusCodes.Status401Unauthorized,
+                "Unauthorized",
+                "https://http.cat/401",
+                error.Message
+            ),
             ConflictException => CreateProblemResult(
                 controller,
                 StatusCodes.Status409Conflict,

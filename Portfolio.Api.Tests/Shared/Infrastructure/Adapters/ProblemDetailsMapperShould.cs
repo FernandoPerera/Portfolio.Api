@@ -47,6 +47,22 @@ public class ProblemDetailsMapperShould
     }
 
     [Fact]
+    public void MapToUnauthorized()
+    {
+        var error = Error.New(new UnauthorizedException("Invalid credentials"));
+
+        var result = _mapper.ToActionResult(_controller, error);
+
+        var objectResult = result.ShouldBeOfType<ObjectResult>();
+        objectResult.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
+        var problemDetails = objectResult.Value.ShouldBeOfType<ProblemDetails>();
+        problemDetails.Title.ShouldBe("Unauthorized");
+        problemDetails.Detail.ShouldBe("Invalid credentials");
+        problemDetails.Status.ShouldBe(StatusCodes.Status401Unauthorized);
+        problemDetails.Type.ShouldBe("https://http.cat/401");
+    }
+
+    [Fact]
     public void MapToConflict()
     {
         var error = Error.New(new ConflictException("Language already exists"));
