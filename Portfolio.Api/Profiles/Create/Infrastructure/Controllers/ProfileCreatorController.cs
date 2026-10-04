@@ -1,4 +1,5 @@
 using LanguageExt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Profiles.Create.Application.Dtos;
 using Portfolio.Api.Profiles.Create.Application.UseCases;
@@ -8,6 +9,7 @@ using Portfolio.Api.Shared.Infrastructure.Ports;
 namespace Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("v1/profile")]
 public class ProfileCreatorController(
     ProfileCreator creator,
