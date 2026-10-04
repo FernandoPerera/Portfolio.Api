@@ -13,6 +13,7 @@ namespace Portfolio.Api.Tests.Auth.Login.Application.UseCases;
 
 public class AuthenticatorShould
 {
+    private const string Username = "admin";
     private const string AccessTokenValue = "access-token";
     private const string RefreshTokenValue = "refresh-token";
 
@@ -28,20 +29,23 @@ public class AuthenticatorShould
         _credentialsVerifier.Verify(Arg.Any<AdminCredentials>()).Returns(Unit.Default);
         _accessTokenIssuer.Issue(Arg.Any<AdminUsername>()).Returns(AccessTokenBuilder.Build(AccessTokenValue));
         _refreshTokenIssuer.Issue().Returns(RefreshTokenBuilder.Build(RefreshTokenValue));
-        _refreshTokenSaver.Save(Arg.Any<RefreshToken>()).Returns(Unit.Default);
+        _refreshTokenSaver.Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>()).Returns(Unit.Default);
     }
 
     [Fact]
     public async Task LoginAndIssueTokens()
     {
-        var result = await _authenticator.Execute(LoginInfoBuilder.Build());
+        var result = await _authenticator.Execute(LoginInfoBuilder.Build(Username));
 
         result.Match(
             tokens =>
             {
                 tokens.GetAccessToken().ShouldBe(AccessTokenValue);
                 tokens.GetRefreshToken().ShouldBe(RefreshTokenValue);
-                _refreshTokenSaver.Received(1).Save(Arg.Is<RefreshToken>(token => token.ToString() == RefreshTokenValue));
+                _refreshTokenSaver.Received(1).Save(
+                    Arg.Is<RefreshToken>(token => token.ToString() == RefreshTokenValue),
+                    Arg.Is<AdminUsername>(owner => owner.ToString() == Username)
+                );
             },
             error => error.ShouldBeNull()
         );
@@ -53,7 +57,7 @@ public class AuthenticatorShould
         _credentialsVerifier.Verify(Arg.Any<AdminCredentials>())
             .Returns(Error.New(new UnauthorizedException("Invalid credentials")));
 
-        var result = await _authenticator.Execute(LoginInfoBuilder.Build());
+        var result = await _authenticator.Execute(LoginInfoBuilder.Build(Username));
 
         result.Match(
             tokens => tokens.ShouldBeNull(),
@@ -61,7 +65,7 @@ public class AuthenticatorShould
             {
                 error.Exception.Case.ShouldBeOfType<UnauthorizedException>();
                 _accessTokenIssuer.DidNotReceive().Issue(Arg.Any<AdminUsername>());
-                _refreshTokenSaver.DidNotReceive().Save(Arg.Any<RefreshToken>());
+                _refreshTokenSaver.DidNotReceive().Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>());
             }
         );
     }

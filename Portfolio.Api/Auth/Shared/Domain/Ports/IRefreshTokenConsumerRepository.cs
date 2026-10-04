@@ -6,5 +6,5 @@ namespace Portfolio.Api.Auth.Shared.Domain.Ports;
 
 public interface IRefreshTokenConsumerRepository
 {
-    Task<Either<Error, Unit>> Consume(RefreshToken refreshToken);
+    Task<Either<Error, AdminUsername>> Consume(RefreshToken refreshToken);
 }

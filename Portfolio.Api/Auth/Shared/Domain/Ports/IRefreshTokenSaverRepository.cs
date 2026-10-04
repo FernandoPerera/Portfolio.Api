@@ -6,5 +6,5 @@ namespace Portfolio.Api.Auth.Shared.Domain.Ports;
 
 public interface IRefreshTokenSaverRepository
 {
-    Task<Either<Error, Unit>> Save(RefreshToken refreshToken);
+    Task<Either<Error, Unit>> Save(RefreshToken refreshToken, AdminUsername owner);
 }

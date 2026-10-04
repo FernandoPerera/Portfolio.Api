@@ -20,7 +20,7 @@ public class Authenticator(
             from _ in credentialsVerifier.Verify(credentials).ToAsync()
             from accessToken in accessTokenIssuer.Issue(credentials.GetUsername()).ToAsync()
             from refreshToken in refreshTokenIssuer.Issue().ToAsync()
-            from __ in refreshTokenSaver.Save(refreshToken).ToAsync()
+            from __ in refreshTokenSaver.Save(refreshToken, credentials.GetUsername()).ToAsync()
             select new AuthTokens(accessToken, refreshToken)
         );
     }
