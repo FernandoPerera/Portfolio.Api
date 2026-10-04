@@ -1,5 +1,3 @@
-using Portfolio.Api.Auth.Login.Infrastructure.Extensions;
-using Portfolio.Api.Auth.Refresh.Infrastructure.Extensions;
 using Portfolio.Api.Auth.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Create.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Create.Infrastructure.Extensions;
@@ -15,11 +13,9 @@ builder.Services.AddProblemDetails();
 
 // Shared dependencies
 builder.Services.AddSharedInfrastructure();
-builder.Services.AddAuthSharedInfrastructure();
+builder.Services.AddAuthentication(builder.Configuration);
 
 // Actions
-builder.Services.AddAuthLogin();
-builder.Services.AddAuthRefresh();
 builder.Services.AddLanguageCreate();
 builder.Services.AddProfileCreate();
 builder.Services.AddProfileFind();
