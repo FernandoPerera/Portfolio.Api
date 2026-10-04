@@ -11,6 +11,8 @@ Clean Architecture coupled with Tactical Domain-Driven Design (DDD) and Function
 - **Value Objects:** Immutable, `private` constructor, `public static Either<Error, T> Create(...)`.
 - **Domain Models / Entities:** `private` constructor, monadic LINQ composition from Value Objects. Expose values via explicit `GetX()` getter methods for infrastructure adapters.
 - **Rules Live in Value Objects:** Models only compose Value Objects and keep invariants that span several of them (e.g., end date not before start date). Any rule about a single concept gets its own Value Object instead of a private helper in the model: optional values (`EndDate` wraps `Option<YearMonth>`), and collections with rules such as non-empty or no duplicates (`Technologies`, `TimelineTranslations`).
+- **Tell, Don't Ask:** Whenever it applies, tell the object to do the work instead of pulling its state out and deciding outside (e.g., a controller calls `startDate.ToString()` to get the `yyyy-MM` text rather than formatting a `DateOnly` itself). Formats and rules stay with the Value Object that owns them.
+- **Factory Methods Always Return `Either`:** Every `Create(...)` returns `Either<Error, T>`, even when the input is already trusted. No `Create` variant returns a bare `T`.
 - **Ports:** Interfaces in `Domain/Ports/`. Accept strongly-typed Domain Models or Value Objects (never raw primitives). Return `Task<Either<Error, Unit>>` or `Task<Either<Error, TResult>>`.
 - **Canonical Examples:** `src/Domain/ValueObjects/Name.cs`, `src/Domain/Models/ProfileToBeCreated.cs`, `src/Domain/Ports/IProfileCreatorRepository.cs`.
 
