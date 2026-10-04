@@ -18,5 +18,7 @@ public class StartDate
     public static Either<Error, StartDate> CreateUnsafe(DateOnly startDate) =>
         YearMonth.CreateUnsafe(startDate).Map(yearMonth => new StartDate(yearMonth));
 
+    public override string ToString() => _startDate.ToString();
+
     public DateOnly ToDateOnly() => _startDate.ToDateOnly();
 }

@@ -36,7 +36,7 @@ public class EntityFrameworkTimelineFinderAdapter(AppDbContext dbContext) : ITim
         entity.Translations
             .Select(ToTranslation)
             .Sequence()
-            .Bind(translations => TimelineEntryFound.Create(
+            .Bind(translations => TimelineEntryFound.CreateUnsafe(
                 entity.Organization,
                 entity.Category,
                 entity.StartDate,
@@ -46,5 +46,5 @@ public class EntityFrameworkTimelineFinderAdapter(AppDbContext dbContext) : ITim
             ));
 
     private static Either<Error, TimelineTranslation> ToTranslation(TimelineEntryTranslationEntity entity) =>
-        TimelineTranslation.Create(entity.LanguageCode, entity.Title, entity.Description);
+        TimelineTranslation.CreateUnsafe(entity.LanguageCode, entity.Title, entity.Description);
 }

@@ -31,5 +31,7 @@ public class Organization
         return new Organization(trimmed);
     }
 
+    public static Either<Error, Organization> CreateUnsafe(string organization) => new Organization(organization);
+
     public override string ToString() => _organization;
 }

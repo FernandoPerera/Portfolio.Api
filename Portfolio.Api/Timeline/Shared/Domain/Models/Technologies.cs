@@ -29,5 +29,11 @@ public class Technologies
             .Map(technologies => new Technologies(technologies.ToList()));
     }
 
+    public static Either<Error, Technologies> CreateUnsafe(List<string> givenTechnologies) =>
+        givenTechnologies
+            .Select(Technology.CreateUnsafe)
+            .Sequence()
+            .Map(technologies => new Technologies(technologies.ToList()));
+
     public List<string> GetValues() => _technologies.Select(technology => technology.ToString()).ToList();
 }

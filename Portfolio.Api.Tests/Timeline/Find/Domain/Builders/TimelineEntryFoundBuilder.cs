@@ -15,7 +15,7 @@ public static class TimelineEntryFoundBuilder
         List<TimelineTranslation>? translations = null
     )
     {
-        return TimelineEntryFound.Create(
+        return TimelineEntryFound.CreateUnsafe(
                 organization,
                 category,
                 startDate ?? new DateOnly(2023, 1, 1),

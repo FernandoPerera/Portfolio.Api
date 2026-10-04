@@ -8,56 +8,49 @@ public class TimelineEntryFound
 {
     private readonly Organization _organization;
     private readonly TimelineCategory _category;
-    private readonly DateOnly _startDate;
-    private readonly Option<DateOnly> _endDate;
-    private readonly List<string> _technologies;
-    private readonly List<TimelineTranslation> _translations;
+    private readonly TimelinePeriod _period;
+    private readonly Technologies _technologies;
+    private readonly TimelineTranslations _translations;
 
     private TimelineEntryFound(
         Organization organization,
         TimelineCategory category,
-        DateOnly startDate,
-        Option<DateOnly> endDate,
-        List<string> technologies,
-        List<TimelineTranslation> translations
+        TimelinePeriod period,
+        Technologies technologies,
+        TimelineTranslations translations
     )
     {
         _organization = organization;
         _category = category;
-        _startDate = startDate;
-        _endDate = endDate;
+        _period = period;
         _technologies = technologies;
         _translations = translations;
     }
 
-    public static Either<Error, TimelineEntryFound> Create(
+    public static Either<Error, TimelineEntryFound> CreateUnsafe(
         string givenOrganization,
         string givenCategory,
-        DateOnly startDate,
-        DateOnly? endDate,
-        List<string> technologies,
-        List<TimelineTranslation> translations
+        DateOnly givenStartDate,
+        DateOnly? givenEndDate,
+        List<string> givenTechnologies,
+        List<TimelineTranslation> givenTranslations
     ) =>
-        from organization in Organization.Create(givenOrganization)
-        from category in TimelineCategory.Create(givenCategory)
-        select new TimelineEntryFound(
-            organization,
-            category,
-            startDate,
-            Prelude.Optional(endDate),
-            technologies,
-            translations
-        );
+        from organization in Organization.CreateUnsafe(givenOrganization)
+        from category in TimelineCategory.CreateUnsafe(givenCategory)
+        from period in TimelinePeriod.CreateUnsafe(givenStartDate, givenEndDate)
+        from technologies in Technologies.CreateUnsafe(givenTechnologies)
+        from translations in TimelineTranslations.CreateUnsafe(givenTranslations)
+        select new TimelineEntryFound(organization, category, period, technologies, translations);
 
     public string GetOrganization() => _organization.ToString();
 
     public string GetCategory() => _category.ToString();
 
-    public DateOnly GetStartDate() => _startDate;
+    public string GetStartDate() => _period.GetStartDate().ToString();
 
-    public Option<DateOnly> GetEndDate() => _endDate;
+    public string? GetEndDate() => _period.GetEndDate().ToString();
 
-    public List<string> GetTechnologies() => _technologies;
+    public List<string> GetTechnologies() => _technologies.GetValues();
 
-    public List<TimelineTranslation> GetTranslations() => _translations;
+    public List<TimelineTranslation> GetTranslations() => _translations.GetValues();
 }

@@ -31,5 +31,7 @@ public class TimelineDescription
         return new TimelineDescription(trimmed);
     }
 
+    public static Either<Error, TimelineDescription> CreateUnsafe(string description) => new TimelineDescription(description);
+
     public override string ToString() => _description;
 }

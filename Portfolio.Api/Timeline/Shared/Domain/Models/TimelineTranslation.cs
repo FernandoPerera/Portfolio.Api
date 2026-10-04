@@ -27,6 +27,16 @@ public class TimelineTranslation
         from description in TimelineDescription.Create(givenDescription)
         select new TimelineTranslation(languageCode, title, description);
 
+    public static Either<Error, TimelineTranslation> CreateUnsafe(
+        string givenLanguageCode,
+        string givenTitle,
+        string givenDescription
+    ) =>
+        from languageCode in LanguageCode.CreateUnsafe(givenLanguageCode)
+        from title in TimelineTitle.CreateUnsafe(givenTitle)
+        from description in TimelineDescription.CreateUnsafe(givenDescription)
+        select new TimelineTranslation(languageCode, title, description);
+
     public string GetLanguageCode() => _languageCode.ToString();
 
     public LanguageCode GetLanguageCodeModel() => _languageCode;

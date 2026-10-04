@@ -31,5 +31,7 @@ public class TimelineTitle
         return new TimelineTitle(trimmed);
     }
 
+    public static Either<Error, TimelineTitle> CreateUnsafe(string title) => new TimelineTitle(title);
+
     public override string ToString() => _title;
 }

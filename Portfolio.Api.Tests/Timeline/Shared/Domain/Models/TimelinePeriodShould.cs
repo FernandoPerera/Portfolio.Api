@@ -14,8 +14,8 @@ public class TimelinePeriodShould
             .Match(
                 period =>
                 {
-                    period.GetStartDate().ShouldBe(new DateOnly(2021, 9, 1));
-                    period.GetEndDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 6, 1)));
+                    period.GetStartDate().ToDateOnly().ShouldBe(new DateOnly(2021, 9, 1));
+                    period.GetEndDate().ToDateOnly().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 6, 1)));
                 },
                 error => error.ShouldBeNull()
             );
@@ -26,7 +26,7 @@ public class TimelinePeriodShould
     {
         TimelinePeriod.Create("2023-01", "2023-01")
             .Match(
-                period => period.GetEndDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 1, 1))),
+                period => period.GetEndDate().ToDateOnly().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 1, 1))),
                 error => error.ShouldBeNull()
             );
     }

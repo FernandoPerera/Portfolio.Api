@@ -45,8 +45,8 @@ public class EntityFrameworkTimelineFinderAdapterShould
                 var entry = entries.ShouldHaveSingleItem();
                 entry.GetOrganization().ShouldBe(entity.Organization);
                 entry.GetCategory().ShouldBe(entity.Category);
-                entry.GetStartDate().ShouldBe(entity.StartDate);
-                entry.GetEndDate().ShouldBe(endDate);
+                entry.GetStartDate().ShouldBe(entity.StartDate.ToString("yyyy-MM"));
+                entry.GetEndDate().ShouldBe(endDate.ToString("yyyy-MM"));
                 entry.GetTechnologies().ShouldBe(entity.Technologies);
                 entry.GetTranslations()
                     .Select(translation => (
@@ -73,7 +73,7 @@ public class EntityFrameworkTimelineFinderAdapterShould
         var result = await _adapter.FindEntries();
 
         result.Match(
-            entries => entries.ShouldHaveSingleItem().GetEndDate().IsNone.ShouldBeTrue(),
+            entries => entries.ShouldHaveSingleItem().GetEndDate().ShouldBeNull(),
             error => error.ShouldBeNull()
         );
     }

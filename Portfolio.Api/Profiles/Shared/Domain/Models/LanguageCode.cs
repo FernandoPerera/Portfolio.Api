@@ -30,5 +30,7 @@ public class LanguageCode
         return new LanguageCode(trimmed.ToLowerInvariant());
     }
 
+    public static Either<Error, LanguageCode> CreateUnsafe(string languageCode) => new LanguageCode(languageCode);
+
     public override string ToString() => _code;
 }

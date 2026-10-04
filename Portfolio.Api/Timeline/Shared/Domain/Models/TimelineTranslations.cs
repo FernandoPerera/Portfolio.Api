@@ -32,5 +32,8 @@ public class TimelineTranslations
         return new TimelineTranslations(translations);
     }
 
+    public static Either<Error, TimelineTranslations> CreateUnsafe(List<TimelineTranslation> translations) =>
+        new TimelineTranslations(translations);
+
     public List<TimelineTranslation> GetValues() => _translations;
 }

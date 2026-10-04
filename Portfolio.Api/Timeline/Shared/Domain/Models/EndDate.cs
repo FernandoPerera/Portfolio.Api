@@ -35,5 +35,7 @@ public class EndDate
     public bool IsBefore(StartDate startDate) =>
         _endDate.Match(endDate => endDate.ToDateOnly() < startDate.ToDateOnly(), () => false);
 
+    public override string? ToString() => _endDate.Map(endDate => endDate.ToString()).IfNoneUnsafe((string?)null);
+
     public Option<DateOnly> ToDateOnly() => _endDate.Map(endDate => endDate.ToDateOnly());
 }

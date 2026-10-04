@@ -31,5 +31,7 @@ public class Technology
         return new Technology(trimmed);
     }
 
+    public static Either<Error, Technology> CreateUnsafe(string technology) => new Technology(technology);
+
     public override string ToString() => _technology;
 }

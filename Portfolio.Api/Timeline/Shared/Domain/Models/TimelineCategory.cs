@@ -32,5 +32,7 @@ public class TimelineCategory
         return new TimelineCategory(normalized);
     }
 
+    public static Either<Error, TimelineCategory> CreateUnsafe(string category) => new TimelineCategory(category);
+
     public override string ToString() => _category;
 }
