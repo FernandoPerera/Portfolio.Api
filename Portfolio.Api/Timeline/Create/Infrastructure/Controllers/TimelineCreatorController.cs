@@ -1,4 +1,5 @@
 using LanguageExt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 using Portfolio.Api.Timeline.Create.Application.Dtos;
@@ -8,6 +9,7 @@ using Portfolio.Api.Timeline.Create.Infrastructure.Dtos;
 namespace Portfolio.Api.Timeline.Create.Infrastructure.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("v1/timeline")]
 public class TimelineCreatorController(
     TimelineCreator creator,

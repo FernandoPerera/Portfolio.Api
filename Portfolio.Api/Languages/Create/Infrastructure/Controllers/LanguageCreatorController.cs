@@ -1,4 +1,5 @@
 using LanguageExt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Languages.Create.Application.Dtos;
 using Portfolio.Api.Languages.Create.Application.UseCases;
@@ -8,6 +9,7 @@ using Portfolio.Api.Shared.Infrastructure.Ports;
 namespace Portfolio.Api.Languages.Create.Infrastructure.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("v1/language")]
 public class LanguageCreatorController(
     LanguageCreator creator,

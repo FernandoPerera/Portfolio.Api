@@ -1,3 +1,4 @@
+using Portfolio.Api.Auth.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Create.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Create.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Find.Infrastructure.Extensions;
@@ -12,6 +13,7 @@ builder.Services.AddProblemDetails();
 
 // Shared dependencies
 builder.Services.AddSharedInfrastructure();
+builder.Services.AddAuthentication(builder.Configuration);
 
 // Actions
 builder.Services.AddLanguageCreate();
@@ -23,6 +25,10 @@ builder.Services.AddTimelineFind();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program;
