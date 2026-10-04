@@ -1,9 +1,10 @@
+using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 using LanguageExt;
 using Portfolio.Api.Tests.Timeline.Create.Domain.Builders;
-using Portfolio.Api.Timeline.Create.Domain.Models;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Shouldly;
 
-namespace Portfolio.Api.Tests.Timeline.Create.Domain.Models;
+namespace Portfolio.Api.Tests.Timeline.Shared.Domain.Models;
 
 public class EndDateShould
 {

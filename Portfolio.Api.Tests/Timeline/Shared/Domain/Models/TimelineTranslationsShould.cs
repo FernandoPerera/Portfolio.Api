@@ -1,10 +1,10 @@
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Tests.Timeline.Create.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
-using Portfolio.Api.Timeline.Create.Domain.Models;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Shouldly;
 
-namespace Portfolio.Api.Tests.Timeline.Create.Domain.Models;
+namespace Portfolio.Api.Tests.Timeline.Shared.Domain.Models;
 
 public class TimelineTranslationsShould
 {

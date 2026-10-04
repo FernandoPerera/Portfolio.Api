@@ -1,7 +1,7 @@
 using LanguageExt;
 using LanguageExt.Common;
 
-namespace Portfolio.Api.Timeline.Create.Domain.Models;
+namespace Portfolio.Api.Timeline.Shared.Domain.Models;
 
 public class StartDate
 {

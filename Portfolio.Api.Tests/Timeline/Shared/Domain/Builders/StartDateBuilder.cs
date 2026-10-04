@@ -1,6 +1,6 @@
-using Portfolio.Api.Timeline.Create.Domain.Models;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 
-namespace Portfolio.Api.Tests.Timeline.Create.Domain.Builders;
+namespace Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 
 public abstract class StartDateBuilder
 {
