@@ -1,5 +1,8 @@
 using LanguageExt;
 using LanguageExt.Common;
+using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
+using static LanguageExt.Prelude;
 
 namespace Portfolio.Api.Profiles.Find.Domain.Models;
 
@@ -30,4 +33,8 @@ public class ProfileFound
     public string GetEnterprise() => _enterprise.ToString();
 
     public List<ProfileTranslationFound> GetTranslations() => _translations;
+
+    public Either<Error, ProfileTranslationFound> GetTranslation(LanguageCode languageCode) =>
+        Optional(_translations.FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
+            .ToEither(Error.New(new NotFoundException($"Profile translation for language '{languageCode}' was not found")));
 }

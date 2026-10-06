@@ -1,6 +1,9 @@
 using LanguageExt;
 using LanguageExt.Common;
+using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
+using static LanguageExt.Prelude;
 
 namespace Portfolio.Api.Timeline.Find.Domain.Models;
 
@@ -59,4 +62,8 @@ public class TimelineEntryFound
     public List<string> GetTechnologies() => _technologies.GetValues();
 
     public List<TimelineTranslation> GetTranslations() => _translations.GetValues();
+
+    public Either<Error, TimelineTranslation> GetTranslation(LanguageCode languageCode) =>
+        Optional(_translations.GetValues().FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
+            .ToEither(Error.New(new NotFoundException($"Timeline translation for language '{languageCode}' was not found")));
 }

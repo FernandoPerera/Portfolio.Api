@@ -1,3 +1,4 @@
+using LanguageExt;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
@@ -11,10 +12,15 @@ public class TimelineEntryToBeUpdatedShould
     [Fact]
     public void BeUpdatedWithTheGivenValues()
     {
+        const string givenLanguageCode = "en";
+        const string givenTitle = "Vocational training";
+        const string givenDescription = "Web application development.";
         var id = Guid.NewGuid();
-        var current = TimelineEntryFoundBuilder.Build(id);
+        var current = TimelineEntryFoundBuilder.Build(
+            id,
+            translations: [TimelineTranslationBuilder.Build(givenLanguageCode)]
+        );
         var givenTechnologies = new List<string> { "React", "TypeScript" };
-        var english = TimelineTranslationBuilder.Build("en", "Vocational training", "Web application development.");
 
         TimelineEntryToBeUpdated.Create(
                 current,
@@ -23,7 +29,9 @@ public class TimelineEntryToBeUpdatedShould
                 "2021-09",
                 "2023-06",
                 givenTechnologies,
-                [english]
+                givenTitle,
+                givenDescription,
+                givenLanguageCode
             )
             .Match(
                 entry =>
@@ -32,32 +40,53 @@ public class TimelineEntryToBeUpdatedShould
                     entry.GetOrganization().ShouldBe("Lean Mind");
                     entry.GetCategory().ShouldBe("education");
                     entry.GetStartDate().ShouldBe(new DateOnly(2021, 9, 1));
-                    entry.GetEndDate().ShouldBe(new DateOnly(2023, 6, 1));
+                    entry.GetEndDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 6, 1)));
                     entry.GetTechnologies().ShouldBe(givenTechnologies);
-                    entry.GetTranslations().ShouldBe([english]);
+                    entry.GetLanguageCode().ShouldBe(givenLanguageCode);
+                    entry.GetTitle().ShouldBe(givenTitle);
+                    entry.GetDescription().ShouldBe(givenDescription);
                 },
                 error => error.ShouldBeNull()
             );
     }
 
     [Fact]
-    public void BeUpdatedOnlyWithTheGivenValues()
+    public void KeepTheCurrentValuesThatWereNotGiven()
     {
-        var current = TimelineEntryFoundBuilder.Build();
+        const string givenOrganization = "Lean Mind Labs";
+        var translation = TimelineTranslationBuilder.Build("es");
+        var current = TimelineEntryFoundBuilder.Build(
+            endDate: new DateOnly(2023, 6, 1),
+            technologies: ["React", "TypeScript"],
+            translations: [translation]
+        );
 
-        TimelineEntryToBeUpdated.Create(current, "Lean Mind", null, null, null, null, null)
+        TimelineEntryToBeUpdated.Create(current, givenOrganization, null, null, null, null, null, null, translation.GetLanguageCode())
             .Match(
                 entry =>
                 {
                     entry.GetId().ShouldBe(current.GetId());
-                    entry.GetOrganization().ShouldBe("Lean Mind");
-                    entry.GetCategory().ShouldBeNull();
-                    entry.GetStartDate().ShouldBeNull();
-                    entry.GetEndDate().ShouldBeNull();
-                    entry.GetTechnologies().ShouldBeNull();
-                    entry.GetTranslations().ShouldBeNull();
+                    entry.GetOrganization().ShouldBe(givenOrganization);
+                    entry.GetCategory().ShouldBe(current.GetCategory());
+                    entry.GetStartDate().ShouldBe(new DateOnly(2023, 1, 1));
+                    entry.GetEndDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 6, 1)));
+                    entry.GetTechnologies().ShouldBe(current.GetTechnologies());
+                    entry.GetTitle().ShouldBe(translation.GetTitle());
+                    entry.GetDescription().ShouldBe(translation.GetDescription());
                 },
                 error => error.ShouldBeNull()
+            );
+    }
+
+    [Fact]
+    public void RejectUpdateWhenTheLanguageIsNotInTheEntry()
+    {
+        var current = TimelineEntryFoundBuilder.Build(translations: [TimelineTranslationBuilder.Build("es")]);
+
+        TimelineEntryToBeUpdated.Create(current, null, null, null, null, null, null, null, "fr")
+            .Match(
+                entry => entry.ShouldBeNull(),
+                error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
             );
     }
 
@@ -66,7 +95,7 @@ public class TimelineEntryToBeUpdatedShould
     {
         var current = TimelineEntryFoundBuilder.Build(endDate: new DateOnly(2023, 6, 1));
 
-        TimelineEntryToBeUpdated.Create(current, null, null, "2024-01", null, null, null)
+        TimelineEntryToBeUpdated.Create(current, null, null, "2024-01", null, null, null, null, "es")
             .Match(
                 entry => entry.ShouldBeNull(),
                 error => error.Exception.Case.ShouldBeOfType<ValidationException>()
@@ -78,7 +107,7 @@ public class TimelineEntryToBeUpdatedShould
     {
         var current = TimelineEntryFoundBuilder.Build(startDate: new DateOnly(2023, 1, 1));
 
-        TimelineEntryToBeUpdated.Create(current, null, null, null, "2022-12", null, null)
+        TimelineEntryToBeUpdated.Create(current, null, null, null, "2022-12", null, null, null, "es")
             .Match(
                 entry => entry.ShouldBeNull(),
                 error => error.Exception.Case.ShouldBeOfType<ValidationException>()

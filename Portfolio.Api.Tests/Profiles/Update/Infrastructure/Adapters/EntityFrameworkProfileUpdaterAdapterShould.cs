@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Portfolio.Api.Profiles.Create.Infrastructure.Entities;
+using Portfolio.Api.Profiles.Find.Domain.Models;
 using Portfolio.Api.Profiles.Update.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Profiles.Find.Domain.Builders;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Profiles.Update.Domain.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
@@ -87,7 +90,8 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
             enterprise: null,
             jobRole: givenRole,
             presentation: null,
-            languageCode: translation.LanguageCode
+            languageCode: translation.LanguageCode,
+            current: CurrentProfile(entity, translation)
         );
 
         var result = await _adapter.UpdateProfile(profileToBeUpdated);
@@ -118,7 +122,8 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
             enterprise: null,
             jobRole: null,
             presentation: null,
-            languageCode: translation.LanguageCode
+            languageCode: translation.LanguageCode,
+            current: CurrentProfile(entity, translation)
         );
 
         var result = await _adapter.UpdateProfile(profileToBeUpdated);
@@ -178,4 +183,11 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
             error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
         );
     }
+
+    private static ProfileFound CurrentProfile(ProfileEntity entity, ProfileTranslationEntity translation) =>
+        ProfileFoundBuilder.Build(
+            entity.Name,
+            entity.Enterprise,
+            [ProfileTranslationFoundBuilder.Build(translation.LanguageCode, translation.Presentation, translation.Role)]
+        );
 }

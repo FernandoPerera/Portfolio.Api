@@ -30,4 +30,6 @@ public class Name
     }
 
     public override string ToString() => _name;
+
+    public static Either<Error, Name> CreateUnsafe(string givenName) => new Name(givenName);
 }

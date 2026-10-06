@@ -17,4 +17,6 @@ public class EnterpriseName
     }
 
     public override string ToString() => _value;
+
+    public static Either<Error, EnterpriseName> CreateUnsafe(string? givenEnterpriseName) => new EnterpriseName(givenEnterpriseName ?? string.Empty);
 }

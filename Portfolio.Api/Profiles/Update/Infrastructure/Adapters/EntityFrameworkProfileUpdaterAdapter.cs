@@ -27,10 +27,10 @@ public class EntityFrameworkProfileUpdaterAdapter(AppDbContext dbContext) : IPro
                 return Error.New(new NotFoundException($"Profile translation for language '{languageCode}' was not found"));
             }
 
-            profileToBeUpdated.GetName().IfSome(name => entity.Name = name);
-            profileToBeUpdated.GetEnterprise().IfSome(enterprise => entity.Enterprise = enterprise);
-            profileToBeUpdated.GetRole().IfSome(role => translation.Role = role);
-            profileToBeUpdated.GetPresentation().IfSome(presentation => translation.Presentation = presentation);
+            entity.Name = profileToBeUpdated.GetName();
+            entity.Enterprise = profileToBeUpdated.GetEnterprise();
+            translation.Role = profileToBeUpdated.GetRole();
+            translation.Presentation = profileToBeUpdated.GetPresentation();
 
             await dbContext.SaveChangesAsync();
 

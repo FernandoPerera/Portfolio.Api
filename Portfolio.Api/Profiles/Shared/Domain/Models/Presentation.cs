@@ -28,4 +28,6 @@ public class Presentation
     }
 
     public override string ToString() => _value;
+
+    public static Either<Error, Presentation> CreateUnsafe(string givenPresentation) => new Presentation(givenPresentation);
 }
