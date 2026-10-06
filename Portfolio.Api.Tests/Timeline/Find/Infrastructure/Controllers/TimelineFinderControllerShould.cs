@@ -67,6 +67,7 @@ public class TimelineFinderControllerShould
     }
 
     private static TimelineEntryResponse ExpectedResponse(TimelineEntryFound entry) => new(
+        entry.GetId(),
         entry.GetOrganization(),
         entry.GetCategory(),
         entry.GetStartDate(),

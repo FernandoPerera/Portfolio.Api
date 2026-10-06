@@ -7,6 +7,7 @@ using Portfolio.Api.Profiles.Update.Infrastructure.Extensions;
 using Portfolio.Api.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Create.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
+using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddProfileFind();
 builder.Services.AddProfileUpdate();
 builder.Services.AddTimelineCreate();
 builder.Services.AddTimelineFind();
+builder.Services.AddTimelineUpdate();
 
 var app = builder.Build();
 

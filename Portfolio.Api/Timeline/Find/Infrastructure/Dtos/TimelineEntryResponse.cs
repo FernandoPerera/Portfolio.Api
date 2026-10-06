@@ -4,6 +4,7 @@ using Portfolio.Api.Timeline.Find.Domain.Models;
 namespace Portfolio.Api.Timeline.Find.Infrastructure.Dtos;
 
 public record TimelineEntryResponse(
+    [property: JsonPropertyName("id")] Guid Id,
     [property: JsonPropertyName("organization")] string Organization,
     [property: JsonPropertyName("category")] string Category,
     [property: JsonPropertyName("startDate")] string StartDate,
@@ -13,6 +14,7 @@ public record TimelineEntryResponse(
 )
 {
     public static TimelineEntryResponse From(TimelineEntryFound entry) => new(
+        entry.GetId(),
         entry.GetOrganization(),
         entry.GetCategory(),
         entry.GetStartDate(),

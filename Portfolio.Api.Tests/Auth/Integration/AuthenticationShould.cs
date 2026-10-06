@@ -33,6 +33,14 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
         response.Content.Headers.ContentType!.MediaType.ShouldBe("application/problem+json");
     }
 
+    [Fact]
+    public async Task RejectTimelineUpdateWithoutToken()
+    {
+        var response = await _client.PatchAsJsonAsync($"v1/timeline/{Guid.NewGuid()}", new { organization = "Lean Mind" });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
     [Theory]
     [MemberData(nameof(WriteEndpoints))]
     public async Task RejectWritesWithAnInvalidToken(string url, object body)

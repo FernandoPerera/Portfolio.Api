@@ -43,6 +43,7 @@ public class EntityFrameworkTimelineFinderAdapterShould
             entries =>
             {
                 var entry = entries.ShouldHaveSingleItem();
+                entry.GetId().ShouldBe(entryId);
                 entry.GetOrganization().ShouldBe(entity.Organization);
                 entry.GetCategory().ShouldBe(entity.Category);
                 entry.GetStartDate().ShouldBe(entity.StartDate.ToString("yyyy-MM"));
