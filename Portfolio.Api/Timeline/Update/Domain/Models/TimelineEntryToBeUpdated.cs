@@ -2,27 +2,28 @@ using LanguageExt;
 using LanguageExt.Common;
 using Portfolio.Api.Timeline.Find.Domain.Models;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
+using static LanguageExt.Prelude;
 
 namespace Portfolio.Api.Timeline.Update.Domain.Models;
 
 public class TimelineEntryToBeUpdated
 {
     private readonly Guid _id;
-    private readonly Organization? _organization;
-    private readonly TimelineCategory? _category;
-    private readonly StartDate? _startDate;
-    private readonly EndDate? _endDate;
-    private readonly Technologies? _technologies;
-    private readonly TimelineTranslations? _translations;
+    private readonly Option<Organization> _organization;
+    private readonly Option<TimelineCategory> _category;
+    private readonly Option<StartDate> _startDate;
+    private readonly Option<EndDate> _endDate;
+    private readonly Option<Technologies> _technologies;
+    private readonly Option<TimelineTranslations> _translations;
 
     private TimelineEntryToBeUpdated(
         Guid id,
-        Organization? organization,
-        TimelineCategory? category,
-        StartDate? startDate,
-        EndDate? endDate,
-        Technologies? technologies,
-        TimelineTranslations? translations
+        Option<Organization> organization,
+        Option<TimelineCategory> category,
+        Option<StartDate> startDate,
+        Option<EndDate> endDate,
+        Option<Technologies> technologies,
+        Option<TimelineTranslations> translations
     )
     {
         _id = id;
@@ -41,53 +42,38 @@ public class TimelineEntryToBeUpdated
         string? givenStartDate,
         string? givenEndDate,
         List<string>? givenTechnologies,
-        List<TimelineTranslation>? givenTranslations
+        Option<List<TimelineTranslation>> givenTranslations
     ) =>
-        from organization in CreateIfGiven(givenOrganization, Organization.Create)
-        from category in CreateIfGiven(givenCategory, TimelineCategory.Create)
-        from startDate in CreateIfGiven(givenStartDate, StartDate.Create)
-        from endDate in CreateIfGiven(givenEndDate, EndDate.Create)
+        from organization in Optional(givenOrganization).Map(Organization.Create).Sequence()
+        from category in Optional(givenCategory).Map(TimelineCategory.Create).Sequence()
+        from startDate in Optional(givenStartDate).Map(StartDate.Create).Sequence()
+        from endDate in Optional(givenEndDate).Map(EndDate.Create).Sequence()
         from _ in EnsurePeriodIsValid(current, givenStartDate, givenEndDate)
-        from technologies in CreateIfGiven(givenTechnologies, Technologies.Create)
-        from translations in CreateIfGiven(givenTranslations, TimelineTranslations.Create)
+        from technologies in Optional(givenTechnologies).Map(Technologies.Create).Sequence()
+        from translations in givenTranslations.Map(TimelineTranslations.Create).Sequence()
         select new TimelineEntryToBeUpdated(
             current.GetId(),
-            organization.IfNoneUnsafe((Organization?)null),
-            category.IfNoneUnsafe((TimelineCategory?)null),
-            startDate.IfNoneUnsafe((StartDate?)null),
-            endDate.IfNoneUnsafe((EndDate?)null),
-            technologies.IfNoneUnsafe((Technologies?)null),
-            translations.IfNoneUnsafe((TimelineTranslations?)null)
+            organization,
+            category,
+            startDate,
+            endDate,
+            technologies,
+            translations
         );
 
     public Guid GetId() => _id;
 
-    public string? GetOrganization() => _organization?.ToString();
+    public Option<string> GetOrganization() => _organization.Map(organization => organization.ToString());
 
-    public string? GetCategory() => _category?.ToString();
+    public Option<string> GetCategory() => _category.Map(category => category.ToString());
 
-    public DateOnly? GetStartDate() => _startDate?.ToDateOnly();
+    public Option<DateOnly> GetStartDate() => _startDate.Map(startDate => startDate.ToDateOnly());
 
-    public DateOnly? GetEndDate() => _endDate?.ToDateOnly().ToNullable();
+    public Option<DateOnly> GetEndDate() => _endDate.Bind(endDate => endDate.ToDateOnly());
 
-    public List<string>? GetTechnologies() => _technologies?.GetValues();
+    public Option<List<string>> GetTechnologies() => _technologies.Map(technologies => technologies.GetValues());
 
-    public List<TimelineTranslation>? GetTranslations() => _translations?.GetValues();
-
-    private static Either<Error, Option<TValue>> CreateIfGiven<TGiven, TValue>(
-        TGiven? given,
-        Func<TGiven, Either<Error, TValue>> create
-    )
-        where TGiven : class
-        where TValue : class
-    {
-        if (given is null)
-        {
-            return Option<TValue>.None;
-        }
-
-        return create(given).Map(Option<TValue>.Some);
-    }
+    public Option<List<TimelineTranslation>> GetTranslations() => _translations.Map(translations => translations.GetValues());
 
     private static Either<Error, Unit> EnsurePeriodIsValid(
         TimelineEntryFound current,

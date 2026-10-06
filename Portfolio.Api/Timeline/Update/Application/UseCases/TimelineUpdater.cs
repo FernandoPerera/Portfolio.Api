@@ -28,7 +28,7 @@ public class TimelineUpdater(
                 timelineUpdaterInfo.StartDate,
                 timelineUpdaterInfo.EndDate,
                 timelineUpdaterInfo.Technologies,
-                translations.IfNoneUnsafe((List<TimelineTranslation>?)null)
+                translations
             ).ToAsync()
             from _ in EnsureLanguagesExist(entry).ToAsync()
             from result in updater.UpdateEntry(entry).ToAsync()
@@ -57,7 +57,7 @@ public class TimelineUpdater(
 
     private async Task<Either<Error, Unit>> EnsureLanguagesExist(TimelineEntryToBeUpdated entry)
     {
-        foreach (var translation in entry.GetTranslations() ?? [])
+        foreach (var translation in entry.GetTranslations().IfNone([]))
         {
             var exists = await languageExistence.Exists(translation.GetLanguageCodeModel());
             if (exists.IsLeft)
