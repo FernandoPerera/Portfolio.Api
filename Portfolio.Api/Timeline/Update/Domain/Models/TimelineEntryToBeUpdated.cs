@@ -1,5 +1,6 @@
 using LanguageExt;
 using LanguageExt.Common;
+using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Find.Domain.Models;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
 using static LanguageExt.Prelude;
@@ -13,7 +14,9 @@ public class TimelineEntryToBeUpdated
     private readonly TimelineCategory _category;
     private readonly TimelinePeriod _period;
     private readonly Technologies _technologies;
-    private readonly TimelineTranslations _translations;
+    private readonly LanguageCode _languageCode;
+    private readonly TimelineTitle _title;
+    private readonly TimelineDescription _description;
 
     private TimelineEntryToBeUpdated(
         Guid id,
@@ -21,7 +24,9 @@ public class TimelineEntryToBeUpdated
         TimelineCategory category,
         TimelinePeriod period,
         Technologies technologies,
-        TimelineTranslations translations
+        LanguageCode languageCode,
+        TimelineTitle title,
+        TimelineDescription description
     )
     {
         _id = id;
@@ -29,7 +34,9 @@ public class TimelineEntryToBeUpdated
         _category = category;
         _period = period;
         _technologies = technologies;
-        _translations = translations;
+        _languageCode = languageCode;
+        _title = title;
+        _description = description;
     }
 
     public static Either<Error, TimelineEntryToBeUpdated> Create(
@@ -39,8 +46,12 @@ public class TimelineEntryToBeUpdated
         string? givenStartDate,
         string? givenEndDate,
         List<string>? givenTechnologies,
-        Option<List<TimelineTranslation>> givenTranslations
+        string? givenTitle,
+        string? givenDescription,
+        string givenLanguageCode
     ) =>
+        from languageCode in LanguageCode.Create(givenLanguageCode)
+        from translation in current.GetTranslation(languageCode)
         from organization in Optional(givenOrganization)
             .Match(Organization.Create, Organization.CreateUnsafe(current.GetOrganization()))
         from category in Optional(givenCategory)
@@ -51,9 +62,20 @@ public class TimelineEntryToBeUpdated
         )
         from technologies in Optional(givenTechnologies)
             .Match(Technologies.Create, Technologies.CreateUnsafe(current.GetTechnologies()))
-        from translations in givenTranslations
-            .Match(TimelineTranslations.Create, TimelineTranslations.CreateUnsafe(current.GetTranslations()))
-        select new TimelineEntryToBeUpdated(current.GetId(), organization, category, period, technologies, translations);
+        from title in Optional(givenTitle)
+            .Match(TimelineTitle.Create, TimelineTitle.CreateUnsafe(translation.GetTitle()))
+        from description in Optional(givenDescription)
+            .Match(TimelineDescription.Create, TimelineDescription.CreateUnsafe(translation.GetDescription()))
+        select new TimelineEntryToBeUpdated(
+            current.GetId(),
+            organization,
+            category,
+            period,
+            technologies,
+            languageCode,
+            title,
+            description
+        );
 
     public Guid GetId() => _id;
 
@@ -67,5 +89,9 @@ public class TimelineEntryToBeUpdated
 
     public List<string> GetTechnologies() => _technologies.GetValues();
 
-    public List<TimelineTranslation> GetTranslations() => _translations.GetValues();
+    public string GetLanguageCode() => _languageCode.ToString();
+
+    public string GetTitle() => _title.ToString();
+
+    public string GetDescription() => _description.ToString();
 }

@@ -1,5 +1,3 @@
-using Portfolio.Api.Timeline.Create.Infrastructure.Dtos;
-
 namespace Portfolio.Api.Timeline.Update.Infrastructure.Dtos;
 
 public record UpdateTimelineRequest(
@@ -8,5 +6,6 @@ public record UpdateTimelineRequest(
     string? StartDate,
     string? EndDate,
     List<string>? Technologies,
-    List<TimelineTranslationRequest>? Translations
+    string? Title,
+    string? Description
 );

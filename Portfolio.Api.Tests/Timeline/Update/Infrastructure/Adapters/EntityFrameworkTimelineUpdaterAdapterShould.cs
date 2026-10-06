@@ -6,7 +6,6 @@ using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 using Portfolio.Api.Timeline.Find.Domain.Models;
-using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Update.Domain.Models;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 using Shouldly;
@@ -66,7 +65,6 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
         var entryId = Guid.NewGuid();
         await _dbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(entryId));
         await _dbContext.SaveChangesAsync();
-        var spanish = TimelineTranslationBuilder.Build("es", "Ciclo formativo", "Desarrollo web.");
         var expected = TimelineEntryEntityBuilder.Build(
             entryId,
             "Escuela",
@@ -83,7 +81,8 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
             "2021-09",
             "2023-06",
             ["Angular"],
-            [spanish]
+            "Ciclo formativo",
+            "Desarrollo web."
         );
 
         var result = await _updater.UpdateEntry(update);
@@ -99,21 +98,25 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
     }
 
     [Fact]
-    public async Task ReplaceTheTranslations()
+    public async Task UpdateOnlyTheTranslationOfTheGivenLanguage()
     {
+        const string givenLanguage = "es";
+        const string untouchedLanguage = "en";
         var entryId = Guid.NewGuid();
-        await _dbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(
+        var spanish = TimelineEntryTranslationEntityBuilder.Build(entryId, givenLanguage);
+        var english = TimelineEntryTranslationEntityBuilder.Build(entryId, untouchedLanguage, "Frontend Lead", "Technical leadership.");
+        await _dbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(entryId, translations: [spanish, english]));
+        await _dbContext.SaveChangesAsync();
+        var current = TimelineEntryFoundBuilder.Build(
             entryId,
+            technologies: ["React", "TypeScript"],
             translations:
             [
-                TimelineEntryTranslationEntityBuilder.Build(entryId, "es"),
-                TimelineEntryTranslationEntityBuilder.Build(entryId, "en")
+                TimelineTranslationBuilder.Build(givenLanguage),
+                TimelineTranslationBuilder.Build(untouchedLanguage, "Frontend Lead", "Technical leadership.")
             ]
-        ));
-        await _dbContext.SaveChangesAsync();
-        var spanish = TimelineTranslationBuilder.Build("es", "Nuevo título", "Nueva descripción.");
-        var french = TimelineTranslationBuilder.Build("fr", "Nouveau titre", "Nouvelle description.");
-        var update = ToBeUpdated(TimelineEntryFoundBuilder.Build(entryId), translations: [spanish, french]);
+        );
+        var update = ToBeUpdated(current, title: "Nuevo título", description: "Nueva descripción.", languageCode: givenLanguage);
 
         var result = await _updater.UpdateEntry(update);
 
@@ -127,8 +130,8 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
                     .ToList()
                     .ShouldBeEquivalentTo(new[]
                     {
-                        new { LanguageCode = "es", Title = "Nuevo título", Description = "Nueva descripción." },
-                        new { LanguageCode = "fr", Title = "Nouveau titre", Description = "Nouvelle description." }
+                        new { LanguageCode = untouchedLanguage, Title = "Frontend Lead", Description = "Technical leadership." },
+                        new { LanguageCode = givenLanguage, Title = "Nuevo título", Description = "Nueva descripción." }
                     }.ToList());
             },
             error => error.ShouldBeNull()
@@ -145,6 +148,27 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
             error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+        );
+    }
+
+    [Fact]
+    public async Task FailWhenTheTranslationDoesNotExist()
+    {
+        var entryId = Guid.NewGuid();
+        await _dbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(entryId));
+        await _dbContext.SaveChangesAsync();
+        var current = TimelineEntryFoundBuilder.Build(
+            entryId,
+            translations: [TimelineTranslationBuilder.Build("fr")]
+        );
+        var update = ToBeUpdated(current, languageCode: "fr");
+
+        var result = await _updater.UpdateEntry(update);
+
+        result.Match(
+            unit => unit.ShouldBeEquivalentTo(null),
+            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+                .Message.ShouldBe("Timeline translation for language 'fr' was not found")
         );
     }
 
@@ -169,7 +193,9 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
         string? startDate = null,
         string? endDate = null,
         List<string>? technologies = null,
-        List<TimelineTranslation>? translations = null
+        string? title = null,
+        string? description = null,
+        string languageCode = "es"
     ) =>
         TimelineEntryToBeUpdated.Create(
                 current,
@@ -178,7 +204,9 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
                 startDate,
                 endDate,
                 technologies,
-                translations
+                title,
+                description,
+                languageCode
             )
             .IfLeft(error => throw new Exception("Error building the update in tests, error: " + error.Message));
 }

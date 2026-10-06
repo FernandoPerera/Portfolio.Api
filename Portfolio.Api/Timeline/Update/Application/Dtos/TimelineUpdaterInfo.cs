@@ -1,5 +1,3 @@
-using Portfolio.Api.Timeline.Create.Application.Dtos;
-
 namespace Portfolio.Api.Timeline.Update.Application.Dtos;
 
 public record TimelineUpdaterInfo(
@@ -9,5 +7,7 @@ public record TimelineUpdaterInfo(
     string? StartDate,
     string? EndDate,
     List<string>? Technologies,
-    List<TimelineTranslationInfo>? Translations
+    string? Title,
+    string? Description,
+    string LanguageCode
 );

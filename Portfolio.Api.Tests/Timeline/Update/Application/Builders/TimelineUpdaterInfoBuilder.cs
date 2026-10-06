@@ -1,4 +1,3 @@
-using Portfolio.Api.Timeline.Create.Application.Dtos;
 using Portfolio.Api.Timeline.Update.Application.Dtos;
 
 namespace Portfolio.Api.Tests.Timeline.Update.Application.Builders;
@@ -12,7 +11,9 @@ public abstract class TimelineUpdaterInfoBuilder
         string? startDate = null,
         string? endDate = null,
         List<string>? technologies = null,
-        List<TimelineTranslationInfo>? translations = null
+        string? title = null,
+        string? description = null,
+        string languageCode = "es"
     )
     {
         return new TimelineUpdaterInfo(
@@ -22,7 +23,9 @@ public abstract class TimelineUpdaterInfoBuilder
             startDate,
             endDate,
             technologies,
-            translations
+            title,
+            description,
+            languageCode
         );
     }
 }

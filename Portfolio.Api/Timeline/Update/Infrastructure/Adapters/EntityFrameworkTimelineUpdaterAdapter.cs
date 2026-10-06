@@ -26,12 +26,20 @@ public class EntityFrameworkTimelineUpdaterAdapter(AppDbContext dbContext) : ITi
                 return Error.New(new NotFoundException($"Timeline entry '{id}' was not found"));
             }
 
+            var languageCode = timelineEntryToBeUpdated.GetLanguageCode();
+            var translation = entity.Translations.SingleOrDefault(current => current.LanguageCode == languageCode);
+            if (translation is null)
+            {
+                return Error.New(new NotFoundException($"Timeline translation for language '{languageCode}' was not found"));
+            }
+
             entity.Organization = timelineEntryToBeUpdated.GetOrganization();
             entity.Category = timelineEntryToBeUpdated.GetCategory();
             entity.StartDate = timelineEntryToBeUpdated.GetStartDate();
             entity.EndDate = timelineEntryToBeUpdated.GetEndDate().ToNullable();
             entity.Technologies = timelineEntryToBeUpdated.GetTechnologies();
-            ReplaceTranslations(entity, timelineEntryToBeUpdated.GetTranslations());
+            translation.Title = timelineEntryToBeUpdated.GetTitle();
+            translation.Description = timelineEntryToBeUpdated.GetDescription();
 
             await dbContext.SaveChangesAsync();
 
@@ -40,37 +48,6 @@ public class EntityFrameworkTimelineUpdaterAdapter(AppDbContext dbContext) : ITi
         catch (Exception error)
         {
             return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message));
-        }
-    }
-
-    private void ReplaceTranslations(TimelineEntryEntity entity, List<TimelineTranslation> translations)
-    {
-        var givenLanguages = translations.Select(translation => translation.GetLanguageCode()).ToList();
-
-        var removed = entity.Translations
-            .Where(translation => !givenLanguages.Contains(translation.LanguageCode))
-            .ToList();
-        dbContext.TimelineEntryTranslations.RemoveRange(removed);
-
-        foreach (var translation in translations)
-        {
-            var existing = entity.Translations
-                .SingleOrDefault(current => current.LanguageCode == translation.GetLanguageCode());
-
-            if (existing is null)
-            {
-                entity.Translations.Add(new TimelineEntryTranslationEntity
-                {
-                    EntryId = entity.Id,
-                    LanguageCode = translation.GetLanguageCode(),
-                    Title = translation.GetTitle(),
-                    Description = translation.GetDescription()
-                });
-                continue;
-            }
-
-            existing.Title = translation.GetTitle();
-            existing.Description = translation.GetDescription();
         }
     }
 }
