@@ -31,5 +31,7 @@ public class LanguageName
         return new LanguageName(trimmed);
     }
 
+    public static Either<Error, LanguageName> CreateUnsafe(string name) => new LanguageName(name);
+
     public override string ToString() => _name;
 }
