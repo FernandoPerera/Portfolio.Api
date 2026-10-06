@@ -1,5 +1,6 @@
-using LanguageExt;
 using Portfolio.Api.Profiles.Update.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.Tests.Profiles.Find.Domain.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Update.Domain.Models;
@@ -7,22 +8,27 @@ namespace Portfolio.Api.Tests.Profiles.Update.Domain.Models;
 public class ProfileToBeUpdatedShould
 {
     [Fact]
-    public void BeCreatedWithAllTheFields()
+    public void BeCreatedWithAllTheGivenFields()
     {
         const string givenName = "Fernando";
         const string givenEnterprise = "Lean Mind";
         const string givenJobRole = "Beer software architect";
         const string givenPresentation = "Mucho gusto :)";
         const string givenLanguageCode = "es";
+        var current = ProfileFoundBuilder.Build(
+            "Old name",
+            "Old enterprise",
+            [ProfileTranslationFoundBuilder.Build(givenLanguageCode, "Old presentation", "Old role")]
+        );
 
-        ProfileToBeUpdated.Create(givenName, givenEnterprise, givenJobRole, givenPresentation, givenLanguageCode)
+        ProfileToBeUpdated.Create(current, givenName, givenEnterprise, givenJobRole, givenPresentation, givenLanguageCode)
             .Match(
                 profile =>
                 {
-                    profile.GetName().ShouldBe(Option<string>.Some(givenName));
-                    profile.GetEnterprise().ShouldBe(Option<string>.Some(givenEnterprise));
-                    profile.GetRole().ShouldBe(Option<string>.Some(givenJobRole));
-                    profile.GetPresentation().ShouldBe(Option<string>.Some(givenPresentation));
+                    profile.GetName().ShouldBe(givenName);
+                    profile.GetEnterprise().ShouldBe(givenEnterprise);
+                    profile.GetRole().ShouldBe(givenJobRole);
+                    profile.GetPresentation().ShouldBe(givenPresentation);
                     profile.GetLanguageCode().ShouldBe(givenLanguageCode);
                 },
                 error => error.ShouldBeNull()
@@ -30,37 +36,55 @@ public class ProfileToBeUpdatedShould
     }
 
     [Fact]
-    public void BeCreatedWithOnlyTheProvidedFields()
+    public void KeepTheCurrentValuesThatWereNotGiven()
     {
         const string givenJobRole = "Beer software architect";
         const string givenLanguageCode = "es";
+        var translation = ProfileTranslationFoundBuilder.Build(givenLanguageCode, "Current presentation", "Current role");
+        var current = ProfileFoundBuilder.Build("Current name", "Current enterprise", [translation]);
 
-        ProfileToBeUpdated.Create(null, null, givenJobRole, null, givenLanguageCode)
+        ProfileToBeUpdated.Create(current, null, null, givenJobRole, null, givenLanguageCode)
             .Match(
                 profile =>
                 {
-                    profile.GetName().ShouldBe(Option<string>.None);
-                    profile.GetEnterprise().ShouldBe(Option<string>.None);
-                    profile.GetRole().ShouldBe(Option<string>.Some(givenJobRole));
-                    profile.GetPresentation().ShouldBe(Option<string>.None);
+                    profile.GetName().ShouldBe(current.GetName());
+                    profile.GetEnterprise().ShouldBe(current.GetEnterprise());
+                    profile.GetRole().ShouldBe(givenJobRole);
+                    profile.GetPresentation().ShouldBe(translation.GetPresentation());
                 },
                 error => error.ShouldBeNull()
             );
     }
 
     [Fact]
-    public void BeCreatedWithoutFieldsToUpdate()
+    public void KeepTheCurrentProfileWithoutFieldsToUpdate()
     {
-        ProfileToBeUpdated.Create(null, null, null, null, "es")
+        var translation = ProfileTranslationFoundBuilder.Build();
+        var current = ProfileFoundBuilder.Build(translations: [translation]);
+
+        ProfileToBeUpdated.Create(current, null, null, null, null, translation.GetLanguageCode())
             .Match(
                 profile =>
                 {
-                    profile.GetName().ShouldBe(Option<string>.None);
-                    profile.GetEnterprise().ShouldBe(Option<string>.None);
-                    profile.GetRole().ShouldBe(Option<string>.None);
-                    profile.GetPresentation().ShouldBe(Option<string>.None);
+                    profile.GetName().ShouldBe(current.GetName());
+                    profile.GetEnterprise().ShouldBe(current.GetEnterprise());
+                    profile.GetRole().ShouldBe(translation.GetRole());
+                    profile.GetPresentation().ShouldBe(translation.GetPresentation());
                 },
                 error => error.ShouldBeNull()
+            );
+    }
+
+    [Fact]
+    public void RejectUpdateWhenTheLanguageIsNotInTheProfile()
+    {
+        var current = ProfileFoundBuilder.Build(translations: [ProfileTranslationFoundBuilder.Build("es")]);
+
+        ProfileToBeUpdated.Create(current, null, null, null, null, "fr")
+            .Match(
+                profile => profile.ShouldBeNull(),
+                error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+                    .Message.ShouldBe("Profile translation for language 'fr' was not found")
             );
     }
 }

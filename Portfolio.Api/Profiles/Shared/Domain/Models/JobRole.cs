@@ -21,4 +21,6 @@ public class JobRole
     }
 
     public override string ToString() => _value;
+
+    public static Either<Error, JobRole> CreateUnsafe(string givenJobRole) => new JobRole(givenJobRole);
 }

@@ -1,23 +1,29 @@
 using LanguageExt;
 using LanguageExt.Common;
+using Portfolio.Api.Profiles.Find.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 using static LanguageExt.Prelude;
+using EnterpriseName = Portfolio.Api.Profiles.Shared.Domain.Models.EnterpriseName;
+using JobRole = Portfolio.Api.Profiles.Shared.Domain.Models.JobRole;
+using Name = Portfolio.Api.Profiles.Shared.Domain.Models.Name;
+using Presentation = Portfolio.Api.Profiles.Shared.Domain.Models.Presentation;
 
 namespace Portfolio.Api.Profiles.Update.Domain.Models;
 
 public class ProfileToBeUpdated
 {
-    private readonly Option<Name> _name;
-    private readonly Option<EnterpriseName> _enterprise;
-    private readonly Option<JobRole> _jobRole;
-    private readonly Option<Presentation> _presentation;
+    private readonly Name _name;
+    private readonly EnterpriseName _enterprise;
+    private readonly JobRole _jobRole;
+    private readonly Presentation _presentation;
     private readonly LanguageCode _languageCode;
 
     private ProfileToBeUpdated(
-        Option<Name> name,
-        Option<EnterpriseName> enterprise,
-        Option<JobRole> jobRole,
-        Option<Presentation> presentation,
+        Name name,
+        EnterpriseName enterprise,
+        JobRole jobRole,
+        Presentation presentation,
         LanguageCode languageCode
     )
     {
@@ -29,26 +35,41 @@ public class ProfileToBeUpdated
     }
 
     public static Either<Error, ProfileToBeUpdated> Create(
+        ProfileFound current,
         string? givenName,
         string? givenEnterpriseName,
         string? givenJobRole,
         string? givenPresentation,
         string givenLanguageCode
     ) =>
-        from name in Optional(givenName).Map(Name.Create).Sequence()
-        from enterpriseName in Optional(givenEnterpriseName).Map(EnterpriseName.Create).Sequence()
-        from jobRole in Optional(givenJobRole).Map(JobRole.Create).Sequence()
-        from presentation in Optional(givenPresentation).Map(Presentation.Create).Sequence()
         from languageCode in LanguageCode.Create(givenLanguageCode)
+        from translation in FindTranslation(current, languageCode)
+        from name in Optional(givenName)
+            .Match(Name.Create, Name.CreateUnsafe(current.GetName()))
+        from enterpriseName in Optional(givenEnterpriseName)
+            .Match(EnterpriseName.Create, EnterpriseName.CreateUnsafe(current.GetEnterprise()))
+        from jobRole in Optional(givenJobRole)
+            .Match(JobRole.Create, JobRole.CreateUnsafe(translation.GetRole()))
+        from presentation in Optional(givenPresentation)
+            .Match(Presentation.Create, Presentation.CreateUnsafe(translation.GetPresentation()))
         select new ProfileToBeUpdated(name, enterpriseName, jobRole, presentation, languageCode);
 
-    public Option<string> GetName() => _name.Map(name => name.ToString());
+    public string GetName() => _name.ToString();
 
-    public Option<string> GetEnterprise() => _enterprise.Map(enterprise => enterprise.ToString());
+    public string GetEnterprise() => _enterprise.ToString();
 
-    public Option<string> GetRole() => _jobRole.Map(jobRole => jobRole.ToString());
+    public string GetRole() => _jobRole.ToString();
 
-    public Option<string> GetPresentation() => _presentation.Map(presentation => presentation.ToString());
+    public string GetPresentation() => _presentation.ToString();
 
     public string GetLanguageCode() => _languageCode.ToString();
+
+    private static Either<Error, ProfileTranslationFound> FindTranslation(
+        ProfileFound current,
+        LanguageCode languageCode
+    ) =>
+        Optional(current.GetTranslations()
+                .FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
+            .ToEither(Error.New(
+                new NotFoundException($"Profile translation for language '{languageCode}' was not found")));
 }

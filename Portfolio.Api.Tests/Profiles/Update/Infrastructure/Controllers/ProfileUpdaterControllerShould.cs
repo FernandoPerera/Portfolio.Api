@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Portfolio.Api.Profiles.Find.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Update.Application.UseCases;
 using Portfolio.Api.Profiles.Update.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Update.Infrastructure.Controllers;
@@ -25,7 +26,8 @@ public class ProfileUpdaterControllerShould
 
         _appDbContext = new AppDbContext(options);
         var updaterRepository = new EntityFrameworkProfileUpdaterAdapter(_appDbContext);
-        var updater = new ProfileUpdater(updaterRepository);
+        var finderRepository = new EntityFrameworkProfileFinderAdapter(_appDbContext);
+        var updater = new ProfileUpdater(finderRepository, updaterRepository);
         var errorResponseMapper = new ProblemDetailsMapper();
         _controller = new ProfileUpdaterController(updater, errorResponseMapper);
     }
