@@ -1,5 +1,6 @@
 using Portfolio.Api.Auth.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Create.Infrastructure.Extensions;
+using Portfolio.Api.Languages.Delete.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Find.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Update.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Create.Infrastructure.Extensions;
@@ -21,6 +22,7 @@ builder.Services.AddAuthentication(builder.Configuration);
 
 // Actions
 builder.Services.AddLanguageCreate();
+builder.Services.AddLanguageDelete();
 builder.Services.AddLanguageFind();
 builder.Services.AddLanguageUpdate();
 builder.Services.AddProfileCreate();
