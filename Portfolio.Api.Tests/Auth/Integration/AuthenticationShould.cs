@@ -51,6 +51,14 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
+     
+    public async Task RejectLanguageReadWithoutToken()
+    {
+        var response = await _client.GetAsync("v1/language");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe("application/problem+json");
+    }
 
     [Theory]
     [MemberData(nameof(PublicEndpoints))]
@@ -70,6 +78,17 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
         var response = await _client.PostAsJsonAsync("v1/language", new { languageCode = "fr", name = "French" });
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task AllowLanguageReadWithAValidToken()
+    {
+        var tokens = await Login();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var response = await _client.GetAsync("v1/language");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
