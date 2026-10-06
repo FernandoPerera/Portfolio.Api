@@ -37,6 +37,7 @@ public class EntityFrameworkTimelineFinderAdapter(AppDbContext dbContext) : ITim
             .Select(ToTranslation)
             .Sequence()
             .Bind(translations => TimelineEntryFound.CreateUnsafe(
+                entity.Id,
                 entity.Organization,
                 entity.Category,
                 entity.StartDate,

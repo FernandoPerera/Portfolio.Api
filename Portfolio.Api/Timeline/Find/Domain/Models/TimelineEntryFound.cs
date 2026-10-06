@@ -6,6 +6,7 @@ namespace Portfolio.Api.Timeline.Find.Domain.Models;
 
 public class TimelineEntryFound
 {
+    private readonly Guid _id;
     private readonly Organization _organization;
     private readonly TimelineCategory _category;
     private readonly TimelinePeriod _period;
@@ -13,6 +14,7 @@ public class TimelineEntryFound
     private readonly TimelineTranslations _translations;
 
     private TimelineEntryFound(
+        Guid id,
         Organization organization,
         TimelineCategory category,
         TimelinePeriod period,
@@ -20,6 +22,7 @@ public class TimelineEntryFound
         TimelineTranslations translations
     )
     {
+        _id = id;
         _organization = organization;
         _category = category;
         _period = period;
@@ -28,6 +31,7 @@ public class TimelineEntryFound
     }
 
     public static Either<Error, TimelineEntryFound> CreateUnsafe(
+        Guid givenId,
         string givenOrganization,
         string givenCategory,
         DateOnly givenStartDate,
@@ -40,7 +44,9 @@ public class TimelineEntryFound
         from period in TimelinePeriod.CreateUnsafe(givenStartDate, givenEndDate)
         from technologies in Technologies.CreateUnsafe(givenTechnologies)
         from translations in TimelineTranslations.CreateUnsafe(givenTranslations)
-        select new TimelineEntryFound(organization, category, period, technologies, translations);
+        select new TimelineEntryFound(givenId, organization, category, period, technologies, translations);
+
+    public Guid GetId() => _id;
 
     public string GetOrganization() => _organization.ToString();
 

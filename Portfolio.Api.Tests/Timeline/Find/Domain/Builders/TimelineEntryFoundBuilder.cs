@@ -7,6 +7,7 @@ namespace Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 public static class TimelineEntryFoundBuilder
 {
     public static TimelineEntryFound Build(
+        Guid? id = null,
         string organization = "Lean Mind",
         string category = "work",
         DateOnly? startDate = null,
@@ -16,6 +17,7 @@ public static class TimelineEntryFoundBuilder
     )
     {
         return TimelineEntryFound.CreateUnsafe(
+                id ?? Guid.NewGuid(),
                 organization,
                 category,
                 startDate ?? new DateOnly(2023, 1, 1),
