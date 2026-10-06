@@ -42,17 +42,17 @@ public class TimelineEntryToBeUpdated
         Option<List<TimelineTranslation>> givenTranslations
     ) =>
         from organization in Optional(givenOrganization)
-            .Match(Organization.Create, () => Organization.CreateUnsafe(current.GetOrganization()))
+            .Match(Organization.Create, Organization.CreateUnsafe(current.GetOrganization()))
         from category in Optional(givenCategory)
-            .Match(TimelineCategory.Create, () => TimelineCategory.CreateUnsafe(current.GetCategory()))
+            .Match(TimelineCategory.Create, TimelineCategory.CreateUnsafe(current.GetCategory()))
         from period in TimelinePeriod.Create(
             givenStartDate ?? current.GetStartDate(),
             givenEndDate ?? current.GetEndDate()
         )
         from technologies in Optional(givenTechnologies)
-            .Match(Technologies.Create, () => Technologies.CreateUnsafe(current.GetTechnologies()))
+            .Match(Technologies.Create, Technologies.CreateUnsafe(current.GetTechnologies()))
         from translations in givenTranslations
-            .Match(TimelineTranslations.Create, () => TimelineTranslations.CreateUnsafe(current.GetTranslations()))
+            .Match(TimelineTranslations.Create, TimelineTranslations.CreateUnsafe(current.GetTranslations()))
         select new TimelineEntryToBeUpdated(current.GetId(), organization, category, period, technologies, translations);
 
     public Guid GetId() => _id;
