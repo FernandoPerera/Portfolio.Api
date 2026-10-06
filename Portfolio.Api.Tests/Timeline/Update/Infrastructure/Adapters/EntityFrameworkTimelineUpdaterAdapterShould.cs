@@ -5,6 +5,7 @@ using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
+using Portfolio.Api.Timeline.Find.Domain.Models;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Update.Domain.Models;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
@@ -40,7 +41,12 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
             endDate: new DateOnly(2023, 6, 1),
             translations: [TimelineEntryTranslationEntityBuilder.Build(entryId)]
         );
-        var update = ToBeUpdated(entryId, organization: "Lean Mind Labs");
+        var current = TimelineEntryFoundBuilder.Build(
+            entryId,
+            endDate: new DateOnly(2023, 6, 1),
+            technologies: ["React", "TypeScript"]
+        );
+        var update = ToBeUpdated(current, organization: "Lean Mind Labs");
 
         var result = await _updater.UpdateEntry(update);
 
@@ -71,7 +77,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
             [TimelineEntryTranslationEntityBuilder.Build(entryId, "es", "Ciclo formativo", "Desarrollo web.")]
         );
         var update = ToBeUpdated(
-            entryId,
+            TimelineEntryFoundBuilder.Build(entryId),
             "Escuela",
             "education",
             "2021-09",
@@ -107,7 +113,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
         await _dbContext.SaveChangesAsync();
         var spanish = TimelineTranslationBuilder.Build("es", "Nuevo título", "Nueva descripción.");
         var french = TimelineTranslationBuilder.Build("fr", "Nouveau titre", "Nouvelle description.");
-        var update = ToBeUpdated(entryId, translations: [spanish, french]);
+        var update = ToBeUpdated(TimelineEntryFoundBuilder.Build(entryId), translations: [spanish, french]);
 
         var result = await _updater.UpdateEntry(update);
 
@@ -132,7 +138,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
     [Fact]
     public async Task FailWhenTheEntryDoesNotExist()
     {
-        var update = ToBeUpdated(Guid.NewGuid(), organization: "Lean Mind Labs");
+        var update = ToBeUpdated(TimelineEntryFoundBuilder.Build(), organization: "Lean Mind Labs");
 
         var result = await _updater.UpdateEntry(update);
 
@@ -145,7 +151,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
     [Fact]
     public async Task FailWhenErrorOccurs()
     {
-        var update = ToBeUpdated(Guid.NewGuid(), organization: "Lean Mind Labs");
+        var update = ToBeUpdated(TimelineEntryFoundBuilder.Build(), organization: "Lean Mind Labs");
         await _dbContext.DisposeAsync();
 
         var result = await _updater.UpdateEntry(update);
@@ -157,7 +163,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
     }
 
     private static TimelineEntryToBeUpdated ToBeUpdated(
-        Guid entryId,
+        TimelineEntryFound current,
         string? organization = null,
         string? category = null,
         string? startDate = null,
@@ -166,7 +172,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
         List<TimelineTranslation>? translations = null
     ) =>
         TimelineEntryToBeUpdated.Create(
-                TimelineEntryFoundBuilder.Build(entryId),
+                current,
                 organization,
                 category,
                 startDate,

@@ -26,12 +26,12 @@ public class EntityFrameworkTimelineUpdaterAdapter(AppDbContext dbContext) : ITi
                 return Error.New(new NotFoundException($"Timeline entry '{id}' was not found"));
             }
 
-            timelineEntryToBeUpdated.GetOrganization().IfSome(organization => entity.Organization = organization);
-            timelineEntryToBeUpdated.GetCategory().IfSome(category => entity.Category = category);
-            timelineEntryToBeUpdated.GetStartDate().IfSome(startDate => entity.StartDate = startDate);
-            timelineEntryToBeUpdated.GetEndDate().IfSome(endDate => entity.EndDate = endDate);
-            timelineEntryToBeUpdated.GetTechnologies().IfSome(technologies => entity.Technologies = technologies);
-            timelineEntryToBeUpdated.GetTranslations().IfSome(translations => ReplaceTranslations(entity, translations));
+            entity.Organization = timelineEntryToBeUpdated.GetOrganization();
+            entity.Category = timelineEntryToBeUpdated.GetCategory();
+            entity.StartDate = timelineEntryToBeUpdated.GetStartDate();
+            entity.EndDate = timelineEntryToBeUpdated.GetEndDate().ToNullable();
+            entity.Technologies = timelineEntryToBeUpdated.GetTechnologies();
+            ReplaceTranslations(entity, timelineEntryToBeUpdated.GetTranslations());
 
             await dbContext.SaveChangesAsync();
 

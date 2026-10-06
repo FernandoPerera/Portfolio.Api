@@ -31,33 +31,36 @@ public class TimelineEntryToBeUpdatedShould
                 entry =>
                 {
                     entry.GetId().ShouldBe(id);
-                    entry.GetOrganization().ShouldBe(Option<string>.Some("Lean Mind"));
-                    entry.GetCategory().ShouldBe(Option<string>.Some("education"));
-                    entry.GetStartDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2021, 9, 1)));
+                    entry.GetOrganization().ShouldBe("Lean Mind");
+                    entry.GetCategory().ShouldBe("education");
+                    entry.GetStartDate().ShouldBe(new DateOnly(2021, 9, 1));
                     entry.GetEndDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 6, 1)));
-                    entry.GetTechnologies().IfNone([]).ShouldBe(givenTechnologies);
-                    entry.GetTranslations().IfNone([]).ShouldBe([english]);
+                    entry.GetTechnologies().ShouldBe(givenTechnologies);
+                    entry.GetTranslations().ShouldBe([english]);
                 },
                 error => error.ShouldBeNull()
             );
     }
 
     [Fact]
-    public void BeUpdatedOnlyWithTheGivenValues()
+    public void KeepTheCurrentValuesThatWereNotGiven()
     {
-        var current = TimelineEntryFoundBuilder.Build();
+        var current = TimelineEntryFoundBuilder.Build(
+            endDate: new DateOnly(2023, 6, 1),
+            technologies: ["React", "TypeScript"]
+        );
 
-        TimelineEntryToBeUpdated.Create(current, "Lean Mind", null, null, null, null, Option<List<TimelineTranslation>>.None)
+        TimelineEntryToBeUpdated.Create(current, "Lean Mind Labs", null, null, null, null, Option<List<TimelineTranslation>>.None)
             .Match(
                 entry =>
                 {
                     entry.GetId().ShouldBe(current.GetId());
-                    entry.GetOrganization().ShouldBe("Lean Mind");
-                    entry.GetCategory().ShouldBe(Option<string>.None);
-                    entry.GetStartDate().ShouldBe(Option<DateOnly>.None);
-                    entry.GetEndDate().ShouldBe(Option<DateOnly>.None);
-                    entry.GetTechnologies().IsNone.ShouldBeTrue();
-                    entry.GetTranslations().IsNone.ShouldBeTrue();
+                    entry.GetOrganization().ShouldBe("Lean Mind Labs");
+                    entry.GetCategory().ShouldBe(current.GetCategory());
+                    entry.GetStartDate().ShouldBe(new DateOnly(2023, 1, 1));
+                    entry.GetEndDate().ShouldBe(Option<DateOnly>.Some(new DateOnly(2023, 6, 1)));
+                    entry.GetTechnologies().ShouldBe(current.GetTechnologies());
+                    entry.GetTranslations().ShouldBe(current.GetTranslations());
                 },
                 error => error.ShouldBeNull()
             );

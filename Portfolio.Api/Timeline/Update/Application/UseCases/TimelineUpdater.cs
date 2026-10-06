@@ -21,6 +21,7 @@ public class TimelineUpdater(
             from id in TimelineId.Create(timelineUpdaterInfo.Id).ToAsync()
             from current in finder.FindEntry(id).ToAsync()
             from translations in CreateTranslations(timelineUpdaterInfo.Translations).ToAsync()
+            from _ in EnsureLanguagesExist(translations).ToAsync()
             from entry in TimelineEntryToBeUpdated.Create(
                 current,
                 timelineUpdaterInfo.Organization,
@@ -30,7 +31,6 @@ public class TimelineUpdater(
                 timelineUpdaterInfo.Technologies,
                 translations
             ).ToAsync()
-            from _ in EnsureLanguagesExist(entry).ToAsync()
             from result in updater.UpdateEntry(entry).ToAsync()
             select result
         );
@@ -55,9 +55,9 @@ public class TimelineUpdater(
             .Map(created => Option<List<TimelineTranslation>>.Some(created.ToList()));
     }
 
-    private async Task<Either<Error, Unit>> EnsureLanguagesExist(TimelineEntryToBeUpdated entry)
+    private async Task<Either<Error, Unit>> EnsureLanguagesExist(Option<List<TimelineTranslation>> translations)
     {
-        foreach (var translation in entry.GetTranslations().IfNone([]))
+        foreach (var translation in translations.IfNone([]))
         {
             var exists = await languageExistence.Exists(translation.GetLanguageCodeModel());
             if (exists.IsLeft)
