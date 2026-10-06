@@ -2,7 +2,6 @@ using LanguageExt;
 using LanguageExt.Common;
 using Portfolio.Api.Profiles.Find.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
-using Portfolio.Api.Shared.Domain.Errors;
 using static LanguageExt.Prelude;
 using EnterpriseName = Portfolio.Api.Profiles.Shared.Domain.Models.EnterpriseName;
 using JobRole = Portfolio.Api.Profiles.Shared.Domain.Models.JobRole;
@@ -43,7 +42,7 @@ public class ProfileToBeUpdated
         string givenLanguageCode
     ) =>
         from languageCode in LanguageCode.Create(givenLanguageCode)
-        from translation in FindTranslation(current, languageCode)
+        from translation in current.GetTranslation(languageCode)
         from name in Optional(givenName)
             .Match(Name.Create, Name.CreateUnsafe(current.GetName()))
         from enterpriseName in Optional(givenEnterpriseName)
@@ -63,13 +62,4 @@ public class ProfileToBeUpdated
     public string GetPresentation() => _presentation.ToString();
 
     public string GetLanguageCode() => _languageCode.ToString();
-
-    private static Either<Error, ProfileTranslationFound> FindTranslation(
-        ProfileFound current,
-        LanguageCode languageCode
-    ) =>
-        Optional(current.GetTranslations()
-                .FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
-            .ToEither(Error.New(
-                new NotFoundException($"Profile translation for language '{languageCode}' was not found")));
 }
