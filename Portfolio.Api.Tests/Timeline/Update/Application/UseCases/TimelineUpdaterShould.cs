@@ -8,6 +8,7 @@ using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Application.Builders;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Update.Application.Builders;
+using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Update.Application.UseCases;
 using Portfolio.Api.Timeline.Update.Domain.Models;
 using Portfolio.Api.Timeline.Update.Domain.Ports;
@@ -26,7 +27,7 @@ public class TimelineUpdaterShould
     public TimelineUpdaterShould()
     {
         _updater = new TimelineUpdater(_finderRepository, _updaterRepository, _languageExistenceRepository);
-        _finderRepository.FindEntry(_entryId).Returns(TimelineEntryFoundBuilder.Build(_entryId));
+        _finderRepository.FindEntry(Arg.Is<TimelineId>(id => id.ToGuid() == _entryId)).Returns(TimelineEntryFoundBuilder.Build(_entryId));
         _languageExistenceRepository.Exists(Arg.Any<LanguageCode>()).Returns(Unit.Default);
         _updaterRepository.UpdateEntry(Arg.Any<TimelineEntryToBeUpdated>()).Returns(Unit.Default);
     }

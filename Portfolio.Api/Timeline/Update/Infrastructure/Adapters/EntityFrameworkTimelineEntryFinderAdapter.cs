@@ -12,17 +12,18 @@ namespace Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 
 public class EntityFrameworkTimelineEntryFinderAdapter(AppDbContext dbContext) : ITimelineEntryFinderRepository
 {
-    public async Task<Either<Error, TimelineEntryFound>> FindEntry(Guid id)
+    public async Task<Either<Error, TimelineEntryFound>> FindEntry(TimelineId id)
     {
         try
         {
+            var entryId = id.ToGuid();
             var entity = await dbContext.TimelineEntries
                 .Include(entry => entry.Translations)
-                .SingleOrDefaultAsync(entry => entry.Id == id);
+                .SingleOrDefaultAsync(entry => entry.Id == entryId);
 
             if (entity is null)
             {
-                return Error.New(new NotFoundException($"Timeline entry '{id}' was not found"));
+                return Error.New(new NotFoundException($"Timeline entry '{entryId}' was not found"));
             }
 
             return ToEntry(entity);

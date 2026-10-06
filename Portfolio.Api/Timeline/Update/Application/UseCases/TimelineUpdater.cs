@@ -18,7 +18,8 @@ public class TimelineUpdater(
     public async Task<Either<Error, Unit>> Execute(TimelineUpdaterInfo timelineUpdaterInfo)
     {
         return await (
-            from current in finder.FindEntry(timelineUpdaterInfo.Id).ToAsync()
+            from id in TimelineId.Create(timelineUpdaterInfo.Id).ToAsync()
+            from current in finder.FindEntry(id).ToAsync()
             from translations in CreateTranslations(timelineUpdaterInfo.Translations).ToAsync()
             from entry in TimelineEntryToBeUpdated.Create(
                 current,

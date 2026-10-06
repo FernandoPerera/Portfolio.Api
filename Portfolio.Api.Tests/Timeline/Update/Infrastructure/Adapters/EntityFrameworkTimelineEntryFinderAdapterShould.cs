@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 using Shouldly;
 
@@ -37,7 +38,7 @@ public class EntityFrameworkTimelineEntryFinderAdapterShould
         await _dbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(Guid.NewGuid()));
         await _dbContext.SaveChangesAsync();
 
-        var result = await _finder.FindEntry(entryId);
+        var result = await _finder.FindEntry(TimelineIdBuilder.Build(entryId));
 
         result.Match(
             entry =>
@@ -70,7 +71,7 @@ public class EntityFrameworkTimelineEntryFinderAdapterShould
         await _dbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(Guid.NewGuid()));
         await _dbContext.SaveChangesAsync();
 
-        var result = await _finder.FindEntry(Guid.NewGuid());
+        var result = await _finder.FindEntry(TimelineIdBuilder.Build());
 
         result.Match(
             entry => entry.ShouldBeNull(),
@@ -83,7 +84,7 @@ public class EntityFrameworkTimelineEntryFinderAdapterShould
     {
         await _dbContext.DisposeAsync();
 
-        var result = await _finder.FindEntry(Guid.NewGuid());
+        var result = await _finder.FindEntry(TimelineIdBuilder.Build());
 
         result.Match(
             entry => entry.ShouldBeNull(),
