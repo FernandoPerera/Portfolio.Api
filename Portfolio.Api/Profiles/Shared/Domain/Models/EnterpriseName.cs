@@ -1,7 +1,7 @@
 using LanguageExt;
 using LanguageExt.Common;
 
-namespace Portfolio.Api.Profiles.Create.Domain.Models;
+namespace Portfolio.Api.Profiles.Shared.Domain.Models;
 
 public class EnterpriseName
 {

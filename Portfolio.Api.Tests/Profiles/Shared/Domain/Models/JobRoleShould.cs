@@ -1,8 +1,8 @@
-using Portfolio.Api.Profiles.Create.Domain.Models;
+using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
 using Shouldly;
 
-namespace Portfolio.Api.Tests.Profiles.Create.Domain.Models;
+namespace Portfolio.Api.Tests.Profiles.Shared.Domain.Models;
 
 public class JobRoleShould
 {

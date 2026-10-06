@@ -45,6 +45,13 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
     }
 
     [Fact]
+    public async Task RejectProfileUpdateWithoutToken()
+    {
+        var response = await _client.PatchAsJsonAsync("v1/profile/es", new { name = "Fernando" });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+     
     public async Task RejectLanguageReadWithoutToken()
     {
         var response = await _client.GetAsync("v1/language");

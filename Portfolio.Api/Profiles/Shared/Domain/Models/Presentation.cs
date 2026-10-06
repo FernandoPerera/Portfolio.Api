@@ -2,7 +2,7 @@ using LanguageExt;
 using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
-namespace Portfolio.Api.Profiles.Create.Domain.Models;
+namespace Portfolio.Api.Profiles.Shared.Domain.Models;
 
 public class Presentation
 {
