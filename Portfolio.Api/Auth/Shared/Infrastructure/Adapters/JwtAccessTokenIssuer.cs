@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
+using Portfolio.Api.Auth.Shared.Infrastructure.Authorization;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
 using Portfolio.Api.Shared.Domain.Errors;
 
@@ -24,7 +25,10 @@ public class JwtAccessTokenIssuer(IOptions<JwtOptions> jwtOptions, TimeProvider 
             {
                 Issuer = options.Issuer,
                 Audience = options.Audience,
-                Subject = new ClaimsIdentity([new Claim(JwtRegisteredClaimNames.Sub, username.ToString())]),
+                Subject = new ClaimsIdentity([
+                    new Claim(JwtRegisteredClaimNames.Sub, username.ToString()),
+                    new Claim(AdminAccess.RoleClaimType, AdminAccess.RoleClaimValue)
+                ]),
                 IssuedAt = now,
                 NotBefore = now,
                 Expires = now.AddMinutes(options.AccessTokenMinutes),
