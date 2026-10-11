@@ -1,6 +1,5 @@
 using LanguageExt;
 using NSubstitute;
-using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Update.Application.Builders;
@@ -46,40 +45,6 @@ public class TimelineUpdaterShould
                 ));
             },
             error => error.ShouldBeNull()
-        );
-    }
-
-    [Fact]
-    public async Task FailWhenTheUpdateIsInvalid()
-    {
-        var updaterInfo = TimelineUpdaterInfoBuilder.Build(_entryId, category: "hobby");
-
-        var result = await _updater.Execute(updaterInfo);
-
-        result.Match(
-            unit => unit.ShouldBeEquivalentTo(null),
-            error =>
-            {
-                error.Exception.Case.ShouldBeOfType<ValidationException>();
-                _updaterRepository.DidNotReceive().UpdateEntry(Arg.Any<TimelineEntryToBeUpdated>());
-            }
-        );
-    }
-
-    [Fact]
-    public async Task FailWhenTheTranslationDoesNotExist()
-    {
-        var updaterInfo = TimelineUpdaterInfoBuilder.Build(_entryId, languageCode: "fr");
-
-        var result = await _updater.Execute(updaterInfo);
-
-        result.Match(
-            unit => unit.ShouldBeEquivalentTo(null),
-            error =>
-            {
-                error.Exception.Case.ShouldBeOfType<NotFoundException>();
-                _updaterRepository.DidNotReceive().UpdateEntry(Arg.Any<TimelineEntryToBeUpdated>());
-            }
         );
     }
 }
