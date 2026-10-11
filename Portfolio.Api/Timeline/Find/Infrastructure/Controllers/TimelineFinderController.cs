@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 using Portfolio.Api.Timeline.Find.Application.UseCases;
@@ -6,6 +7,7 @@ using Portfolio.Api.Timeline.Find.Infrastructure.Dtos;
 namespace Portfolio.Api.Timeline.Find.Infrastructure.Controllers;
 
 [ApiController]
+[AllowAnonymous]
 [Route("v1/timeline")]
 public class TimelineFinderController(
     TimelineFinder finder,
