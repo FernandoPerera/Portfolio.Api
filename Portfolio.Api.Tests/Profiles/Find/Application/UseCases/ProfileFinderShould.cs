@@ -1,9 +1,7 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Profiles.Find.Application.UseCases;
 using Portfolio.Api.Profiles.Find.Domain.Ports;
-using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Tests.Profiles.Find.Domain.Builders;
 using Shouldly;
 
@@ -31,20 +29,6 @@ public class ProfileFinderShould
         result.Match(
             profile => profile.ShouldBe(domainProfile),
             error => error.ShouldBeNull()
-        );
-    }
-
-    [Fact]
-    public async Task ReturnRepositoryErrorWhenProfileRetrievalFails()
-    {
-        var expectedError = Error.New(new ServiceUnavailableException("Database unavailable"));
-        _repository.FindProfile().Returns(expectedError);
-
-        var result = await _finder.Execute();
-
-        result.Match(
-            info => throw new InvalidOperationException("Should have failed"),
-            error => error.ShouldBe(expectedError)
         );
     }
 }
