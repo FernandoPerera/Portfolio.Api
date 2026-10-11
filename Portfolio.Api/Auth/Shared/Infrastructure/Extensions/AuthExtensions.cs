@@ -27,6 +27,7 @@ public static class AuthExtensions
     {
         services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
         services.AddOptions<AdminOptions>().Bind(configuration.GetSection(AdminOptions.SectionName));
+        services.AddOptions<GitHubOptions>().Bind(configuration.GetSection(GitHubOptions.SectionName));
     }
 
     private static void AddJwtBearerAuthentication(this IServiceCollection services)
@@ -72,6 +73,8 @@ public static class AuthExtensions
         services.AddSingleton<ICredentialsVerifier, ConfigurationCredentialsVerifier>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddSingleton<IRefreshTokenIssuer, RandomRefreshTokenIssuer>();
+        services.AddHttpClient(GitHubIdentityProvider.ClientName);
+        services.AddScoped<IExternalIdentityProvider, GitHubIdentityProvider>();
         services.AddScoped<IRefreshTokenSaverRepository, EntityFrameworkRefreshTokenSaverAdapter>();
         services.AddScoped<IRefreshTokenConsumerRepository, EntityFrameworkRefreshTokenConsumerAdapter>();
     }
