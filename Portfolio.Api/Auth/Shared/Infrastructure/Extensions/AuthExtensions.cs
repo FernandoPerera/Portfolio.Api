@@ -71,6 +71,7 @@ public static class AuthExtensions
     {
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<ICredentialsVerifier, ConfigurationCredentialsVerifier>();
+        services.AddSingleton<IAdminAuthorizer, ConfigurationAdminAuthorizer>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddSingleton<IRefreshTokenIssuer, RandomRefreshTokenIssuer>();
         services.AddHttpClient(GitHubIdentityProvider.ClientName);
