@@ -7,7 +7,9 @@ using Portfolio.Api.Profiles.Create.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Find.Infrastructure.Extensions;
 using Portfolio.Api.Profiles.Update.Infrastructure.Extensions;
 using Portfolio.Api.Shared.Infrastructure.Extensions;
+using Portfolio.Api.Timeline.AddTranslation.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Create.Infrastructure.Extensions;
+using Portfolio.Api.Timeline.Delete.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
 
@@ -29,6 +31,8 @@ builder.Services.AddProfileCreate();
 builder.Services.AddProfileFind();
 builder.Services.AddProfileUpdate();
 builder.Services.AddTimelineCreate();
+builder.Services.AddTimelineTranslationAdd();
+builder.Services.AddTimelineDelete();
 builder.Services.AddTimelineFind();
 builder.Services.AddTimelineUpdate();
 
