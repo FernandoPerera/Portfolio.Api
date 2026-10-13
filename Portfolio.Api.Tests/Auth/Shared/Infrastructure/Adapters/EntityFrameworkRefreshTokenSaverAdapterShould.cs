@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
@@ -31,7 +30,7 @@ public class EntityFrameworkRefreshTokenSaverAdapterShould
         _saver = new EntityFrameworkRefreshTokenSaverAdapter(
             _appDbContext,
             _idGenerator,
-            Options.Create(new JwtOptions { RefreshTokenDays = 7 }),
+            new JwtOptions { RefreshTokenDays = 7 },
             new FixedTimeProvider(Now)
         );
     }

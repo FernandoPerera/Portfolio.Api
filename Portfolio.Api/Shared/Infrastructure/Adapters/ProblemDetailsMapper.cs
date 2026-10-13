@@ -33,6 +33,13 @@ public class ProblemDetailsMapper : IErrorResponseMapper
                 "https://http.cat/401",
                 error.Message
             ),
+            ForbiddenException => CreateProblemResult(
+                controller,
+                StatusCodes.Status403Forbidden,
+                "Forbidden",
+                "https://http.cat/403",
+                error.Message
+            ),
             ConflictException => CreateProblemResult(
                 controller,
                 StatusCodes.Status409Conflict,

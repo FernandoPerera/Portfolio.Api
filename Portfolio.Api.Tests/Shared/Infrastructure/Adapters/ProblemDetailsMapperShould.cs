@@ -47,6 +47,22 @@ public class ProblemDetailsMapperShould
     }
 
     [Fact]
+    public void MapToForbidden()
+    {
+        var error = Error.New(new ForbiddenException("Not allowed"));
+
+        var result = _mapper.ToActionResult(_controller, error);
+
+        var objectResult = result.ShouldBeOfType<ObjectResult>();
+        objectResult.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
+        var problemDetails = objectResult.Value.ShouldBeOfType<ProblemDetails>();
+        problemDetails.Title.ShouldBe("Forbidden");
+        problemDetails.Detail.ShouldBe("Not allowed");
+        problemDetails.Status.ShouldBe(StatusCodes.Status403Forbidden);
+        problemDetails.Type.ShouldBe("https://http.cat/403");
+    }
+
+    [Fact]
     public void MapToUnauthorized()
     {
         var error = Error.New(new UnauthorizedException("Invalid credentials"));

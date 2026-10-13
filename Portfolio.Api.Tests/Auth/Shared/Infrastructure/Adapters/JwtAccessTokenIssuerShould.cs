@@ -1,8 +1,8 @@
 using System.Text;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
+using Portfolio.Api.Auth.Shared.Infrastructure.Authorization;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure;
@@ -25,7 +25,7 @@ public class JwtAccessTokenIssuerShould
     [Fact]
     public async Task IssueASignedTokenForTheAdmin()
     {
-        var issuer = new JwtAccessTokenIssuer(Options.Create(_options), new FixedTimeProvider(Now));
+        var issuer = new JwtAccessTokenIssuer(_options, new FixedTimeProvider(Now));
 
         var result = issuer.Issue(AdminUsernameBuilder.Build("admin"));
 
@@ -40,6 +40,7 @@ public class JwtAccessTokenIssuerShould
         validation.IsValid.ShouldBeTrue();
         var jwt = new JsonWebTokenHandler().ReadJsonWebToken(token);
         jwt.Subject.ShouldBe("admin");
+        jwt.GetClaim(AdminAccess.RoleClaimType).Value.ShouldBe(AdminAccess.RoleClaimValue);
         jwt.ValidTo.ShouldBe(Now.UtcDateTime.AddMinutes(15));
     }
 }

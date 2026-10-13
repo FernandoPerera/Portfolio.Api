@@ -1,0 +1,29 @@
+using LanguageExt;
+using LanguageExt.Common;
+using Portfolio.Api.Auth.Login.Application.Dtos;
+using Portfolio.Api.Auth.Shared.Domain.Models;
+using Portfolio.Api.Auth.Shared.Domain.Ports;
+
+namespace Portfolio.Api.Auth.Login.Application.UseCases;
+
+public class LoginCodeExchanger(
+    ILoginCodeConsumerRepository loginCodeConsumer,
+    IAdminUsernameProvider adminUsernameProvider,
+    IAccessTokenIssuer accessTokenIssuer,
+    IRefreshTokenIssuer refreshTokenIssuer,
+    IRefreshTokenSaverRepository refreshTokenSaver
+)
+{
+    public async Task<Either<Error, AuthTokens>> Execute(ExchangeInfo exchangeInfo)
+    {
+        return await (
+            from loginCode in LoginCode.Create(exchangeInfo.Code).ToAsync()
+            from _ in loginCodeConsumer.Consume(loginCode).ToAsync()
+            from owner in adminUsernameProvider.Get().ToAsync()
+            from accessToken in accessTokenIssuer.Issue(owner).ToAsync()
+            from refreshToken in refreshTokenIssuer.Issue().ToAsync()
+            from __ in refreshTokenSaver.Save(refreshToken, owner).ToAsync()
+            select new AuthTokens(accessToken, refreshToken)
+        );
+    }
+}

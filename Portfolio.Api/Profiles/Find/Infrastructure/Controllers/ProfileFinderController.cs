@@ -1,4 +1,5 @@
 using LanguageExt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Profiles.Find.Application.UseCases;
 using Portfolio.Api.Profiles.Find.Infrastructure.Dtos;
@@ -7,6 +8,7 @@ using Portfolio.Api.Shared.Infrastructure.Ports;
 namespace Portfolio.Api.Profiles.Find.Infrastructure.Controllers;
 
 [ApiController]
+[AllowAnonymous]
 [Route("v1/profile")]
 public class ProfileFinderController(
     ProfileFinder finder,

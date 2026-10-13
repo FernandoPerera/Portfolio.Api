@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Refresh.Application.UseCases;
 using Portfolio.Api.Auth.Refresh.Infrastructure.Controllers;
 using Portfolio.Api.Auth.Refresh.Infrastructure.Dtos;
@@ -29,12 +28,12 @@ public class AuthRefreshControllerShould
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-        var jwtOptions = Options.Create(new JwtOptions
+        var jwtOptions = new JwtOptions
         {
             Issuer = "portfolio-api",
             Audience = "portfolio-clients",
             SigningKey = "a-signing-key-with-at-least-32-bytes!"
-        });
+        };
         var timeProvider = new FixedTimeProvider(Now);
 
         _appDbContext = new AppDbContext(options);

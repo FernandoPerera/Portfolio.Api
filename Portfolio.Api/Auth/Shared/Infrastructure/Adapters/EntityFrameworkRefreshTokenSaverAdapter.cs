@@ -1,6 +1,5 @@
 using LanguageExt;
 using LanguageExt.Common;
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Entities;
@@ -14,7 +13,7 @@ namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 public class EntityFrameworkRefreshTokenSaverAdapter(
     AppDbContext dbContext,
     IGeneratorIdentifier generatorIdentifier,
-    IOptions<JwtOptions> jwtOptions,
+    JwtOptions jwtOptions,
     TimeProvider timeProvider
 ) : IRefreshTokenSaverRepository
 {
@@ -27,7 +26,7 @@ public class EntityFrameworkRefreshTokenSaverAdapter(
                 Id = generatorIdentifier.Generate(),
                 TokenHash = RefreshTokenHasher.Hash(refreshToken),
                 Owner = owner.ToString(),
-                ExpiresAt = timeProvider.GetUtcNow().AddDays(jwtOptions.Value.RefreshTokenDays)
+                ExpiresAt = timeProvider.GetUtcNow().AddDays(jwtOptions.RefreshTokenDays)
             };
 
             await dbContext.RefreshTokens.AddAsync(entity);
