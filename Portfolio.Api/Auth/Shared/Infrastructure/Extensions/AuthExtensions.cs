@@ -86,6 +86,7 @@ public static class AuthExtensions
         services.AddScoped<IRefreshTokenSaverRepository, EntityFrameworkRefreshTokenSaverAdapter>();
         services.AddScoped<IRefreshTokenConsumerRepository, EntityFrameworkRefreshTokenConsumerAdapter>();
         services.AddSingleton<ILoginCodeSaverRepository, InMemoryLoginCodeSaverAdapter>();
+        services.AddSingleton<ILoginCodeConsumerRepository, InMemoryLoginCodeConsumerAdapter>();
     }
 
     private static void AddAuthUseCases(this IServiceCollection services)
