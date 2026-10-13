@@ -12,7 +12,7 @@ public class InMemoryLoginCodeConsumerAdapter(
     TimeProvider timeProvider
 ) : ILoginCodeConsumerRepository
 {
-    private readonly object _consumeLock = new();
+    private readonly Lock _consumeLock = new();
 
     public Either<Error, Unit> Consume(LoginCode loginCode)
     {
