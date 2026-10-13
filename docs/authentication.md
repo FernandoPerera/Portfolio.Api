@@ -1,95 +1,95 @@
-# Autenticación y autorización
+# Authentication & Authorization
 
-Cómo decide la API quién eres (autenticación) y qué puedes hacer (autorización).
-
----
-## 0. Cómo funciona este tipo de autenticación
-
-Esta API no guarda contraseñas. Delega el login en un proveedor externo con el estándar **OAuth 2.0** (flujo *Authorization Code*), el mismo mecanismo de los botones "Entrar con Google" o "Entrar con GitHub".
-
-A alto nivel, siempre son los mismos cuatro pasos:
-
-1. **Redirección:** la aplicación manda al usuario al proveedor (aquí, **GitHub**).
-2. **Identificación:** el usuario inicia sesión y acepta *en el sitio del proveedor*. La aplicación nunca ve su contraseña.
-3. **Vuelta con un código:** el proveedor devuelve al usuario a la aplicación con un código temporal.
-4. **Verificación:** la aplicación, en su servidor y con su `client_secret`, cambia ese código por la identidad del usuario.
-
-Aquí usamos **GitHub** como proveedor. GitHub solo nos dice *quién es* el usuario (su id numérico); **la API decide si ese usuario es el dueño** y, si lo es, emite su **propio JWT** para autorizar las peticiones siguientes.
+How the API decides who you are (authentication) and what you may do (authorization).
 
 ---
-## 1. Visión general
+## 0. How This Kind of Authentication Works
 
-Solo **una persona** (el dueño) puede modificar el portfolio. Los demás solo leen los datos públicos.
+This API does not store passwords. It delegates the login to an external provider using the **OAuth 2.0** standard (*Authorization Code* flow), the same mechanism behind the "Sign in with Google" or "Sign in with GitHub" buttons.
 
-- **El login** se delega en GitHub (OAuth 2.0). La API nunca ve tu contraseña de GitHub.
-- **El control de acceso** lo hace la API con su **propio JWT**. GitHub se usa una sola vez, para demostrar quién eres.
-- El dueño se reconoce por el **id numérico e inmutable de GitHub**, no por el nombre ni el email.
+At a high level, it is always the same four steps:
 
-| Quién | Qué puede hacer | Cómo |
+1. **Redirect:** the application sends the user to the provider (here, **GitHub**).
+2. **Identification:** the user signs in and accepts *on the provider's site*. The application never sees their password.
+3. **Return with a code:** the provider sends the user back to the application with a temporary code.
+4. **Verification:** the application, on its server and with its `client_secret`, exchanges that code for the identity of the user.
+
+Here **GitHub** is the provider. GitHub only tells us *who* the user is (their numeric id); **the API decides whether that user is the owner** and, if so, issues its **own JWT** to authorize the following requests.
+
+---
+## 1. Overview
+
+Only **one person** (the owner) can modify the portfolio. Everyone else can only read the public data.
+
+- **The login** is delegated to GitHub (OAuth 2.0). The API never sees your GitHub password.
+- **Access control** is done by the API with its **own JWT**. GitHub is used only once, to prove who you are.
+- The owner is recognised by the **immutable numeric GitHub id**, not by username or email.
+
+| Who | What they can do | How |
 |---|---|---|
-| Visitante | Leer el perfil y el timeline | Sin token (`[AllowAnonymous]`) |
-| Dueño | Todo lo demás (crear, actualizar, borrar) | `Authorization: Bearer <access token>` |
-| Otro usuario de GitHub | Solo leer | El login funciona, pero la API responde 403 |
+| Visitor | Read the profile and the timeline | No token (`[AllowAnonymous]`) |
+| Owner | Everything else (create, update, delete) | `Authorization: Bearer <access token>` |
+| Another GitHub user | Read only | The login works, but the API answers 403 |
 
 ---
-## 2. Los cuatro controladores y por qué existe cada uno
+## 2. The Four Controllers and Why Each One Exists
 
-Un login con GitHub no cabe en una sola petición: el usuario tiene que ir a GitHub, volver, y después la web tiene que recoger el token. Por eso hay **un controlador por cada tramo del viaje**.
+A login with GitHub does not fit in a single request: the user has to go to GitHub, come back, and then the web has to pick up the token. That is why there is **one controller for each leg of the trip**.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor N as Navegador
-    participant W as Tu web
+    actor N as Browser
+    participant W as Your web
     participant L as GitHubLoginController
     participant G as GitHub
     participant CB as GitHubAdminAuthenticationController
     participant EX as LoginCodeExchangeController
 
-    N->>W: Pulsa "Entrar con GitHub"
-    W->>L: El navegador va a GET /v1/auth/github/login
-    L-->>N: 302 a GitHub + cookie oauth_state
-    N->>G: Inicias sesión y aceptas
-    G-->>N: 302 a GitHub:RedirectUri (el callback)
-    N->>CB: GET /v1/auth/github/callback?code=CODIGO_DE_GITHUB&state=...
-    Note over CB: Comprueba la cookie, pregunta a GitHub<br/>quién eres y que eres el dueño
-    CB-->>N: 302 a tu web con ?code=LOGIN_CODE
-    N->>W: Tu web carga con el LOGIN_CODE en su URL
+    N->>W: Clicks "Sign in with GitHub"
+    W->>L: The browser goes to GET /v1/auth/github/login
+    L-->>N: 302 to GitHub + oauth_state cookie
+    N->>G: You sign in and accept
+    G-->>N: 302 to GitHub:RedirectUri (the callback)
+    N->>CB: GET /v1/auth/github/callback?code=GITHUB_CODE&state=...
+    Note over CB: Checks the cookie, asks GitHub<br/>who you are and that you are the owner
+    CB-->>N: 302 to your web with ?code=LOGIN_CODE
+    N->>W: Your web loads with the LOGIN_CODE in its URL
     W->>EX: POST /v1/auth/exchange { code: LOGIN_CODE }
     EX-->>W: accessToken + refreshToken
 ```
 
-### Qué hace cada controlador
+### What Each Controller Does
 
-- **`GitHubLoginController`** (`GET v1/auth/github/login`): es la puerta de entrada. Genera un valor aleatorio (`state`), lo guarda en una cookie y redirige el navegador a GitHub. No devuelve ninguna URL a tu web: la redirección la sigue el navegador solo.
-- **`GitHubAdminAuthenticationController`** (`GET v1/auth/github/callback`): es la dirección a la que GitHub devuelve al usuario cuando acepta. Comprueba la cookie, pregunta a GitHub quién es y verifica que es el dueño. Si todo va bien, redirige a tu web con un código de un solo uso (`LoginCode`). El código que trae GitHub muere aquí.
-- **`LoginCodeExchangeController`** (`POST v1/auth/exchange`): la web le envía el `LoginCode` y recibe el `accessToken` y el `refreshToken`. Existe para que los tokens viajen en el cuerpo de una respuesta y no en una URL.
-- **`AuthRefreshController`** (`POST v1/auth/refresh`): cuando el access token caduca, la web envía el `refreshToken` y recibe un par nuevo, sin volver a pasar por GitHub.
+- **`GitHubLoginController`** (`GET v1/auth/github/login`): the entry door. It generates a random value (`state`), stores it in a cookie and redirects the browser to GitHub. It does not return any URL to your web: the browser follows the redirect on its own.
+- **`GitHubAdminAuthenticationController`** (`GET v1/auth/github/callback`): the address where GitHub sends the user back after accepting. It checks the cookie, asks GitHub who the user is and verifies that they are the owner. If everything is fine, it redirects to your web with a one-time code (`LoginCode`). The code that GitHub brings dies here.
+- **`LoginCodeExchangeController`** (`POST v1/auth/exchange`): the web sends it the `LoginCode` and receives the `accessToken` and the `refreshToken`. It exists so that the tokens travel in the body of a response and not in a URL.
+- **`AuthRefreshController`** (`POST v1/auth/refresh`): when the access token expires, the web sends the `refreshToken` and receives a new pair, without going through GitHub again.
 
-Tu web solo hace dos llamadas: navegar a `login` al principio y llamar a `exchange` al final. Lo que ocurre entre medias son redirecciones del navegador.
+Your web only makes two calls: it navigates to `login` at the beginning and calls `exchange` at the end. What happens in between are browser redirects.
 
-### Los dos códigos
+### The Two Codes
 
-La URL lleva un parámetro `code` en dos momentos distintos. No son lo mismo:
+The URL carries a `code` parameter at two different moments. They are not the same thing:
 
-| | Código de GitHub (`AuthorizationCode`) | Código nuestro (`LoginCode`) |
+| | GitHub code (`AuthorizationCode`) | Our code (`LoginCode`) |
 |---|---|---|
-| Quién lo crea | GitHub | Nuestra API |
-| A dónde llega | Al callback | A tu web, y de ahí a `exchange` |
-| Dónde muere | En el callback | En `exchange` (un solo uso, 60 s) |
+| Who creates it | GitHub | Our API |
+| Where it arrives | At the callback | At your web, and from there at `exchange` |
+| Where it dies | At the callback | At `exchange` (single use, 60 s) |
 
 ---
-## 3. Configuración
+## 3. Configuration
 
-El repositorio es **público**: `appsettings.json` solo tiene claves vacías y URLs públicas. Los valores nunca se suben.
+The repository is **public**: `appsettings.json` only has empty keys and public URLs. The values are never committed.
 
-| Setting | ¿Secreto? |
+| Setting | Secret? |
 |---|---|
-| `Jwt:SigningKey`, `GitHub:ClientSecret`, `Admin:GitHubUserId` | **Sí** |
-| `GitHub:ClientId`, `GitHub:RedirectUri`, `Auth:FrontendRedirectUri`, `Admin:Username`, `Jwt:Issuer`, `Jwt:Audience` | No, pero dependen del entorno |
-| `GitHub:AuthorizeEndpoint`, `TokenEndpoint`, `UserEndpoint`, `UserAgent` | No, son URLs públicas y se suben |
+| `Jwt:SigningKey`, `GitHub:ClientSecret`, `Admin:GitHubUserId` | **Yes** |
+| `GitHub:ClientId`, `GitHub:RedirectUri`, `Auth:FrontendRedirectUri`, `Admin:Username`, `Jwt:Issuer`, `Jwt:Audience` | No, but they depend on the environment |
+| `GitHub:AuthorizeEndpoint`, `TokenEndpoint`, `UserEndpoint`, `UserAgent` | No, they are public URLs and are committed |
 
-- **En local:** `dotnet user-secrets set "GitHub:ClientSecret" "<valor>" --project Portfolio.Api`
-- **En producción:** variables de entorno con `__` como separador (`GitHub__ClientSecret`).
-- Los settings de `GitHub` y `Auth` se validan al arrancar: sin ellos la API no arranca.
-- `GitHub:RedirectUri` debe ser exactamente la dirección del callback registrada en la OAuth App de GitHub.
+- **Locally:** `dotnet user-secrets set "GitHub:ClientSecret" "<value>" --project Portfolio.Api`
+- **In production:** environment variables with `__` as separator (`GitHub__ClientSecret`).
+- The `GitHub` and `Auth` settings are validated at startup: the API does not start without them.
+- `GitHub:RedirectUri` must be exactly the callback address registered in the GitHub OAuth App.
