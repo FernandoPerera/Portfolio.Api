@@ -27,7 +27,10 @@ public static class AuthExtensions
     {
         services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
         services.AddOptions<AdminOptions>().Bind(configuration.GetSection(AdminOptions.SectionName));
-        services.AddOptions<GitHubOptions>().Bind(configuration.GetSection(GitHubOptions.SectionName));
+        services.AddOptions<GitHubOptions>()
+            .Bind(configuration.GetSection(GitHubOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
     }
 
     private static void AddJwtBearerAuthentication(this IServiceCollection services)
