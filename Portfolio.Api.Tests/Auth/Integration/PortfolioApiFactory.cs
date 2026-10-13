@@ -20,6 +20,7 @@ public class PortfolioApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("GitHub:ClientId", "client-id");
         builder.UseSetting("GitHub:ClientSecret", "client-secret");
         builder.UseSetting("GitHub:RedirectUri", "https://portfolio.test/v1/auth/github/callback");
+        builder.UseSetting("Auth:FrontendRedirectUri", "https://portfolio.test/login");
         builder.UseSetting("Admin:Username", AdminUsername);
         builder.UseSetting("Admin:PasswordHash", Pbkdf2PasswordHasher.Hash(AdminPassword));
     }
