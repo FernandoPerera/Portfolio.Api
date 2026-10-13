@@ -89,5 +89,6 @@ public static class AuthExtensions
     {
         services.AddScoped<Authenticator>();
         services.AddScoped<TokenRefresher>();
+        services.AddScoped<GitHubLoginStarter>();
     }
 }
