@@ -100,7 +100,7 @@ public static class AuthExtensions
     {
         services.AddScoped<TokenRefresher>();
         services.AddScoped<GitHubLoginStarter>();
-        services.AddScoped<GitHubLoginCompleter>();
+        services.AddScoped<GitHubAdminAuthenticator>();
         services.AddScoped<LoginCodeExchanger>();
     }
 }

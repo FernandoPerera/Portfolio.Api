@@ -43,8 +43,8 @@ sequenceDiagram
     participant W as Tu web
     participant L as GitHubLoginController
     participant G as GitHub
-    participant CB as GitHubCallbackController
-    participant EX as AuthExchangeController
+    participant CB as GitHubAdminAuthenticationController
+    participant EX as LoginCodeExchangeController
 
     N->>W: Pulsa "Entrar con GitHub"
     W->>L: El navegador va a GET /v1/auth/github/login
@@ -62,8 +62,8 @@ sequenceDiagram
 ### Qué hace cada controlador
 
 - **`GitHubLoginController`** (`GET v1/auth/github/login`): es la puerta de entrada. Genera un valor aleatorio (`state`), lo guarda en una cookie y redirige el navegador a GitHub. No devuelve ninguna URL a tu web: la redirección la sigue el navegador solo.
-- **`GitHubCallbackController`** (`GET v1/auth/github/callback`): es la dirección a la que GitHub devuelve al usuario cuando acepta. Comprueba la cookie, pregunta a GitHub quién es y verifica que es el dueño. Si todo va bien, redirige a tu web con un código de un solo uso (`LoginCode`). El código que trae GitHub muere aquí.
-- **`AuthExchangeController`** (`POST v1/auth/exchange`): la web le envía el `LoginCode` y recibe el `accessToken` y el `refreshToken`. Existe para que los tokens viajen en el cuerpo de una respuesta y no en una URL.
+- **`GitHubAdminAuthenticationController`** (`GET v1/auth/github/callback`): es la dirección a la que GitHub devuelve al usuario cuando acepta. Comprueba la cookie, pregunta a GitHub quién es y verifica que es el dueño. Si todo va bien, redirige a tu web con un código de un solo uso (`LoginCode`). El código que trae GitHub muere aquí.
+- **`LoginCodeExchangeController`** (`POST v1/auth/exchange`): la web le envía el `LoginCode` y recibe el `accessToken` y el `refreshToken`. Existe para que los tokens viajen en el cuerpo de una respuesta y no en una URL.
 - **`AuthRefreshController`** (`POST v1/auth/refresh`): cuando el access token caduca, la web envía el `refreshToken` y recibe un par nuevo, sin volver a pasar por GitHub.
 
 Tu web solo hace dos llamadas: navegar a `login` al principio y llamar a `exchange` al final. Lo que ocurre entre medias son redirecciones del navegador.

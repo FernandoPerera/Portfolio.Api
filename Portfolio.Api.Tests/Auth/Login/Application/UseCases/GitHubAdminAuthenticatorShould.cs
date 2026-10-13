@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Login.Application.UseCases;
 
-public class GitHubLoginCompleterShould
+public class GitHubAdminAuthenticatorShould
 {
     private const string LoginCodeValue = "login-code";
     private const string State = "oauth-state";
@@ -20,11 +20,11 @@ public class GitHubLoginCompleterShould
     private readonly IAdminAuthorizer _adminAuthorizer = Substitute.For<IAdminAuthorizer>();
     private readonly ILoginCodeIssuer _loginCodeIssuer = Substitute.For<ILoginCodeIssuer>();
     private readonly ILoginCodeSaverRepository _loginCodeSaver = Substitute.For<ILoginCodeSaverRepository>();
-    private readonly GitHubLoginCompleter _completer;
+    private readonly GitHubAdminAuthenticator _authenticator;
 
-    public GitHubLoginCompleterShould()
+    public GitHubAdminAuthenticatorShould()
     {
-        _completer = new GitHubLoginCompleter(_identityProvider, _adminAuthorizer, _loginCodeIssuer, _loginCodeSaver);
+        _authenticator = new GitHubAdminAuthenticator(_identityProvider, _adminAuthorizer, _loginCodeIssuer, _loginCodeSaver);
         _identityProvider.Identify(Arg.Any<AuthorizationCode>()).Returns(ExternalUserIdBuilder.Build());
         _adminAuthorizer.EnsureIsAdmin(Arg.Any<ExternalUserId>()).Returns(Unit.Default);
         _loginCodeIssuer.Issue().Returns(LoginCodeBuilder.Build(LoginCodeValue));
@@ -34,7 +34,7 @@ public class GitHubLoginCompleterShould
     [Fact]
     public async Task IssueALoginCodeForTheAdmin()
     {
-        var result = await _completer.Execute(new GitHubCallbackInfo("github-code", State, State));
+        var result = await _authenticator.Execute(new GitHubCallbackInfo("github-code", State, State));
 
         result.Match(
             loginCode =>
@@ -52,7 +52,7 @@ public class GitHubLoginCompleterShould
         _adminAuthorizer.EnsureIsAdmin(Arg.Any<ExternalUserId>())
             .Returns(Error.New(new ForbiddenException("This user is not allowed to manage the portfolio")));
 
-        var result = await _completer.Execute(new GitHubCallbackInfo("github-code", State, State));
+        var result = await _authenticator.Execute(new GitHubCallbackInfo("github-code", State, State));
 
         result.Match(
             loginCode => loginCode.ShouldBeNull(),
@@ -67,7 +67,7 @@ public class GitHubLoginCompleterShould
     [Fact]
     public async Task NotCallGitHubWhenTheStateDoesNotMatch()
     {
-        var result = await _completer.Execute(new GitHubCallbackInfo("github-code", State, "another-state"));
+        var result = await _authenticator.Execute(new GitHubCallbackInfo("github-code", State, "another-state"));
 
         result.Match(
             loginCode => loginCode.ShouldBeNull(),

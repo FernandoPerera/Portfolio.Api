@@ -15,7 +15,7 @@ using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Login.Infrastructure.Controllers;
 
-public class GitHubCallbackControllerShould
+public class GitHubAdminAuthenticationControllerShould
 {
     private const string FrontendRedirectUri = "https://portfolio.test/login";
     private const string State = "oauth-state";
@@ -24,15 +24,15 @@ public class GitHubCallbackControllerShould
     private readonly IAdminAuthorizer _adminAuthorizer = Substitute.For<IAdminAuthorizer>();
     private readonly ILoginCodeIssuer _loginCodeIssuer = Substitute.For<ILoginCodeIssuer>();
     private readonly ILoginCodeSaverRepository _loginCodeSaver = Substitute.For<ILoginCodeSaverRepository>();
-    private readonly GitHubCallbackController _controller;
+    private readonly GitHubAdminAuthenticationController _controller;
 
-    public GitHubCallbackControllerShould()
+    public GitHubAdminAuthenticationControllerShould()
     {
-        var completer = new GitHubLoginCompleter(_identityProvider, _adminAuthorizer, _loginCodeIssuer, _loginCodeSaver);
+        var authenticator = new GitHubAdminAuthenticator(_identityProvider, _adminAuthorizer, _loginCodeIssuer, _loginCodeSaver);
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers.Cookie = $"{OAuthStateCookie.Name}={State}";
-        _controller = new GitHubCallbackController(
-            completer,
+        _controller = new GitHubAdminAuthenticationController(
+            authenticator,
             new AuthOptions { FrontendRedirectUri = FrontendRedirectUri },
             new ProblemDetailsMapper()
         )

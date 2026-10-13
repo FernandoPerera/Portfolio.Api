@@ -6,7 +6,7 @@ using Portfolio.Api.Auth.Shared.Domain.Ports;
 
 namespace Portfolio.Api.Auth.Login.Application.UseCases;
 
-public class GitHubLoginCompleter(
+public class GitHubAdminAuthenticator(
     IExternalIdentityProvider identityProvider,
     IAdminAuthorizer adminAuthorizer,
     ILoginCodeIssuer loginCodeIssuer,

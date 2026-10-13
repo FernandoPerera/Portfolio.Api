@@ -12,7 +12,7 @@ namespace Portfolio.Api.Auth.Login.Infrastructure.Controllers;
 [ApiController]
 [AllowAnonymous]
 [Route("v1/auth/exchange")]
-public class AuthExchangeController(
+public class LoginCodeExchangeController(
     LoginCodeExchanger exchanger,
     IErrorResponseMapper errorResponseMapper
 ) : ControllerBase

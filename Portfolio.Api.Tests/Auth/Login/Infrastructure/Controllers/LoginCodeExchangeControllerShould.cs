@@ -17,15 +17,15 @@ using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Login.Infrastructure.Controllers;
 
-public class AuthExchangeControllerShould
+public class LoginCodeExchangeControllerShould
 {
     private static readonly DateTimeOffset Now = new(2026, 1, 2, 10, 0, 0, TimeSpan.Zero);
 
     private readonly MemoryCache _cache = new(new MemoryCacheOptions());
     private readonly IRefreshTokenSaverRepository _refreshTokenSaver = Substitute.For<IRefreshTokenSaverRepository>();
-    private readonly AuthExchangeController _controller;
+    private readonly LoginCodeExchangeController _controller;
 
-    public AuthExchangeControllerShould()
+    public LoginCodeExchangeControllerShould()
     {
         var timeProvider = new FixedTimeProvider(Now);
         var jwtOptions = new JwtOptions
@@ -41,7 +41,7 @@ public class AuthExchangeControllerShould
             new RandomRefreshTokenIssuer(),
             _refreshTokenSaver
         );
-        _controller = new AuthExchangeController(exchanger, new ProblemDetailsMapper());
+        _controller = new LoginCodeExchangeController(exchanger, new ProblemDetailsMapper());
         _refreshTokenSaver.Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>()).Returns(LanguageExt.Unit.Default);
     }
 

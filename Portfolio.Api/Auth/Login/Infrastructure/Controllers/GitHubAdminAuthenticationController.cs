@@ -13,8 +13,8 @@ namespace Portfolio.Api.Auth.Login.Infrastructure.Controllers;
 [ApiController]
 [AllowAnonymous]
 [Route("v1/auth/github")]
-public class GitHubCallbackController(
-    GitHubLoginCompleter completer,
+public class GitHubAdminAuthenticationController(
+    GitHubAdminAuthenticator authenticator,
     AuthOptions authOptions,
     IErrorResponseMapper errorResponseMapper
 ) : ControllerBase
@@ -26,7 +26,7 @@ public class GitHubCallbackController(
         Response.Cookies.Delete(OAuthStateCookie.Name, new CookieOptions { Path = OAuthStateCookie.Path });
 
         return await (
-            from loginCode in completer.Execute(new GitHubCallbackInfo(code ?? string.Empty, state ?? string.Empty, expectedState)).ToAsync()
+            from loginCode in authenticator.Execute(new GitHubCallbackInfo(code ?? string.Empty, state ?? string.Empty, expectedState)).ToAsync()
             select QueryHelpers.AddQueryString(authOptions.FrontendRedirectUri, "code", loginCode.ToString())
         ).Match<ActionResult>(
             redirectUrl => Redirect(redirectUrl),
