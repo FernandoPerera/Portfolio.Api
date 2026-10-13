@@ -81,7 +81,6 @@ public static class AuthExtensions
     {
         services.AddMemoryCache();
         services.AddSingleton(TimeProvider.System);
-        services.AddSingleton<ICredentialsVerifier, ConfigurationCredentialsVerifier>();
         services.AddSingleton<IAdminAuthorizer, ConfigurationAdminAuthorizer>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddSingleton<IRefreshTokenIssuer, RandomRefreshTokenIssuer>();
@@ -99,7 +98,6 @@ public static class AuthExtensions
 
     private static void AddAuthUseCases(this IServiceCollection services)
     {
-        services.AddScoped<Authenticator>();
         services.AddScoped<TokenRefresher>();
         services.AddScoped<GitHubLoginStarter>();
         services.AddScoped<GitHubLoginCompleter>();
