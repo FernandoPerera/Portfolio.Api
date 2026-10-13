@@ -24,9 +24,14 @@ public class InMemoryLoginCodeSaverAdapterShould
     {
         var loginCode = LoginCodeBuilder.Build("login-code");
 
-        _saver.Save(loginCode).ShouldBeUnit();
-
-        _cache.Get<DateTimeOffset>(LoginCodeHasher.Hash(loginCode))
-            .ShouldBe(Now.Add(InMemoryLoginCodeSaverAdapter.Lifetime));
+        _saver.Save(loginCode).Match(
+            unit =>
+            {
+                unit.ShouldBeUnit();
+                _cache.Get<DateTimeOffset>(LoginCodeHasher.Hash(loginCode))
+                    .ShouldBe(Now.Add(InMemoryLoginCodeSaverAdapter.Lifetime));
+            },
+            error => error.ShouldBeNull()
+        );
     }
 }

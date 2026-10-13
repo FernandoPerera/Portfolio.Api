@@ -1,4 +1,5 @@
 using LanguageExt;
+using LanguageExt.Common;
 using Microsoft.Extensions.Caching.Memory;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
@@ -12,7 +13,7 @@ public class InMemoryLoginCodeSaverAdapter(
 {
     public static readonly TimeSpan Lifetime = TimeSpan.FromSeconds(60);
 
-    public Unit Save(LoginCode loginCode)
+    public Either<Error, Unit> Save(LoginCode loginCode)
     {
         cache.Set(LoginCodeHasher.Hash(loginCode), timeProvider.GetUtcNow().Add(Lifetime), Lifetime);
 
