@@ -86,6 +86,7 @@ public static class AuthExtensions
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddSingleton<IRefreshTokenIssuer, RandomRefreshTokenIssuer>();
         services.AddSingleton<ILoginCodeIssuer, RandomLoginCodeIssuer>();
+        services.AddSingleton<IAdminUsernameProvider, ConfigurationAdminUsernameProvider>();
         services.AddSingleton<IOAuthStateIssuer, RandomOAuthStateIssuer>();
         services.AddSingleton<IAuthorizationUrlBuilder, GitHubAuthorizationUrlBuilder>();
         services.AddHttpClient(GitHubIdentityProvider.ClientName);
