@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using LanguageExt;
 using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
@@ -21,6 +23,16 @@ public class OAuthState
         }
 
         return new OAuthState(state.Trim());
+    }
+
+    public Either<Error, Unit> EnsureMatches(OAuthState expected)
+    {
+        var matches = CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(_state),
+            Encoding.UTF8.GetBytes(expected._state)
+        );
+
+        return matches ? Unit.Default : Error.New(new UnauthorizedException("Invalid OAuth state"));
     }
 
     public override string ToString() => _state;
