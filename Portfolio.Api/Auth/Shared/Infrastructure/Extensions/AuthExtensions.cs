@@ -72,6 +72,7 @@ public static class AuthExtensions
 
     private static void AddAuthAdapters(this IServiceCollection services)
     {
+        services.AddMemoryCache();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<ICredentialsVerifier, ConfigurationCredentialsVerifier>();
         services.AddSingleton<IAdminAuthorizer, ConfigurationAdminAuthorizer>();
@@ -84,6 +85,7 @@ public static class AuthExtensions
         services.AddScoped<IExternalIdentityProvider, GitHubIdentityProvider>();
         services.AddScoped<IRefreshTokenSaverRepository, EntityFrameworkRefreshTokenSaverAdapter>();
         services.AddScoped<IRefreshTokenConsumerRepository, EntityFrameworkRefreshTokenConsumerAdapter>();
+        services.AddSingleton<ILoginCodeSaverRepository, InMemoryLoginCodeSaverAdapter>();
     }
 
     private static void AddAuthUseCases(this IServiceCollection services)
