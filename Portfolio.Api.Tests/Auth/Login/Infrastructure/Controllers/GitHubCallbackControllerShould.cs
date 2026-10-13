@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using NSubstitute;
 using Portfolio.Api.Auth.Login.Application.UseCases;
-using Portfolio.Api.Auth.Login.Infrastructure;
+using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Auth.Login.Infrastructure.Controllers;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;

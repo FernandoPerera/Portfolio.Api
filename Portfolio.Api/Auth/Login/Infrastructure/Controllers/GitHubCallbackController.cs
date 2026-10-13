@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Portfolio.Api.Auth.Login.Application.Dtos;
 using Portfolio.Api.Auth.Login.Application.UseCases;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
+using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 
 namespace Portfolio.Api.Auth.Login.Infrastructure.Controllers;

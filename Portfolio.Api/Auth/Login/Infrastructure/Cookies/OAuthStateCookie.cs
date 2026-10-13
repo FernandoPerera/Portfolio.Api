@@ -1,4 +1,4 @@
-namespace Portfolio.Api.Auth.Login.Infrastructure;
+namespace Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 
 public static class OAuthStateCookie
 {

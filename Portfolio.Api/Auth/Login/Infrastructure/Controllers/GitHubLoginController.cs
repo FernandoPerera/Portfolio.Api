@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Auth.Login.Application.UseCases;
+using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 
 namespace Portfolio.Api.Auth.Login.Infrastructure.Controllers;
