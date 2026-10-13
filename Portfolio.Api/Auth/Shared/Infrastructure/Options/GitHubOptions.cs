@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Portfolio.Api.Auth.Shared.Infrastructure.Options;
 
 public record GitHubOptions
@@ -9,6 +11,8 @@ public record GitHubOptions
     public string ClientSecret { get; init; } = string.Empty;
 
     public string RedirectUri { get; init; } = string.Empty;
+
+    public string AuthorizeEndpoint { get; init; } = string.Empty;
 
     public string TokenEndpoint { get; init; } = string.Empty;
 
