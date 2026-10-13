@@ -2,7 +2,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using LanguageExt;
 using LanguageExt.Common;
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
@@ -10,7 +9,7 @@ using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
-public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, IOptions<GitHubOptions> gitHubOptions) : IExternalIdentityProvider
+public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, GitHubOptions options) : IExternalIdentityProvider
 {
     public const string ClientName = "github";
 
@@ -34,7 +33,6 @@ public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, IOptio
 
     private async Task<string?> ExchangeCode(AuthorizationCode code)
     {
-        var options = gitHubOptions.Value;
         using var request = new HttpRequestMessage(HttpMethod.Post, options.TokenEndpoint)
         {
             Content = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -60,7 +58,6 @@ public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, IOptio
 
     private async Task<Either<Error, ExternalUserId>> FindUserId(string accessToken)
     {
-        var options = gitHubOptions.Value;
         using var request = new HttpRequestMessage(HttpMethod.Get, options.UserEndpoint);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         request.Headers.UserAgent.ParseAdd(options.UserAgent);

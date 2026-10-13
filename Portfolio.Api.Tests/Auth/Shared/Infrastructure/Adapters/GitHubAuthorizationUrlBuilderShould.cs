@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
@@ -32,5 +31,5 @@ public class GitHubAuthorizationUrlBuilderShould
         query["state"].ToString().ShouldBe(state);
     }
 
-    private static GitHubAuthorizationUrlBuilder CreateBuilder(GitHubOptions options) => new(Options.Create(options));
+    private static GitHubAuthorizationUrlBuilder CreateBuilder(GitHubOptions options) => new(options);
 }

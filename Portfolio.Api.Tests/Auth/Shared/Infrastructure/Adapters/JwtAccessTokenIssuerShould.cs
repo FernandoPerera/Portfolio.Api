@@ -1,5 +1,4 @@
 using System.Text;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
@@ -26,7 +25,7 @@ public class JwtAccessTokenIssuerShould
     [Fact]
     public async Task IssueASignedTokenForTheAdmin()
     {
-        var issuer = new JwtAccessTokenIssuer(Options.Create(_options), new FixedTimeProvider(Now));
+        var issuer = new JwtAccessTokenIssuer(_options, new FixedTimeProvider(Now));
 
         var result = issuer.Issue(AdminUsernameBuilder.Build("admin"));
 

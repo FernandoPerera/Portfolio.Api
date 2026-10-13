@@ -2,7 +2,6 @@ using System.Security.Claims;
 using System.Text;
 using LanguageExt;
 using LanguageExt.Common;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Api.Auth.Shared.Domain.Models;
@@ -13,13 +12,12 @@ using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
-public class JwtAccessTokenIssuer(IOptions<JwtOptions> jwtOptions, TimeProvider timeProvider) : IAccessTokenIssuer
+public class JwtAccessTokenIssuer(JwtOptions options, TimeProvider timeProvider) : IAccessTokenIssuer
 {
     public Either<Error, AccessToken> Issue(AdminUsername username)
     {
         try
         {
-            var options = jwtOptions.Value;
             var now = timeProvider.GetUtcNow().UtcDateTime;
             var descriptor = new SecurityTokenDescriptor
             {

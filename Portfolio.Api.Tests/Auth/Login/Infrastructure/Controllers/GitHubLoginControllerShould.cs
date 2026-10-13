@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Login.Application.UseCases;
 using Portfolio.Api.Auth.Login.Infrastructure;
 using Portfolio.Api.Auth.Login.Infrastructure.Controllers;
@@ -41,7 +40,7 @@ public class GitHubLoginControllerShould
     {
         var starter = new GitHubLoginStarter(
             new RandomOAuthStateIssuer(),
-            new GitHubAuthorizationUrlBuilder(Options.Create(options))
+            new GitHubAuthorizationUrlBuilder(options)
         );
 
         return new GitHubLoginController(starter, new ProblemDetailsMapper())

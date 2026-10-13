@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
 using Portfolio.Api.Shared.Domain.Errors;
@@ -41,5 +40,5 @@ public class ConfigurationAdminAuthorizerShould
     }
 
     private static ConfigurationAdminAuthorizer CreateAuthorizer(string configuredAdminId) =>
-        new(Options.Create(new AdminOptions { GitHubUserId = configuredAdminId }));
+        new(new AdminOptions { GitHubUserId = configuredAdminId });
 }

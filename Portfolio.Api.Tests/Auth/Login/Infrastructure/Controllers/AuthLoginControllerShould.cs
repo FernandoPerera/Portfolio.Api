@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Login.Application.UseCases;
 using Portfolio.Api.Auth.Login.Infrastructure.Controllers;
 using Portfolio.Api.Auth.Login.Infrastructure.Dtos;
@@ -24,17 +23,17 @@ public class AuthLoginControllerShould
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-        var jwtOptions = Options.Create(new JwtOptions
+        var jwtOptions = new JwtOptions
         {
             Issuer = "portfolio-api",
             Audience = "portfolio-clients",
             SigningKey = "a-signing-key-with-at-least-32-bytes!"
-        });
-        var adminOptions = Options.Create(new AdminOptions
+        };
+        var adminOptions = new AdminOptions
         {
             Username = "admin",
             PasswordHash = Pbkdf2PasswordHasher.Hash("secret")
-        });
+        };
 
         _appDbContext = new AppDbContext(options);
         var authenticator = new Authenticator(

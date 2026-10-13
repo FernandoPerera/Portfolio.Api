@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
@@ -106,7 +105,7 @@ public class GitHubIdentityProviderShould
         var httpClientFactory = Substitute.For<IHttpClientFactory>();
         httpClientFactory.CreateClient(GitHubIdentityProvider.ClientName).Returns(_ => new HttpClient(handler));
 
-        return new GitHubIdentityProvider(httpClientFactory, Options.Create(_options));
+        return new GitHubIdentityProvider(httpClientFactory, _options);
     }
 
     private void AssertCodeWasExchanged((HttpRequestMessage Request, string Body) tokenRequest, string code)

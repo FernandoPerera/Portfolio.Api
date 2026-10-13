@@ -26,20 +26,22 @@ public static class AuthExtensions
     private static void AddAuthOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
+        services.AddSingleton(provider => provider.GetRequiredService<IOptions<JwtOptions>>().Value);
         services.AddOptions<AdminOptions>().Bind(configuration.GetSection(AdminOptions.SectionName));
+        services.AddSingleton(provider => provider.GetRequiredService<IOptions<AdminOptions>>().Value);
         services.AddOptions<GitHubOptions>()
             .Bind(configuration.GetSection(GitHubOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+        services.AddSingleton(provider => provider.GetRequiredService<IOptions<GitHubOptions>>().Value);
     }
 
     private static void AddJwtBearerAuthentication(this IServiceCollection services)
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
         services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-            .Configure<IOptions<JwtOptions>>((bearerOptions, jwtOptions) =>
+            .Configure<JwtOptions>((bearerOptions, jwt) =>
             {
-                var jwt = jwtOptions.Value;
                 bearerOptions.MapInboundClaims = false;
                 bearerOptions.Events = new ProblemDetailsJwtBearerEvents();
                 bearerOptions.TokenValidationParameters = new TokenValidationParameters

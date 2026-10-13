@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
@@ -15,7 +14,7 @@ public class ConfigurationCredentialsVerifierShould
     public ConfigurationCredentialsVerifierShould()
     {
         var admin = new AdminOptions { Username = "admin", PasswordHash = Pbkdf2PasswordHasher.Hash("secret") };
-        _verifier = new ConfigurationCredentialsVerifier(Options.Create(admin));
+        _verifier = new ConfigurationCredentialsVerifier(admin);
     }
 
     [Fact]
