@@ -1,238 +1,95 @@
-# Authentication & Authorization
+# Autenticación y autorización
 
-How the API decides who you are (authentication) and what you may do (authorization).
-
-The diagrams are written in Mermaid and render on GitHub and in the IDE preview.
+Cómo decide la API quién eres (autenticación) y qué puedes hacer (autorización).
 
 ---
-## 1. The Big Picture
+## 0. Cómo funciona este tipo de autenticación
 
-Only **one person** (the owner) can change the portfolio. Everyone else can only read the public data.
+Esta API no guarda contraseñas. Delega el login en un proveedor externo con el estándar **OAuth 2.0** (flujo *Authorization Code*), el mismo mecanismo de los botones "Entrar con Google" o "Entrar con GitHub".
 
-- **Login** is delegated to GitHub (OAuth 2.0, Authorization Code flow). The API never sees a GitHub password.
-- **Access control** is done by the API with its **own JWT**. GitHub is only used to prove who you are once.
-- The owner is recognised by the **immutable numeric GitHub user id**, never by username or email (those can change or be reused).
+A alto nivel, siempre son los mismos cuatro pasos:
 
-```mermaid
-flowchart LR
-    Visitor([Visitor]) -- "GET profile / timeline" --> API
-    Owner([Owner]) -- "1. login with GitHub" --> Web
-    Web[Web frontend] -- "2. exchange code" --> API[Portfolio API]
-    API -- "3. who is this user?" --> GitHub[(GitHub)]
-    Owner -- "4. writes with JWT" --> API
-```
+1. **Redirección:** la aplicación manda al usuario al proveedor (aquí, **GitHub**).
+2. **Identificación:** el usuario inicia sesión y acepta *en el sitio del proveedor*. La aplicación nunca ve su contraseña.
+3. **Vuelta con un código:** el proveedor devuelve al usuario a la aplicación con un código temporal.
+4. **Verificación:** la aplicación, en su servidor y con su `client_secret`, cambia ese código por la identidad del usuario.
 
-| Who | What they can do | How |
+Aquí usamos **GitHub** como proveedor. GitHub solo nos dice *quién es* el usuario (su id numérico); **la API decide si ese usuario es el dueño** y, si lo es, emite su **propio JWT** para autorizar las peticiones siguientes.
+
+---
+## 1. Visión general
+
+Solo **una persona** (el dueño) puede modificar el portfolio. Los demás solo leen los datos públicos.
+
+- **El login** se delega en GitHub (OAuth 2.0). La API nunca ve tu contraseña de GitHub.
+- **El control de acceso** lo hace la API con su **propio JWT**. GitHub se usa una sola vez, para demostrar quién eres.
+- El dueño se reconoce por el **id numérico e inmutable de GitHub**, no por el nombre ni el email.
+
+| Quién | Qué puede hacer | Cómo |
 |---|---|---|
-| Visitor | Read the profile and the timeline | No token (`[AllowAnonymous]`) |
-| Owner | Everything else (create, update, delete) | `Authorization: Bearer <access token>` |
-| Anyone else | Nothing beyond reading | GitHub login succeeds, the API answers 403 |
+| Visitante | Leer el perfil y el timeline | Sin token (`[AllowAnonymous]`) |
+| Dueño | Todo lo demás (crear, actualizar, borrar) | `Authorization: Bearer <access token>` |
+| Otro usuario de GitHub | Solo leer | El login funciona, pero la API responde 403 |
 
 ---
-## 2. The Login Flow (step by step)
+## 2. Los cuatro controladores y por qué existe cada uno
 
-Five requests, three actors: the browser, the API and GitHub.
+Un login con GitHub no cabe en una sola petición: el usuario tiene que ir a GitHub, volver, y después la web tiene que recoger el token. Por eso hay **un controlador por cada tramo del viaje**.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as Owner (browser)
-    participant W as Web frontend
-    participant A as Portfolio API
+    actor N as Navegador
+    participant W as Tu web
+    participant L as GitHubLoginController
     participant G as GitHub
+    participant CB as GitHubCallbackController
+    participant EX as AuthExchangeController
 
-    U->>W: Click "Login with GitHub"
-    W->>A: Navigate to GET /v1/auth/github/login
-    Note over A: Generate random state<br/>Build GitHub authorize URL
-    A-->>U: 302 to GitHub + Set-Cookie oauth_state
-    U->>G: Authorize the app
-    G-->>U: 302 to /v1/auth/github/callback?code=...&state=...
-    U->>A: GET /v1/auth/github/callback (cookie oauth_state sent)
-    Note over A: 1. state in URL == state in cookie?
-    A->>G: POST access_token (code + client_id + client_secret)
-    G-->>A: GitHub access token
-    A->>G: GET /user (Bearer token)
-    G-->>A: id = 123456
-    Note over A: 2. id == Admin:GitHubUserId?<br/>3. Issue one-time login code (60 s)
-    A-->>U: 302 to Auth:FrontendRedirectUri?code=LOGIN_CODE
-    U->>W: Web loads with ?code=LOGIN_CODE
-    W->>A: POST /v1/auth/exchange { code }
-    Note over A: Consume code (single use)<br/>Issue JWT + refresh token
-    A-->>W: { accessToken, refreshToken, ... }
+    N->>W: Pulsa "Entrar con GitHub"
+    W->>L: El navegador va a GET /v1/auth/github/login
+    L-->>N: 302 a GitHub + cookie oauth_state
+    N->>G: Inicias sesión y aceptas
+    G-->>N: 302 a GitHub:RedirectUri (el callback)
+    N->>CB: GET /v1/auth/github/callback?code=CODIGO_DE_GITHUB&state=...
+    Note over CB: Comprueba la cookie, pregunta a GitHub<br/>quién eres y que eres el dueño
+    CB-->>N: 302 a tu web con ?code=LOGIN_CODE
+    N->>W: Tu web carga con el LOGIN_CODE en su URL
+    W->>EX: POST /v1/auth/exchange { code: LOGIN_CODE }
+    EX-->>W: accessToken + refreshToken
 ```
 
-### Why each piece exists
+### Qué hace cada controlador
 
-| Piece | Problem it solves |
+- **`GitHubLoginController`** (`GET v1/auth/github/login`): es la puerta de entrada. Genera un valor aleatorio (`state`), lo guarda en una cookie y redirige el navegador a GitHub. No devuelve ninguna URL a tu web: la redirección la sigue el navegador solo.
+- **`GitHubCallbackController`** (`GET v1/auth/github/callback`): es la dirección a la que GitHub devuelve al usuario cuando acepta. Comprueba la cookie, pregunta a GitHub quién es y verifica que es el dueño. Si todo va bien, redirige a tu web con un código de un solo uso (`LoginCode`). El código que trae GitHub muere aquí.
+- **`AuthExchangeController`** (`POST v1/auth/exchange`): la web le envía el `LoginCode` y recibe el `accessToken` y el `refreshToken`. Existe para que los tokens viajen en el cuerpo de una respuesta y no en una URL.
+- **`AuthRefreshController`** (`POST v1/auth/refresh`): cuando el access token caduca, la web envía el `refreshToken` y recibe un par nuevo, sin volver a pasar por GitHub.
+
+Tu web solo hace dos llamadas: navegar a `login` al principio y llamar a `exchange` al final. Lo que ocurre entre medias son redirecciones del navegador.
+
+### Los dos códigos
+
+La URL lleva un parámetro `code` en dos momentos distintos. No son lo mismo:
+
+| | Código de GitHub (`AuthorizationCode`) | Código nuestro (`LoginCode`) |
+|---|---|---|
+| Quién lo crea | GitHub | Nuestra API |
+| A dónde llega | Al callback | A tu web, y de ahí a `exchange` |
+| Dónde muere | En el callback | En `exchange` (un solo uso, 60 s) |
+
+---
+## 3. Configuración
+
+El repositorio es **público**: `appsettings.json` solo tiene claves vacías y URLs públicas. Los valores nunca se suben.
+
+| Setting | ¿Secreto? |
 |---|---|
-| `state` + `oauth_state` cookie | Prevents login CSRF: only the browser that started the login can finish it. The callback compares the `state` of the URL with the cookie (constant-time comparison) and deletes the cookie. |
-| GitHub numeric `id` | Identifies the user without trusting names or emails. |
-| `Admin:GitHubUserId` | Decides who is the owner. A valid GitHub user who is not the owner gets **403**. |
-| One-time **login code** | The API must hand the web something after the redirect. Putting the real tokens in the URL would leak them (history, logs, `Referer`). The code is useless after 60 seconds or after one use. |
-| `POST /v1/auth/exchange` | Turns the code into tokens in the response **body**, not in a URL. |
+| `Jwt:SigningKey`, `GitHub:ClientSecret`, `Admin:GitHubUserId` | **Sí** |
+| `GitHub:ClientId`, `GitHub:RedirectUri`, `Auth:FrontendRedirectUri`, `Admin:Username`, `Jwt:Issuer`, `Jwt:Audience` | No, pero dependen del entorno |
+| `GitHub:AuthorizeEndpoint`, `TokenEndpoint`, `UserEndpoint`, `UserAgent` | No, son URLs públicas y se suben |
 
-### Where the failures end up
-
-```mermaid
-flowchart TD
-    Start([GET /callback]) --> S{state matches<br/>the cookie?}
-    S -- no --> E401[401 Invalid OAuth state]
-    S -- yes --> I{GitHub accepts<br/>the code?}
-    I -- no --> E401b[401]
-    I -- GitHub down --> E503[503]
-    I -- yes --> A{id is the<br/>configured admin?}
-    A -- no --> E403[403 not allowed]
-    A -- yes --> OK[Login code issued<br/>302 to the web]
-```
-
----
-## 3. The Tokens
-
-After the exchange the web holds two tokens.
-
-| Token | Lifetime | Used for | Stored in the API |
-|---|---|---|---|
-| **Access token** (JWT) | 15 minutes | Sent on every write request | Not stored (it is signed) |
-| **Refresh token** | 7 days | Get a new access token without logging in again | Only its SHA-256 hash, in the database |
-
-The access token is signed with `Jwt:SigningKey` (HMAC-SHA256) and carries:
-
-| Claim | Value | Meaning |
-|---|---|---|
-| `sub` | `Admin:Username` | Who the token belongs to |
-| `role` | `admin` | What the authorization policy checks |
-| `iss`, `aud`, `exp` | from settings / now + 15 min | Validated on every request |
-
-### Refresh with rotation
-
-Each refresh token is **single use**. Using it returns a new pair and invalidates the old one.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant W as Web frontend
-    participant A as Portfolio API
-
-    W->>A: POST /v1/auth/refresh { refreshToken: R1 }
-    Note over A: R1 valid and not used yet?<br/>Mark R1 as consumed
-    A-->>W: new accessToken + refreshToken R2
-
-    W->>A: POST /v1/auth/refresh { refreshToken: R1 } (reused!)
-    Note over A: R1 was already consumed<br/>Revoke the WHOLE session
-    A-->>W: 401
-    W->>A: POST /v1/auth/refresh { refreshToken: R2 }
-    A-->>W: 401 (revoked)
-```
-
-If a refresh token is used twice, someone probably copied it. The API deletes every refresh token of that owner, which forces a new login.
-
----
-## 4. Authorization (who may call what)
-
-```mermaid
-flowchart TD
-    Req([Incoming request]) --> AA{Endpoint has<br/>AllowAnonymous?}
-    AA -- yes --> Run[Run the endpoint]
-    AA -- no --> T{Valid JWT?<br/>signature, issuer,<br/>audience, expiry}
-    T -- no --> U401[401 Unauthorized]
-    T -- yes --> R{Claim role = admin?}
-    R -- no --> F403[403 Forbidden]
-    R -- yes --> Run
-```
-
-- The **`Admin` policy** (`role = admin`) is the **default and the fallback** policy. Any endpoint without an explicit attribute requires the owner. Forgetting to protect a new endpoint is not possible, it is protected by default.
-- Public endpoints opt out explicitly with `[AllowAnonymous]`: the profile finder, the timeline finder and the whole `v1/auth/*` family.
-
----
-## 5. Endpoints
-
-| Endpoint | Access | Purpose |
-|---|---|---|
-| `GET v1/auth/github/login` | Anonymous | Start the login: sets the `oauth_state` cookie and redirects to GitHub |
-| `GET v1/auth/github/callback` | Anonymous | GitHub returns here: validates, authorizes the owner, redirects to the web with a login code |
-| `POST v1/auth/exchange` | Anonymous | `{ "code": "..." }` returns the access and refresh tokens |
-| `POST v1/auth/refresh` | Anonymous | `{ "refreshToken": "..." }` returns a new pair |
-| Profile and timeline reads | Anonymous | Public portfolio data |
-| Everything else | Owner only | Writes and the rest of the reads |
-
-Browsers must **navigate** to `login` (a link or `window.location`); a `fetch` cannot follow the cross-site redirect nor keep the cookie.
-
----
-## 6. Code Map
-
-Where each concept lives, following the hexagonal layout (`Domain` has no framework dependencies).
-
-```mermaid
-flowchart LR
-    subgraph Infrastructure
-        C1[GitHubLoginController]
-        C2[GitHubCallbackController]
-        C3[AuthExchangeController]
-        C4[AuthRefreshController]
-        AD1[GitHubAuthorizationUrlBuilder]
-        AD2[GitHubIdentityProvider]
-        AD3[ConfigurationAdminAuthorizer]
-        AD4[InMemoryLoginCode adapters]
-        AD5[JwtAccessTokenIssuer]
-        AD6[EntityFramework refresh token adapters]
-    end
-    subgraph Application
-        UC1[GitHubLoginStarter]
-        UC2[GitHubLoginCompleter]
-        UC3[LoginCodeExchanger]
-        UC4[TokenRefresher]
-    end
-    subgraph Domain
-        P[Ports + Value objects<br/>OAuthState, LoginCode,<br/>RefreshToken, ExternalUserId...]
-    end
-
-    C1 --> UC1
-    C2 --> UC2
-    C3 --> UC3
-    C4 --> UC4
-    UC1 & UC2 & UC3 & UC4 --> P
-    AD1 & AD2 & AD3 & AD4 & AD5 & AD6 -. implement .-> P
-```
-
-| Use case | Ports it uses |
-|---|---|
-| `GitHubLoginStarter` | `IOAuthStateIssuer`, `IAuthorizationUrlBuilder` |
-| `GitHubLoginCompleter` | `IExternalIdentityProvider`, `IAdminAuthorizer`, `ILoginCodeIssuer`, `ILoginCodeSaverRepository` |
-| `LoginCodeExchanger` | `ILoginCodeConsumerRepository`, `IAdminUsernameProvider`, `IAccessTokenIssuer`, `IRefreshTokenIssuer`, `IRefreshTokenSaverRepository` |
-| `TokenRefresher` | `IRefreshTokenConsumerRepository`, `IAccessTokenIssuer`, `IRefreshTokenIssuer`, `IRefreshTokenSaverRepository` |
-
-Controllers only translate HTTP (cookies, redirects, status codes). The rules (state check, owner check, single use) live in the domain models, ports and use cases.
-
----
-## 7. Configuration
-
-The repository is **public**: no secret is ever committed. `appsettings.json` only holds empty keys and public URLs.
-
-| Setting | Secret? | Purpose |
-|---|---|---|
-| `Jwt:SigningKey` | **Yes** | Signs the access tokens |
-| `Jwt:Issuer`, `Jwt:Audience` | No | Validated on every request |
-| `GitHub:ClientId` | No (but environment specific) | Identifies the OAuth App |
-| `GitHub:ClientSecret` | **Yes** | Proves the API is the OAuth App when exchanging the GitHub code |
-| `GitHub:RedirectUri` | No | The callback URL registered in the OAuth App |
-| `GitHub:AuthorizeEndpoint`, `TokenEndpoint`, `UserEndpoint`, `UserAgent` | No | Public GitHub URLs, committed |
-| `Auth:FrontendRedirectUri` | No | Where the API sends the browser with `?code=` |
-| `Admin:Username` | No | The `sub` claim of the tokens |
-| `Admin:GitHubUserId` | **Yes** (do not publish it) | The numeric id of the owner |
-
-Where to put them:
-
-- **Local:** `dotnet user-secrets set "GitHub:ClientSecret" "<value>" --project Portfolio.Api`
-- **Production:** environment variables, with `__` as the separator (`GitHub__ClientSecret`).
-
-The `GitHub` and `Auth` settings are validated at startup: the application refuses to start if one is missing.
-
----
-## 8. Known Limitations
-
-- **Login codes live in memory** (60 s). A restart in that window, or a second API instance, invalidates the code and the login must be repeated. Revisit it if the API ever runs on several instances.
-- **The database is in memory** (EF InMemory): refresh tokens are lost when the API restarts, so the owner has to log in again.
-- **Callback errors are shown as JSON** in the browser instead of redirecting to the web with an error.
-- **`Secure` cookie flag** follows `Request.IsHttps`. Behind a reverse proxy that terminates TLS, forwarded headers must be configured.
-- **No logout / token revocation endpoint** yet, and no rate limiting on the auth endpoints.
-- **`Admin:GitHubUserId` is not validated at startup**: when empty, nobody can log in.
+- **En local:** `dotnet user-secrets set "GitHub:ClientSecret" "<valor>" --project Portfolio.Api`
+- **En producción:** variables de entorno con `__` como separador (`GitHub__ClientSecret`).
+- Los settings de `GitHub` y `Auth` se validan al arrancar: sin ellos la API no arranca.
+- `GitHub:RedirectUri` debe ser exactamente la dirección del callback registrada en la OAuth App de GitHub.
