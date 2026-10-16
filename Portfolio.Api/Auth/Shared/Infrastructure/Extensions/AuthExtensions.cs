@@ -84,6 +84,7 @@ public static class AuthExtensions
         services.AddSingleton<IAdminAuthorizer, ConfigurationAdminAuthorizer>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddSingleton<IRefreshTokenIssuer, RandomRefreshTokenIssuer>();
+        services.AddSingleton<IRefreshTokenHasher, Sha256RefreshTokenHasher>();
         services.AddSingleton<ILoginCodeIssuer, RandomLoginCodeIssuer>();
         services.AddSingleton<IAdminUsernameProvider, ConfigurationAdminUsernameProvider>();
         services.AddSingleton<IOAuthStateIssuer, RandomOAuthStateIssuer>();
@@ -91,7 +92,10 @@ public static class AuthExtensions
         services.AddHttpClient(GitHubIdentityProvider.ClientName);
         services.AddScoped<IExternalIdentityProvider, GitHubIdentityProvider>();
         services.AddScoped<IRefreshTokenSaverRepository, EntityFrameworkRefreshTokenSaverAdapter>();
+        services.AddScoped<IRefreshTokenFinderRepository, EntityFrameworkRefreshTokenFinderAdapter>();
         services.AddScoped<IRefreshTokenConsumerRepository, EntityFrameworkRefreshTokenConsumerAdapter>();
+        services.AddScoped<IRefreshTokenRevokerRepository, EntityFrameworkRefreshTokenRevokerAdapter>();
+        services.AddScoped<IExpiredRefreshTokenCleanerRepository, EntityFrameworkExpiredRefreshTokenCleanerAdapter>();
         services.AddSingleton<ILoginCodeSaverRepository, InMemoryLoginCodeSaverAdapter>();
         services.AddSingleton<ILoginCodeConsumerRepository, InMemoryLoginCodeConsumerAdapter>();
     }

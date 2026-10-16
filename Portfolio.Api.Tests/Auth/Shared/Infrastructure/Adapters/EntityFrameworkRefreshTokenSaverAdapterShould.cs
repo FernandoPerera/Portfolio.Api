@@ -30,6 +30,7 @@ public class EntityFrameworkRefreshTokenSaverAdapterShould
         _saver = new EntityFrameworkRefreshTokenSaverAdapter(
             _appDbContext,
             _idGenerator,
+            new Sha256RefreshTokenHasher(),
             new JwtOptions { RefreshTokenDays = 7 },
             new FixedTimeProvider(Now)
         );

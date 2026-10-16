@@ -79,7 +79,37 @@ The URL carries a `code` parameter at two different moments. They are not the sa
 | Where it dies | At the callback | At `exchange` (single use, 60 s) |
 
 ---
-## 3. Configuration
+## 3. Refresh Tokens
+
+The access token is a short-lived JWT and nothing is stored about it. The refresh token is the opposite: it lives for days, so the API stores it and can reject it or revoke it.
+
+### What Is Stored
+
+Only the **SHA-256 hash** of the refresh token is stored, never the token itself, together with its owner, its expiration and the moment it was consumed. The token is random and long, so a plain hash is enough: nobody can guess it from the table.
+
+### Rotation: One Token, One Use
+
+Every refresh **consumes** the token it receives and returns a new one. The rules live in the domain model `StoredRefreshToken`, not in the database adapter:
+
+| The token that arrives | Result |
+|---|---|
+| Unknown | 401 |
+| Valid and unused | It is consumed and a new pair is issued |
+| Expired | 401 (the session is kept) |
+| Already consumed | 401 and **the whole session is revoked** |
+
+An already consumed token that comes back means that someone has a copy of it: either the owner or an attacker is using an old token. The API cannot tell which one, so it removes every refresh token of the owner and forces a new login.
+
+### Two Requests at the Same Time
+
+Two refreshes with the same token can arrive together. The database decides who goes first: `ConsumedAt` is a **concurrency token**, so the update only succeeds if the token was still unconsumed when it was read. The loser is treated as a reuse, with the same consequences.
+
+### Cleaning the Table
+
+There is no background job, because the app may be asleep. Every login and every refresh removes the expired tokens right after saving the new one. Consumed tokens that have not expired are kept, since reuse detection needs them. The cleaning is best effort: if it fails, the login or the refresh still succeeds.
+
+---
+## 4. Configuration
 
 The repository is **public**: `appsettings.json` only has empty keys and public URLs. The values are never committed.
 

@@ -17,5 +17,6 @@ public class RefreshTokenEntity
 
     public DateTimeOffset ExpiresAt { get; set; }
 
+    [ConcurrencyCheck]
     public DateTimeOffset? ConsumedAt { get; set; }
 }

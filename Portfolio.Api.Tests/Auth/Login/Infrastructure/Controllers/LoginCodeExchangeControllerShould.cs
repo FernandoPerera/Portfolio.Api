@@ -23,6 +23,7 @@ public class LoginCodeExchangeControllerShould
 
     private readonly MemoryCache _cache = new(new MemoryCacheOptions());
     private readonly IRefreshTokenSaverRepository _refreshTokenSaver = Substitute.For<IRefreshTokenSaverRepository>();
+    private readonly IExpiredRefreshTokenCleanerRepository _expiredRefreshTokenCleaner = Substitute.For<IExpiredRefreshTokenCleanerRepository>();
     private readonly LoginCodeExchangeController _controller;
 
     public LoginCodeExchangeControllerShould()
@@ -39,10 +40,12 @@ public class LoginCodeExchangeControllerShould
             new ConfigurationAdminUsernameProvider(new AdminOptions { Username = "admin" }),
             new JwtAccessTokenIssuer(jwtOptions, timeProvider),
             new RandomRefreshTokenIssuer(),
-            _refreshTokenSaver
+            _refreshTokenSaver,
+            _expiredRefreshTokenCleaner
         );
         _controller = new LoginCodeExchangeController(exchanger, new ProblemDetailsMapper());
         _refreshTokenSaver.Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>()).Returns(LanguageExt.Unit.Default);
+        _expiredRefreshTokenCleaner.Clean().Returns(LanguageExt.Unit.Default);
     }
 
     [Fact]

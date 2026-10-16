@@ -13,20 +13,37 @@ namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 public class EntityFrameworkRefreshTokenSaverAdapter(
     AppDbContext dbContext,
     IGeneratorIdentifier generatorIdentifier,
+    IRefreshTokenHasher refreshTokenHasher,
     JwtOptions jwtOptions,
     TimeProvider timeProvider
 ) : IRefreshTokenSaverRepository
 {
     public async Task<Either<Error, Unit>> Save(RefreshToken refreshToken, AdminUsername owner)
     {
+        return await (
+            from tokenHash in refreshTokenHasher.Hash(refreshToken).ToAsync()
+            from stored in StoredRefreshToken.Create(
+                generatorIdentifier.Generate(),
+                tokenHash.ToString(),
+                owner.ToString(),
+                timeProvider.GetUtcNow().AddDays(jwtOptions.RefreshTokenDays)
+            ).ToAsync()
+            from _ in Persist(stored).ToAsync()
+            select Unit.Default
+        );
+    }
+
+    private async Task<Either<Error, Unit>> Persist(StoredRefreshToken stored)
+    {
         try
         {
             var entity = new RefreshTokenEntity
             {
-                Id = generatorIdentifier.Generate(),
-                TokenHash = RefreshTokenHasher.Hash(refreshToken),
-                Owner = owner.ToString(),
-                ExpiresAt = timeProvider.GetUtcNow().AddDays(jwtOptions.RefreshTokenDays)
+                Id = stored.GetId(),
+                TokenHash = stored.GetTokenHash(),
+                Owner = stored.GetOwner(),
+                ExpiresAt = stored.GetExpiresAt(),
+                ConsumedAt = stored.GetConsumedAt()
             };
 
             await dbContext.RefreshTokens.AddAsync(entity);

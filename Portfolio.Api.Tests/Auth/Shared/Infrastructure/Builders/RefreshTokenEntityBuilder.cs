@@ -17,7 +17,9 @@ public abstract class RefreshTokenEntityBuilder
         return new RefreshTokenEntity
         {
             Id = id ?? Guid.NewGuid(),
-            TokenHash = RefreshTokenHasher.Hash(refreshToken),
+            TokenHash = new Sha256RefreshTokenHasher().Hash(refreshToken)
+                .IfLeft(error => throw new Exception("Error in RefreshTokenEntityBuilder, error: " + error.Message))
+                .ToString(),
             Owner = owner,
             ExpiresAt = expiresAt ?? new DateTimeOffset(2026, 1, 8, 10, 0, 0, TimeSpan.Zero),
             ConsumedAt = consumedAt
