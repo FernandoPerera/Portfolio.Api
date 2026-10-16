@@ -15,6 +15,7 @@ public class TokenRefresher(
     IAccessTokenIssuer accessTokenIssuer,
     IRefreshTokenIssuer refreshTokenIssuer,
     IRefreshTokenSaverRepository refreshTokenSaver,
+    IExpiredRefreshTokenCleanerRepository expiredRefreshTokenCleaner,
     TimeProvider timeProvider
 )
 {
@@ -28,6 +29,7 @@ public class TokenRefresher(
             from accessToken in accessTokenIssuer.Issue(consumed.GetOwnerUsername()).ToAsync()
             from newRefreshToken in refreshTokenIssuer.Issue().ToAsync()
             from __ in refreshTokenSaver.Save(newRefreshToken, consumed.GetOwnerUsername()).ToAsync()
+            from ___ in expiredRefreshTokenCleaner.Clean().ToAsync()
             select new AuthTokens(accessToken, newRefreshToken)
         );
     }

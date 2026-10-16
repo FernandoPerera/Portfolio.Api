@@ -11,7 +11,8 @@ public class LoginCodeExchanger(
     IAdminUsernameProvider adminUsernameProvider,
     IAccessTokenIssuer accessTokenIssuer,
     IRefreshTokenIssuer refreshTokenIssuer,
-    IRefreshTokenSaverRepository refreshTokenSaver
+    IRefreshTokenSaverRepository refreshTokenSaver,
+    IExpiredRefreshTokenCleanerRepository expiredRefreshTokenCleaner
 )
 {
     public async Task<Either<Error, AuthTokens>> Execute(ExchangeInfo exchangeInfo)
@@ -23,6 +24,7 @@ public class LoginCodeExchanger(
             from accessToken in accessTokenIssuer.Issue(owner).ToAsync()
             from refreshToken in refreshTokenIssuer.Issue().ToAsync()
             from __ in refreshTokenSaver.Save(refreshToken, owner).ToAsync()
+            from ___ in expiredRefreshTokenCleaner.Clean().ToAsync()
             select new AuthTokens(accessToken, refreshToken)
         );
     }

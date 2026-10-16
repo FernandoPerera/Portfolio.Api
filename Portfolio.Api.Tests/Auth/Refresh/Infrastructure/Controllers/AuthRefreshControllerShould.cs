@@ -52,6 +52,7 @@ public class AuthRefreshControllerShould
                 jwtOptions,
                 timeProvider
             ),
+            new EntityFrameworkExpiredRefreshTokenCleanerAdapter(_appDbContext, timeProvider),
             timeProvider
         );
         _controller = new AuthRefreshController(refresher, new ProblemDetailsMapper());

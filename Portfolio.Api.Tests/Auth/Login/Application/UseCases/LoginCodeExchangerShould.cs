@@ -23,6 +23,7 @@ public class LoginCodeExchangerShould
     private readonly IAccessTokenIssuer _accessTokenIssuer = Substitute.For<IAccessTokenIssuer>();
     private readonly IRefreshTokenIssuer _refreshTokenIssuer = Substitute.For<IRefreshTokenIssuer>();
     private readonly IRefreshTokenSaverRepository _refreshTokenSaver = Substitute.For<IRefreshTokenSaverRepository>();
+    private readonly IExpiredRefreshTokenCleanerRepository _expiredRefreshTokenCleaner = Substitute.For<IExpiredRefreshTokenCleanerRepository>();
     private readonly LoginCodeExchanger _exchanger;
 
     public LoginCodeExchangerShould()
@@ -32,13 +33,15 @@ public class LoginCodeExchangerShould
             _adminUsernameProvider,
             _accessTokenIssuer,
             _refreshTokenIssuer,
-            _refreshTokenSaver
+            _refreshTokenSaver,
+            _expiredRefreshTokenCleaner
         );
         _loginCodeConsumer.Consume(Arg.Any<LoginCode>()).Returns(Unit.Default);
         _adminUsernameProvider.Get().Returns(AdminUsernameBuilder.Build(Username));
         _accessTokenIssuer.Issue(Arg.Any<AdminUsername>()).Returns(AccessTokenBuilder.Build(AccessTokenValue));
         _refreshTokenIssuer.Issue().Returns(RefreshTokenBuilder.Build(RefreshTokenValue));
         _refreshTokenSaver.Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>()).Returns(Unit.Default);
+        _expiredRefreshTokenCleaner.Clean().Returns(Unit.Default);
     }
 
     [Fact]
@@ -57,6 +60,7 @@ public class LoginCodeExchangerShould
                     Arg.Is<RefreshToken>(token => token.ToString() == RefreshTokenValue),
                     Arg.Is<AdminUsername>(owner => owner.ToString() == Username)
                 );
+                _expiredRefreshTokenCleaner.Received(1).Clean();
             },
             error => error.ShouldBeNull()
         );

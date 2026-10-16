@@ -30,6 +30,7 @@ public class TokenRefresherShould
     private readonly IAccessTokenIssuer _accessTokenIssuer = Substitute.For<IAccessTokenIssuer>();
     private readonly IRefreshTokenIssuer _refreshTokenIssuer = Substitute.For<IRefreshTokenIssuer>();
     private readonly IRefreshTokenSaverRepository _refreshTokenSaver = Substitute.For<IRefreshTokenSaverRepository>();
+    private readonly IExpiredRefreshTokenCleanerRepository _expiredRefreshTokenCleaner = Substitute.For<IExpiredRefreshTokenCleanerRepository>();
     private readonly TokenRefresher _refresher;
 
     public TokenRefresherShould()
@@ -42,6 +43,7 @@ public class TokenRefresherShould
             _accessTokenIssuer,
             _refreshTokenIssuer,
             _refreshTokenSaver,
+            _expiredRefreshTokenCleaner,
             new FixedTimeProvider(Now)
         );
         _refreshTokenHasher.Hash(Arg.Any<RefreshToken>()).Returns(RefreshTokenHashBuilder.Build(CurrentTokenHashValue));
@@ -52,6 +54,7 @@ public class TokenRefresherShould
         _accessTokenIssuer.Issue(Arg.Any<AdminUsername>()).Returns(AccessTokenBuilder.Build(NewAccessTokenValue));
         _refreshTokenIssuer.Issue().Returns(RefreshTokenBuilder.Build(NewRefreshTokenValue));
         _refreshTokenSaver.Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>()).Returns(Unit.Default);
+        _expiredRefreshTokenCleaner.Clean().Returns(Unit.Default);
     }
 
     [Fact]
@@ -78,6 +81,7 @@ public class TokenRefresherShould
                     Arg.Is<AdminUsername>(owner => owner.ToString() == Username)
                 );
                 _refreshTokenRevoker.DidNotReceive().Revoke(Arg.Any<StoredRefreshToken>());
+                _expiredRefreshTokenCleaner.Received(1).Clean();
             },
             error => error.ShouldBeNull()
         );

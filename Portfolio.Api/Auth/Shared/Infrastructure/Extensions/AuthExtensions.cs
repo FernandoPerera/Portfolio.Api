@@ -95,6 +95,7 @@ public static class AuthExtensions
         services.AddScoped<IRefreshTokenFinderRepository, EntityFrameworkRefreshTokenFinderAdapter>();
         services.AddScoped<IRefreshTokenConsumerRepository, EntityFrameworkRefreshTokenConsumerAdapter>();
         services.AddScoped<IRefreshTokenRevokerRepository, EntityFrameworkRefreshTokenRevokerAdapter>();
+        services.AddScoped<IExpiredRefreshTokenCleanerRepository, EntityFrameworkExpiredRefreshTokenCleanerAdapter>();
         services.AddSingleton<ILoginCodeSaverRepository, InMemoryLoginCodeSaverAdapter>();
         services.AddSingleton<ILoginCodeConsumerRepository, InMemoryLoginCodeConsumerAdapter>();
     }
