@@ -57,14 +57,25 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
     }
 
     [Fact]
-    public async Task NotFailWhenTheCleaningCannotBeDone()
+    public async Task NotFailAndDiscardTheDeletionsWhenTheCleaningCannotBeDone()
     {
-        await _appDbContext.DisposeAsync();
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        var failingContext = new FailingSaveDbContext(options);
+        failingContext.RefreshTokens.Add(
+            RefreshTokenEntityBuilder.Build(RefreshTokenBuilder.Build("expired"), expiresAt: Now.AddDays(-1))
+        );
+        var cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(failingContext, new FixedTimeProvider(Now));
 
-        var result = await _cleaner.Clean();
+        var result = await cleaner.Clean();
 
         result.Match(
-            unit => unit.ShouldBeUnit(),
+            unit =>
+            {
+                unit.ShouldBeUnit();
+                failingContext.ChangeTracker.Entries().ShouldBeEmpty();
+            },
             error => error.ShouldBeNull()
         );
     }

@@ -22,6 +22,7 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapter(
         catch (Exception)
         {
             // Cleaning is best effort: a failure here must never break a login or a refresh.
+            dbContext.ChangeTracker.Clear();
         }
 
         return Unit.Default;

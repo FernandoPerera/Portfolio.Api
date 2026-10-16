@@ -144,4 +144,20 @@ public class TokenRefresherShould
             }
         );
     }
+
+    [Fact]
+    public async Task FailWhenTheSessionCannotBeRevokedAfterAReuse()
+    {
+        _refreshTokenFinder.Find(Arg.Any<RefreshTokenHash>())
+            .Returns(StoredRefreshTokenBuilder.Build(Now.AddDays(1), consumedAt: Now.AddMinutes(-5), owner: Username));
+        _refreshTokenRevoker.Revoke(Arg.Any<StoredRefreshToken>())
+            .Returns(Error.New(new ServiceUnavailableException("Database is unavailable")));
+
+        var result = await _refresher.Execute(RefreshInfoBuilder.Build());
+
+        result.Match(
+            tokens => tokens.ShouldBeNull(),
+            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+        );
+    }
 }

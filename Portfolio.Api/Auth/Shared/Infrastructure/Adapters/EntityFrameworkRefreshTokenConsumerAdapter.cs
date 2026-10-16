@@ -31,7 +31,24 @@ public class EntityFrameworkRefreshTokenConsumerAdapter(AppDbContext dbContext) 
         }
         catch (DbUpdateConcurrencyException)
         {
-            return Error.New(new RefreshTokenReuseException("Refresh token has already been used"));
+            return await ReuseOrUnknown(consumedRefreshToken);
+        }
+        catch (Exception error)
+        {
+            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message));
+        }
+    }
+
+    private async Task<Either<Error, Unit>> ReuseOrUnknown(StoredRefreshToken consumedRefreshToken)
+    {
+        try
+        {
+            var id = consumedRefreshToken.GetId();
+            var stillExists = await dbContext.RefreshTokens.AsNoTracking().AnyAsync(token => token.Id == id);
+
+            return stillExists
+                ? Error.New(new RefreshTokenReuseException("Refresh token has already been used"))
+                : Error.New(new UnauthorizedException("Invalid refresh token"));
         }
         catch (Exception error)
         {

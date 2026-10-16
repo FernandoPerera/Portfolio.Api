@@ -78,4 +78,25 @@ public class EntityFrameworkRefreshTokenConsumerAdapterShould
                 .Message.ShouldBe("Refresh token has already been used")
         );
     }
+
+    [Fact]
+    public async Task RejectAsUnknownWhenTheRefreshTokenWasRevokedMeanwhile()
+    {
+        var entity = RefreshTokenEntityBuilder.Build(RefreshTokenBuilder.Build(), expiresAt: Now.AddDays(1));
+        _appDbContext.RefreshTokens.Add(entity);
+        await _appDbContext.SaveChangesAsync();
+        var concurrentContext = new AppDbContext(_options);
+        concurrentContext.RefreshTokens.Remove(await concurrentContext.RefreshTokens.FindAsync(entity.Id) ?? entity);
+        await concurrentContext.SaveChangesAsync();
+
+        var result = await _consumer.Consume(
+            StoredRefreshTokenBuilder.Build(Now.AddDays(1), consumedAt: Now, id: entity.Id)
+        );
+
+        result.Match(
+            unit => unit.ShouldBeEquivalentTo(null),
+            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+                .Message.ShouldBe("Invalid refresh token")
+        );
+    }
 }

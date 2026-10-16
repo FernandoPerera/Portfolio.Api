@@ -41,11 +41,13 @@ public class TokenRefresher(
             select consumedRefreshToken
         ).MapLeftAsync(async error =>
         {
-            if (error.Exception.Case is RefreshTokenReuseException)
+            if (error.Exception.Case is not RefreshTokenReuseException)
             {
-                await refreshTokenRevoker.Revoke(stored);
+                return error;
             }
 
-            return error;
+            var revoked = await refreshTokenRevoker.Revoke(stored);
+
+            return revoked.Match(_ => error, revokeError => revokeError);
         });
 }
