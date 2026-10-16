@@ -37,11 +37,22 @@ public class AuthRefreshControllerShould
         var timeProvider = new FixedTimeProvider(Now);
 
         _appDbContext = new AppDbContext(options);
+        var hasher = new Sha256RefreshTokenHasher();
         var refresher = new TokenRefresher(
-            new EntityFrameworkRefreshTokenConsumerAdapter(_appDbContext, timeProvider),
+            hasher,
+            new EntityFrameworkRefreshTokenFinderAdapter(_appDbContext),
+            new EntityFrameworkRefreshTokenConsumerAdapter(_appDbContext),
+            new EntityFrameworkRefreshTokenRevokerAdapter(_appDbContext),
             new JwtAccessTokenIssuer(jwtOptions, timeProvider),
             new RandomRefreshTokenIssuer(),
-            new EntityFrameworkRefreshTokenSaverAdapter(_appDbContext, new GuidGeneratorIdentifier(), jwtOptions, timeProvider)
+            new EntityFrameworkRefreshTokenSaverAdapter(
+                _appDbContext,
+                new GuidGeneratorIdentifier(),
+                hasher,
+                jwtOptions,
+                timeProvider
+            ),
+            timeProvider
         );
         _controller = new AuthRefreshController(refresher, new ProblemDetailsMapper());
     }

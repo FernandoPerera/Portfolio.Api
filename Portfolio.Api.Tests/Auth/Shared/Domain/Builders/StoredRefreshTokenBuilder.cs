@@ -8,10 +8,11 @@ public abstract class StoredRefreshTokenBuilder
         DateTimeOffset expiresAt,
         DateTimeOffset? consumedAt = null,
         string tokenHash = "refresh-token-hash",
-        string owner = "admin"
+        string owner = "admin",
+        Guid? id = null
     )
     {
-        return StoredRefreshToken.CreateUnsafe(Guid.NewGuid(), tokenHash, owner, expiresAt, consumedAt)
+        return StoredRefreshToken.CreateUnsafe(id ?? Guid.NewGuid(), tokenHash, owner, expiresAt, consumedAt)
             .IfLeft(error => throw new Exception("Error in StoredRefreshTokenBuilder, error: " + error.Message));
     }
 }

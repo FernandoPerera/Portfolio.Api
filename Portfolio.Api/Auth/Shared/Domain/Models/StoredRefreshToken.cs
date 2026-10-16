@@ -81,6 +81,8 @@ public class StoredRefreshToken
 
     public string GetOwner() => _owner.ToString();
 
+    public AdminUsername GetOwnerUsername() => _owner;
+
     public DateTimeOffset GetExpiresAt() => _expiresAt.GetValue();
 
     public DateTimeOffset? GetConsumedAt() => _consumedAt.GetValue();
