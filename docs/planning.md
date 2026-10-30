@@ -48,4 +48,5 @@ Pragmatic Lead Backend Engineer executing features, refactors, and bugfixes in c
 ### 3. Checklist
 - [ ] Application compiles and runs cleanly.
 - [ ] Full test suite passes.
-``
+- [ ] Closed user stories are set to Done in the Notion Board (Portfolio doc > Board).
+```
