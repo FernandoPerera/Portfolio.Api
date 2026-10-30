@@ -12,6 +12,7 @@ namespace Portfolio.Api.Languages.Find.Infrastructure.Controllers;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitingExtensions.PublicPolicy)]
 [Route("v1/language")]
+[Tags("Language")]
 public class LanguageFinderController(
     LanguageFinder finder,
     IErrorResponseMapper errorResponseMapper

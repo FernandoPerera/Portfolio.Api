@@ -10,6 +10,7 @@ namespace Portfolio.Api.Languages.Delete.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/language")]
+[Tags("Language")]
 public class LanguageDeleterController(
     LanguageDeleter deleter,
     IErrorResponseMapper errorResponseMapper

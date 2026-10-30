@@ -11,6 +11,7 @@ namespace Portfolio.Api.Languages.Update.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/language")]
+[Tags("Language")]
 public class LanguageUpdaterController(
     LanguageUpdater updater,
     IErrorResponseMapper errorResponseMapper

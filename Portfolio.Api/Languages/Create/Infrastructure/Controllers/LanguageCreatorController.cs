@@ -11,6 +11,7 @@ namespace Portfolio.Api.Languages.Create.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/language")]
+[Tags("Language")]
 public class LanguageCreatorController(
     LanguageCreator creator,
     IErrorResponseMapper errorResponseMapper
