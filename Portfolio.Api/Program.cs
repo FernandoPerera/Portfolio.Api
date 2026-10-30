@@ -24,6 +24,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddSharedInfrastructure();
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddRateLimiting(builder.Configuration);
+builder.Services.AddCorsPolicy(builder.Configuration);
 
 // Actions
 builder.Services.AddLanguageCreate();
@@ -42,6 +43,7 @@ builder.Services.AddTimelineUpdate();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();

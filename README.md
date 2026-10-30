@@ -37,6 +37,7 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 | `Auth:FrontendRedirectUri` | No | Web address where the user lands after the login |
 | `Admin:Username` | No | GitHub username of the owner |
 | `Admin:GitHubUserId` | Yes | Numeric GitHub id of the owner, the only one allowed to write |
+| `Cors:AllowedOrigins` | No | Origins of the web allowed to call the API from a browser, for example `http://localhost:3000`. It is a list: in environment variables use `Cors__AllowedOrigins__0`, `Cors__AllowedOrigins__1`... If it is empty, no browser origin is allowed. Set the production web here once its domain is defined |
 | `RateLimiting:Auth:PermitLimit`, `RateLimiting:Auth:WindowSeconds` | No | Requests allowed per client IP in the window on `v1/auth/*`. `10` per `60` s by default |
 | `RateLimiting:Public:PermitLimit`, `RateLimiting:Public:WindowSeconds` | No | Same for the public `GET` endpoints. `100` per `60` s by default |
 | `AllowedHosts` | No | Host the API answers to. `localhost` by default; set the domain in production |
