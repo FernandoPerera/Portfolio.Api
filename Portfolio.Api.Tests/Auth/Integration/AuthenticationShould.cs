@@ -33,6 +33,14 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
     }
 
     [Fact]
+    public async Task RejectCreatingAProfileWithoutToken()
+    {
+        var response = await _client.PostAsJsonAsync("v1/profile", new { });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task RejectWritesWithAValidTokenThatIsNotFromTheAdmin()
     {
         var token = new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor

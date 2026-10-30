@@ -16,7 +16,7 @@ public class ProfileCreatorController(
     IErrorResponseMapper errorResponseMapper
 ) : ControllerBase
 {
-    [HttpPost("create")]
+    [HttpPost]
     [Produces("application/json")]
     public async Task<ActionResult> Create(CreateProfileRequest request)
     {
