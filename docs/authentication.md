@@ -32,7 +32,7 @@ Only **one person** (the owner) can modify the portfolio. Everyone else can only
 | Another GitHub user | Read only | The login works, but the API answers 403 |
 
 ---
-## 2. The Four Controllers and Why Each One Exists
+## 2. The Five Controllers and Why Each One Exists
 
 A login with GitHub does not fit in a single request: the user has to go to GitHub, come back, and then the web has to pick up the token. That is why there is **one controller for each leg of the trip**.
 
@@ -65,6 +65,7 @@ sequenceDiagram
 - **`GitHubAdminAuthenticationController`** (`GET v1/auth/github/callback`): the address where GitHub sends the user back after accepting. It checks the cookie, asks GitHub who the user is and verifies that they are the owner. If everything is fine, it redirects to your web with a one-time code (`LoginCode`). The code that GitHub brings dies here.
 - **`LoginCodeExchangeController`** (`POST v1/auth/exchange`): the web sends it the `LoginCode` and receives the `accessToken` and the `refreshToken`. It exists so that the tokens travel in the body of a response and not in a URL.
 - **`AuthRefreshController`** (`POST v1/auth/refresh`): when the access token expires, the web sends the `refreshToken` and receives a new pair, without going through GitHub again.
+- **`AuthLogoutController`** (`POST v1/auth/logout`): when the owner leaves, the web sends the `refreshToken` and the whole session is closed. It does not need a valid access token, so it works even after the access token has expired.
 
 Your web only makes two calls: it navigates to `login` at the beginning and calls `exchange` at the end. What happens in between are browser redirects.
 
@@ -108,6 +109,14 @@ Two refreshes with the same token can arrive together. The database decides who 
 
 There is no background job, because the app may be asleep. Every login and every refresh removes the expired tokens right after saving the new one. Consumed tokens that have not expired are kept, since reuse detection needs them. The cleaning is best effort: if it fails, the login or the refresh still succeeds.
 
+### Logout
+
+`POST v1/auth/logout` receives the refresh token of the session and removes **every** refresh token of its owner, the same removal that reuse detection does. From then on nobody can renew the session, not even with a copy of an older token, and the owner must sign in with GitHub again.
+
+- It is idempotent: an unknown token, or a session that is already closed, also answers 204. This way the endpoint does not reveal whether a token was valid.
+- A token that was already consumed still closes the session.
+- The **access token** already issued is a stateless JWT and keeps working until it expires (15 minutes by default). Logout stops the renewals, it does not cut the access token short.
+
 ---
 ## 4. Configuration
 
@@ -127,4 +136,4 @@ The repository is **public**: `appsettings.json` only has empty keys and public 
 ---
 ## 5. Rate Limiting
 
-The four auth controllers share the `auth` rate limit policy: by default 10 requests per minute per IP. It slows down guessing a `LoginCode` at `exchange` or a refresh token at `refresh`, and it protects the calls the API makes to GitHub. Above the limit the API answers `429 Too Many Requests` with a `Retry-After` header. See the [README](../README.md#rate-limiting) for the settings and its limits.
+The five auth controllers share the `auth` rate limit policy: by default 10 requests per minute per IP. It slows down guessing a `LoginCode` at `exchange` or a refresh token at `refresh`, and it protects the calls the API makes to GitHub. Above the limit the API answers `429 Too Many Requests` with a `Retry-After` header. See the [README](../README.md#rate-limiting) for the settings and its limits.

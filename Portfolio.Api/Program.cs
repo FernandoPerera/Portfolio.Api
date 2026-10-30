@@ -1,3 +1,6 @@
+using Portfolio.Api.Auth.Login.Infrastructure.Extensions;
+using Portfolio.Api.Auth.Logout.Infrastructure.Extensions;
+using Portfolio.Api.Auth.Refresh.Infrastructure.Extensions;
 using Portfolio.Api.Auth.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Create.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Delete.Infrastructure.Extensions;
@@ -22,18 +25,31 @@ builder.Services.AddHealthChecks();
 
 // Shared dependencies
 builder.Services.AddSharedInfrastructure();
-builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAdminAuthorization(builder.Configuration);
+builder.Services.AddAuthShared(builder.Configuration);
 builder.Services.AddRateLimiting(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
 
-// Actions
+// Auth
+builder.Services.AddGitHubLoginStart();
+builder.Services.AddGitHubAdminAuthentication();
+builder.Services.AddLoginCodeExchange();
+builder.Services.AddTokenRefresh();
+builder.Services.AddSessionClose();
+
+// Language
 builder.Services.AddLanguageCreate();
 builder.Services.AddLanguageDelete();
 builder.Services.AddLanguageFind();
 builder.Services.AddLanguageUpdate();
+
+// Profile
 builder.Services.AddProfileCreate();
 builder.Services.AddProfileFind();
 builder.Services.AddProfileUpdate();
+
+// Timeline
 builder.Services.AddTimelineCreate();
 builder.Services.AddTimelineTranslationAdd();
 builder.Services.AddTimelineDelete();

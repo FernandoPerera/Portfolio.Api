@@ -107,6 +107,26 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
         afterReuse.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
+    [Fact]
+    public async Task RejectRefreshingAfterLogout()
+    {
+        var tokens = await Login();
+        var logout = await _client.PostAsJsonAsync("v1/auth/logout", new { refreshToken = tokens.RefreshToken });
+
+        var response = await _client.PostAsJsonAsync("v1/auth/refresh", new { refreshToken = tokens.RefreshToken });
+
+        logout.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task AcceptLogoutWithAnUnknownRefreshToken()
+    {
+        var response = await _client.PostAsJsonAsync("v1/auth/logout", new { refreshToken = "unknown" });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
+
     private string IssueLoginCode()
     {
         using var scope = factory.Services.CreateScope();
