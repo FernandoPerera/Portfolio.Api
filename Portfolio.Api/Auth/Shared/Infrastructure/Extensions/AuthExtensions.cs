@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Api.Auth.Login.Application.UseCases;
+using Portfolio.Api.Auth.Logout.Application.UseCases;
 using Portfolio.Api.Auth.Refresh.Application.UseCases;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
@@ -109,6 +110,7 @@ public static class AuthExtensions
     private static void AddAuthUseCases(this IServiceCollection services)
     {
         services.AddScoped<TokenRefresher>();
+        services.AddScoped<SessionCloser>();
         services.AddScoped<GitHubLoginStarter>();
         services.AddScoped<GitHubAdminAuthenticator>();
         services.AddScoped<LoginCodeExchanger>();
