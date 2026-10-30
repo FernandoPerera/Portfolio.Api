@@ -37,6 +37,8 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 | `Auth:FrontendRedirectUri` | No | Web address where the user lands after the login |
 | `Admin:Username` | No | GitHub username of the owner |
 | `Admin:GitHubUserId` | Yes | Numeric GitHub id of the owner, the only one allowed to write |
+| `RateLimiting:Auth:PermitLimit`, `RateLimiting:Auth:WindowSeconds` | No | Requests allowed per client IP in the window on `v1/auth/*`. `10` per `60` s by default |
+| `RateLimiting:Public:PermitLimit`, `RateLimiting:Public:WindowSeconds` | No | Same for the public `GET` endpoints. `100` per `60` s by default |
 | `AllowedHosts` | No | Host the API answers to. `localhost` by default; set the domain in production |
 
 ```bash
@@ -48,6 +50,12 @@ dotnet user-secrets set "Auth:FrontendRedirectUri" "<value>" --project Portfolio
 dotnet user-secrets set "Admin:Username" "<value>" --project Portfolio.Api
 dotnet user-secrets set "Admin:GitHubUserId" "<value>" --project Portfolio.Api
 ```
+
+### Rate limiting
+Requests are limited per client IP with two fixed-window policies: `auth` for `v1/auth/*` and `public` for the anonymous `GET` endpoints. A request over the limit gets `429 Too Many Requests` as `ProblemDetails`, with a `Retry-After` header. The limits are the `RateLimiting:*` settings above.
+
+* **Behind a proxy:** the client IP is the one the API sees. If it is deployed behind a reverse proxy or a PaaS, `ForwardedHeaders` must be configured first; otherwise every visitor shares the proxy IP and the same quota. Pending until the hosting is decided.
+* **Multiple instances:** the counters live in memory, so each instance counts on its own.
 
 ### Run
 ```bash
