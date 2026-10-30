@@ -18,6 +18,7 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
 
     public static TheoryData<string> PublicEndpoints => new()
     {
+        "v1/language",
         "v1/profile",
         "v1/timeline"
     };
