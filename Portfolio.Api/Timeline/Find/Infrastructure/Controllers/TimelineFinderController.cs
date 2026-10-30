@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Portfolio.Api.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 using Portfolio.Api.Timeline.Find.Application.UseCases;
 using Portfolio.Api.Timeline.Find.Infrastructure.Dtos;
@@ -8,6 +10,7 @@ namespace Portfolio.Api.Timeline.Find.Infrastructure.Controllers;
 
 [ApiController]
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitingExtensions.PublicPolicy)]
 [Route("v1/timeline")]
 public class TimelineFinderController(
     TimelineFinder finder,
