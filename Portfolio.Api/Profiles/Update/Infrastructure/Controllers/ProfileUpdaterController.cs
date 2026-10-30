@@ -11,6 +11,7 @@ namespace Portfolio.Api.Profiles.Update.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/profile")]
+[Tags("Profile")]
 public class ProfileUpdaterController(
     ProfileUpdater updater,
     IErrorResponseMapper errorResponseMapper

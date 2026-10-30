@@ -13,6 +13,7 @@ namespace Portfolio.Api.Profiles.Find.Infrastructure.Controllers;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitingExtensions.PublicPolicy)]
 [Route("v1/profile")]
+[Tags("Profile")]
 public class ProfileFinderController(
     ProfileFinder finder,
     IErrorResponseMapper errorResponseMapper

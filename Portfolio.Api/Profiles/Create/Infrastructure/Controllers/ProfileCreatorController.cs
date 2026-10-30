@@ -11,6 +11,7 @@ namespace Portfolio.Api.Profiles.Create.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/profile")]
+[Tags("Profile")]
 public class ProfileCreatorController(
     ProfileCreator creator,
     IErrorResponseMapper errorResponseMapper
