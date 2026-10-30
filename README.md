@@ -63,6 +63,11 @@ dotnet run --project Portfolio.Api
 ```
 The API listens on `http://localhost:5285` (`https://localhost:7012` with the `https` profile). Check it with `GET /health`.
 
+### API documentation
+In the `Development` environment the API serves its documentation with [Scalar](https://scalar.com) at `/scalar/v1` (for example `http://localhost:5285/scalar/v1`). It describes in business terms what each endpoint does and every response it can return. The raw OpenAPI document is at `/openapi/v1.json`. Neither is served in other environments.
+
+To try the endpoints that only the owner can use, sign in with GitHub, exchange the login code for the tokens and paste the access token in the `Bearer` authentication of Scalar.
+
 ### Build and test
 ```bash
 dotnet build
