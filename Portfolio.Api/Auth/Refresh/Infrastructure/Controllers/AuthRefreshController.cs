@@ -1,16 +1,19 @@
 using LanguageExt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Portfolio.Api.Auth.Refresh.Application.Dtos;
 using Portfolio.Api.Auth.Refresh.Application.UseCases;
 using Portfolio.Api.Auth.Refresh.Infrastructure.Dtos;
 using Portfolio.Api.Auth.Shared.Infrastructure.Dtos;
+using Portfolio.Api.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 
 namespace Portfolio.Api.Auth.Refresh.Infrastructure.Controllers;
 
 [ApiController]
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
 [Route("v1/auth/refresh")]
 public class AuthRefreshController(
     TokenRefresher refresher,
