@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -13,6 +14,7 @@ public static class OpenApiExtensions
         services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer(DescribeApi);
+            options.AddOperationTransformer(RequireBearerToken);
         });
     }
 
@@ -57,6 +59,21 @@ public static class OpenApiExtensions
             BearerFormat = "JWT",
             Description = "Access token obtained when the owner signs in with GitHub."
         };
+
+        return Task.CompletedTask;
+    }
+
+    private static Task RequireBearerToken(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+    {
+        var metadata = context.Description.ActionDescriptor.EndpointMetadata;
+        if (metadata.OfType<IAuthorizeData>().Any() && !metadata.OfType<IAllowAnonymous>().Any())
+        {
+            operation.Security ??= [];
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference(BearerScheme, context.Document)] = []
+            });
+        }
 
         return Task.CompletedTask;
     }
