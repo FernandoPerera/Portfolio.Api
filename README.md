@@ -26,7 +26,7 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 * A GitHub OAuth App (for the owner login, see [`docs/authentication.md`](./docs/authentication.md))
 
 ### Configuration
-`appsettings.json` only has empty keys and public URLs, so the API needs these settings before it starts. Locally, set them with [user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets); in production, use environment variables with `__` as separator (`GitHub__ClientSecret`).
+`appsettings.json` only has empty keys and public URLs, so the API needs these settings before it starts. Locally, set them with [user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets); in production, use environment variables with `__` as separator (`GitHub__ClientSecret`). The API validates them at startup and does not start if one is missing or invalid; `Jwt:SigningKey` needs at least 32 characters and `Admin:GitHubUserId` must be numeric.
 
 | Setting | Secret? | Description |
 |---|---|---|

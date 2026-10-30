@@ -25,14 +25,20 @@ public static class AuthExtensions
 
     private static void AddAuthOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddSingleton(provider => provider.GetRequiredService<IOptions<JwtOptions>>().Value);
         services.AddOptions<AuthOptions>()
             .Bind(configuration.GetSection(AuthOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton(provider => provider.GetRequiredService<IOptions<AuthOptions>>().Value);
-        services.AddOptions<AdminOptions>().Bind(configuration.GetSection(AdminOptions.SectionName));
+        services.AddOptions<AdminOptions>()
+            .Bind(configuration.GetSection(AdminOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddSingleton(provider => provider.GetRequiredService<IOptions<AdminOptions>>().Value);
         services.AddOptions<GitHubOptions>()
             .Bind(configuration.GetSection(GitHubOptions.SectionName))

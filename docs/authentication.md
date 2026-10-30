@@ -121,7 +121,7 @@ The repository is **public**: `appsettings.json` only has empty keys and public 
 
 - **Locally:** `dotnet user-secrets set "GitHub:ClientSecret" "<value>" --project Portfolio.Api`
 - **In production:** environment variables with `__` as separator (`GitHub__ClientSecret`).
-- The `GitHub` and `Auth` settings are validated at startup: the API does not start without them.
+- All the `Jwt`, `GitHub`, `Auth` and `Admin` settings are validated at startup: the API does not start if one is missing or invalid. `Jwt:SigningKey` needs at least 32 characters, `Jwt:AccessTokenMinutes` and `Jwt:RefreshTokenDays` must be positive and `Admin:GitHubUserId` must be the numeric id of the GitHub user.
 - `GitHub:RedirectUri` must be exactly the callback address registered in the GitHub OAuth App.
 
 ---
