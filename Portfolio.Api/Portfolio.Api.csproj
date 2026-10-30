@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>9b7aba52-d917-4498-a924-19b60f628ea0</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,8 +19,10 @@
     <ItemGroup>
         <PackageReference Include="LanguageExt.Core" Version="4.4.9"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12"/>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.18.7"/>
     </ItemGroup>
 
 </Project>
