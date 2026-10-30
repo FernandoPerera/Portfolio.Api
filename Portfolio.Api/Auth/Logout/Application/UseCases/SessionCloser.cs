@@ -23,17 +23,14 @@ public class SessionCloser(
         );
     }
 
-    private async Task<Either<Error, Unit>> CloseSession(RefreshTokenHash tokenHash)
-    {
-        var found = await refreshTokenFinder.Find(tokenHash);
-
-        return await found.Match(
-            stored => refreshTokenRevoker.Revoke(stored),
-            error => Task.FromResult(
-                error.Exception.Case is UnauthorizedException
-                    ? Either<Error, Unit>.Right(Unit.Default)
-                    : Either<Error, Unit>.Left(error)
-            )
-        );
-    }
+    private async Task<Either<Error, Unit>> CloseSession(RefreshTokenHash tokenHash) =>
+        await (await refreshTokenFinder.Find(tokenHash))
+            .Match(
+                Right: refreshTokenRevoker.Revoke,
+                Left: error => Task.FromResult<Either<Error, Unit>>(
+                    error.Exception.Case is UnauthorizedException
+                        ? Unit.Default
+                        : error
+                )
+            );
 }
