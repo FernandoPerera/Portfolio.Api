@@ -16,6 +16,7 @@ namespace Portfolio.Api.Auth.Login.Infrastructure.Controllers;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
 [Route("v1/auth/github")]
+[Tags("Auth")]
 public class GitHubAdminAuthenticationController(
     GitHubAdminAuthenticator authenticator,
     AuthOptions authOptions,

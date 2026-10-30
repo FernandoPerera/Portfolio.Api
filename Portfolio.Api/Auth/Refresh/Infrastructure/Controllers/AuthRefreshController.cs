@@ -15,6 +15,7 @@ namespace Portfolio.Api.Auth.Refresh.Infrastructure.Controllers;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
 [Route("v1/auth/refresh")]
+[Tags("Auth")]
 public class AuthRefreshController(
     TokenRefresher refresher,
     IErrorResponseMapper errorResponseMapper

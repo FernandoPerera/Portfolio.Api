@@ -15,6 +15,7 @@ namespace Portfolio.Api.Auth.Login.Infrastructure.Controllers;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
 [Route("v1/auth/exchange")]
+[Tags("Auth")]
 public class LoginCodeExchangeController(
     LoginCodeExchanger exchanger,
     IErrorResponseMapper errorResponseMapper
