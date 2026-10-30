@@ -18,6 +18,7 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
 
     public static TheoryData<string> PublicEndpoints => new()
     {
+        "v1/language",
         "v1/profile",
         "v1/timeline"
     };
@@ -29,6 +30,14 @@ public class AuthenticationShould(PortfolioApiFactory factory) : IClassFixture<P
         var response = await _client.GetAsync(url);
 
         response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task RejectCreatingAProfileWithoutToken()
+    {
+        var response = await _client.PostAsJsonAsync("v1/profile", new { });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

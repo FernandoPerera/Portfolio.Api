@@ -7,7 +7,7 @@ using Portfolio.Api.Shared.Infrastructure.Ports;
 namespace Portfolio.Api.Languages.Find.Infrastructure.Controllers;
 
 [ApiController]
-[Authorize]
+[AllowAnonymous]
 [Route("v1/language")]
 public class LanguageFinderController(
     LanguageFinder finder,
