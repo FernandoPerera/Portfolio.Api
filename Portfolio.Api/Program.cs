@@ -26,14 +26,18 @@ builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddRateLimiting(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
 
-// Actions
+// Language
 builder.Services.AddLanguageCreate();
 builder.Services.AddLanguageDelete();
 builder.Services.AddLanguageFind();
 builder.Services.AddLanguageUpdate();
+
+// Profile
 builder.Services.AddProfileCreate();
 builder.Services.AddProfileFind();
 builder.Services.AddProfileUpdate();
+
+// Timeline
 builder.Services.AddTimelineCreate();
 builder.Services.AddTimelineTranslationAdd();
 builder.Services.AddTimelineDelete();
