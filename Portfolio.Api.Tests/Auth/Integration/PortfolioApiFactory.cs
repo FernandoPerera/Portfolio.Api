@@ -20,5 +20,7 @@ public class PortfolioApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("GitHub:RedirectUri", "https://portfolio.test/v1/auth/github/callback");
         builder.UseSetting("Auth:FrontendRedirectUri", "https://portfolio.test/login");
         builder.UseSetting("Admin:Username", AdminUsername);
+        builder.UseSetting("RateLimiting:Auth:PermitLimit", "1000");
+        builder.UseSetting("RateLimiting:Public:PermitLimit", "1000");
     }
 }

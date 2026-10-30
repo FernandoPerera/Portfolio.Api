@@ -123,3 +123,8 @@ The repository is **public**: `appsettings.json` only has empty keys and public 
 - **In production:** environment variables with `__` as separator (`GitHub__ClientSecret`).
 - The `GitHub` and `Auth` settings are validated at startup: the API does not start without them.
 - `GitHub:RedirectUri` must be exactly the callback address registered in the GitHub OAuth App.
+
+---
+## 5. Rate Limiting
+
+The four auth controllers share the `auth` rate limit policy: by default 10 requests per minute per IP. It slows down guessing a `LoginCode` at `exchange` or a refresh token at `refresh`, and it protects the calls the API makes to GitHub. Above the limit the API answers `429 Too Many Requests` with a `Retry-After` header. See the [README](../README.md#rate-limiting) for the settings and its limits.

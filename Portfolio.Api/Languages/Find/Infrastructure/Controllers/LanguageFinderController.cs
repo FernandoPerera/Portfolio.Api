@@ -1,13 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Portfolio.Api.Languages.Find.Application.UseCases;
 using Portfolio.Api.Languages.Find.Infrastructure.Dtos;
+using Portfolio.Api.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Shared.Infrastructure.Ports;
 
 namespace Portfolio.Api.Languages.Find.Infrastructure.Controllers;
 
 [ApiController]
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitingExtensions.PublicPolicy)]
 [Route("v1/language")]
 public class LanguageFinderController(
     LanguageFinder finder,
