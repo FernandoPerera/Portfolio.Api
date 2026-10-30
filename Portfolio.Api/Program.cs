@@ -22,7 +22,9 @@ builder.Services.AddHealthChecks();
 
 // Shared dependencies
 builder.Services.AddSharedInfrastructure();
-builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAdminAuthorization(builder.Configuration);
+builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddRateLimiting(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
 
