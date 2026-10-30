@@ -50,6 +50,13 @@ public static class OpenApiExtensions
                           Errors are returned as `ProblemDetails` (RFC 7807).
                           """
         };
+        document.Tags = new HashSet<OpenApiTag>
+        {
+            new() { Name = "Auth", Description = "How the owner signs in with GitHub and keeps the session open." },
+            new() { Name = "Language", Description = "The languages in which the portfolio content can be translated." },
+            new() { Name = "Profile", Description = "Who the portfolio owner is: name, company, job role and presentation." },
+            new() { Name = "Timeline", Description = "The work and education history of the owner." }
+        };
         document.Components ??= new OpenApiComponents();
         document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
         document.Components.SecuritySchemes[BearerScheme] = new OpenApiSecurityScheme
