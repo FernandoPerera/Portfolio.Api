@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+builder.Services.AddOpenApiDocumentation();
 builder.Services.AddHealthChecks();
 
 // Shared dependencies
@@ -45,6 +46,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapOpenApiDocumentation();
 app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
