@@ -1,3 +1,6 @@
+using Portfolio.Api.Auth.Login.Infrastructure.Extensions;
+using Portfolio.Api.Auth.Logout.Infrastructure.Extensions;
+using Portfolio.Api.Auth.Refresh.Infrastructure.Extensions;
 using Portfolio.Api.Auth.Shared.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Create.Infrastructure.Extensions;
 using Portfolio.Api.Languages.Delete.Infrastructure.Extensions;
@@ -24,9 +27,16 @@ builder.Services.AddHealthChecks();
 builder.Services.AddSharedInfrastructure();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAdminAuthorization(builder.Configuration);
-builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddAuthShared(builder.Configuration);
 builder.Services.AddRateLimiting(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
+
+// Auth
+builder.Services.AddGitHubLoginStart();
+builder.Services.AddGitHubAdminAuthentication();
+builder.Services.AddLoginCodeExchange();
+builder.Services.AddTokenRefresh();
+builder.Services.AddSessionClose();
 
 // Language
 builder.Services.AddLanguageCreate();
