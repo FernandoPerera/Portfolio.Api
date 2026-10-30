@@ -11,6 +11,7 @@ namespace Portfolio.Api.Timeline.Create.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/timeline")]
+[Tags("Timeline")]
 public class TimelineCreatorController(
     TimelineCreator creator,
     IErrorResponseMapper errorResponseMapper

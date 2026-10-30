@@ -11,6 +11,7 @@ namespace Portfolio.Api.Timeline.AddTranslation.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/timeline")]
+[Tags("Timeline")]
 public class TimelineTranslationAdderController(
     TimelineTranslationAdder adder,
     IErrorResponseMapper errorResponseMapper

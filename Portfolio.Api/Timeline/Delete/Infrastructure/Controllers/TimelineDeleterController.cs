@@ -10,6 +10,7 @@ namespace Portfolio.Api.Timeline.Delete.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/timeline")]
+[Tags("Timeline")]
 public class TimelineDeleterController(
     TimelineDeleter deleter,
     IErrorResponseMapper errorResponseMapper

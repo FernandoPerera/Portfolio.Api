@@ -10,6 +10,7 @@ namespace Portfolio.Api.Timeline.Update.Infrastructure.Controllers;
 [ApiController]
 [Authorize]
 [Route("v1/timeline")]
+[Tags("Timeline")]
 public class TimelineUpdaterController(
     TimelineUpdater updater,
     IErrorResponseMapper errorResponseMapper

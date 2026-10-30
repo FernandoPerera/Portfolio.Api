@@ -12,6 +12,7 @@ namespace Portfolio.Api.Timeline.Find.Infrastructure.Controllers;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitingExtensions.PublicPolicy)]
 [Route("v1/timeline")]
+[Tags("Timeline")]
 public class TimelineFinderController(
     TimelineFinder finder,
     IErrorResponseMapper errorResponseMapper
