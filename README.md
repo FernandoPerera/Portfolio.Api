@@ -9,7 +9,8 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 * **Framework:** .NET 10
 * **Language:** C# 14
 * **Functional Library:** LanguageExt
-* **Testing:** xUnit, Shouldly, NSubstitute
+* **Persistence:** EF Core with PostgreSQL (Npgsql)
+* **Testing:** xUnit, Shouldly, NSubstitute, Testcontainers (PostgreSQL)
 
 ---
 ## Developer Guidelines
@@ -24,6 +25,7 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 
 ### Requirements
 * [.NET 10 SDK](https://dotnet.microsoft.com/download)
+* [Docker](https://www.docker.com/products/docker-desktop/), for the local database and for the tests
 * A GitHub OAuth App (for the owner login, see [`docs/authentication.md`](./docs/authentication.md))
 
 ### Configuration
@@ -31,6 +33,7 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 
 | Setting | Secret? | Description |
 |---|---|---|
+| `Database:ConnectionString` | Yes | Npgsql connection string of the PostgreSQL database. `appsettings.Development.json` already points to the local one from `docker-compose.yml` |
 | `Jwt:SigningKey` | Yes | Key used to sign the access tokens |
 | `GitHub:ClientId` | No | Client id of the GitHub OAuth App |
 | `GitHub:ClientSecret` | Yes | Client secret of the GitHub OAuth App |
@@ -59,8 +62,20 @@ Requests are limited per client IP with two fixed-window policies: `auth` for `v
 * **Behind a proxy:** the client IP is the one the API sees. If it is deployed behind a reverse proxy or a PaaS, `ForwardedHeaders` must be configured first; otherwise every visitor shares the proxy IP and the same quota. Pending until the hosting is decided.
 * **Multiple instances:** the counters live in memory, so each instance counts on its own.
 
+### Database
+The API stores its data in PostgreSQL. The API never changes the schema: it is created by the SQL scripts in [`database/migrations`](./database/migrations), which are plain `CREATE ... IF NOT EXISTS` statements numbered in the order they must run (`001_initial_create.sql`, `002_...`).
+
+```bash
+docker compose up -d
+docker compose exec -T postgres psql -U portfolio -d portfolio < database/mock-data/001_mock_data.sql
+```
+The first command starts PostgreSQL on `localhost:5432` (user, password and database `portfolio`) and runs the scripts of `database/migrations` when its volume is created. The second one loads sample data (languages, a profile and a timeline) and can be repeated. A script added later does not run on an existing volume: run it with `psql` the same way, or start from scratch with `docker compose down -v`.
+
+When an entity changes, add a new numbered script to `database/migrations`; do not edit the ones already applied. In production, run the scripts against the database before deploying the API.
+
 ### Run
 ```bash
+docker compose up -d
 dotnet run --project Portfolio.Api
 ```
 The API listens on `http://localhost:5285` (`https://localhost:7012` with the `https` profile). Check it with `GET /health`.
@@ -75,3 +90,4 @@ To try the endpoints that only the owner can use, sign in with GitHub, exchange 
 dotnet build
 dotnet test
 ```
+The tests that touch the database run against a real PostgreSQL started with Testcontainers, so Docker must be running. They use the scripts of `database/migrations` to create the schema.
