@@ -3,6 +3,7 @@ using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 using Shouldly;
 
@@ -15,11 +16,11 @@ public class EntityFrameworkTimelineEntryFinderAdapterShould
 
     public EntityFrameworkTimelineEntryFinderAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _dbContext = new AppDbContext(options);
+
+        _dbContext.SeedLanguages("es", "en");
         _finder = new EntityFrameworkTimelineEntryFinderAdapter(_dbContext);
     }
 
