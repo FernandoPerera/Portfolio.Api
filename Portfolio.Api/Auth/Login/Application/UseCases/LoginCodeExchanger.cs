@@ -1,8 +1,8 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Login.Application.Dtos;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Login.Application.UseCases;
 
@@ -15,7 +15,7 @@ public class LoginCodeExchanger(
     IExpiredRefreshTokenCleanerRepository expiredRefreshTokenCleaner
 )
 {
-    public async Task<Either<Error, AuthTokens>> Execute(ExchangeInfo exchangeInfo)
+    public async Task<Either<DomainError, AuthTokens>> Execute(ExchangeInfo exchangeInfo)
     {
         return await (
             from loginCode in LoginCode.Create(exchangeInfo.Code).ToAsync()

@@ -1,8 +1,8 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Login.Application.Dtos;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Login.Application.UseCases;
 
@@ -13,7 +13,7 @@ public class GitHubAdminAuthenticator(
     ILoginCodeSaverRepository loginCodeSaver
 )
 {
-    public async Task<Either<Error, LoginCode>> Execute(GitHubCallbackInfo callbackInfo)
+    public async Task<Either<DomainError, LoginCode>> Execute(GitHubCallbackInfo callbackInfo)
     {
         return await (
             from state in OAuthState.Create(callbackInfo.State).ToAsync()

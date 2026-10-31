@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Domain.Models;
@@ -13,11 +12,11 @@ public class AdminUsername
         _username = username;
     }
 
-    public static Either<Error, AdminUsername> Create(string username)
+    public static Either<DomainError, AdminUsername> Create(string username)
     {
         if (string.IsNullOrWhiteSpace(username))
         {
-            return Error.New(new ValidationException("Username cannot be empty"));
+            return new ValidationError("Username cannot be empty");
         }
 
         return new AdminUsername(username.Trim());

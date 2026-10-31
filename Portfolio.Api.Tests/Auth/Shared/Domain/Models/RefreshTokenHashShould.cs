@@ -26,7 +26,7 @@ public class RefreshTokenHashShould
         RefreshTokenHash.Create(given)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Refresh token hash cannot be empty")
             );
     }

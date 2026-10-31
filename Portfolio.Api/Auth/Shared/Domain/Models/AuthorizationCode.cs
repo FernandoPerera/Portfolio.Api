@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Domain.Models;
@@ -13,11 +12,11 @@ public class AuthorizationCode
         _code = code;
     }
 
-    public static Either<Error, AuthorizationCode> Create(string code)
+    public static Either<DomainError, AuthorizationCode> Create(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
-            return Error.New(new ValidationException("Authorization code cannot be empty"));
+            return new ValidationError("Authorization code cannot be empty");
         }
 
         return new AuthorizationCode(code.Trim());

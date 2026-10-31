@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Auth.Login.Application.Dtos;
 using Portfolio.Api.Auth.Login.Application.UseCases;
@@ -50,7 +49,7 @@ public class GitHubAdminAuthenticatorShould
     public async Task NotIssueALoginCodeWhenTheUserIsNotTheAdmin()
     {
         _adminAuthorizer.EnsureIsAdmin(Arg.Any<ExternalUserId>())
-            .Returns(Error.New(new ForbiddenException("This user is not allowed to manage the portfolio")));
+            .Returns(new ForbiddenError("This user is not allowed to manage the portfolio"));
 
         var result = await _authenticator.Execute(new GitHubCallbackInfo("github-code", State, State));
 
@@ -58,7 +57,7 @@ public class GitHubAdminAuthenticatorShould
             loginCode => loginCode.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<ForbiddenException>();
+                error.ShouldBeOfType<ForbiddenError>();
                 _loginCodeSaver.DidNotReceive().Save(Arg.Any<LoginCode>());
             }
         );
@@ -73,7 +72,7 @@ public class GitHubAdminAuthenticatorShould
             loginCode => loginCode.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<UnauthorizedException>();
+                error.ShouldBeOfType<UnauthorizedError>();
                 _identityProvider.DidNotReceive().Identify(Arg.Any<AuthorizationCode>());
             }
         );

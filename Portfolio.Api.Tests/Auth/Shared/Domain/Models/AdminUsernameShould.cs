@@ -26,7 +26,7 @@ public class AdminUsernameShould
         AdminUsername.Create(given)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Username cannot be empty")
             );
     }

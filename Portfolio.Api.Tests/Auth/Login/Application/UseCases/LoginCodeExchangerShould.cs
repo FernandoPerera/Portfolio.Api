@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Auth.Login.Application.Dtos;
 using Portfolio.Api.Auth.Login.Application.UseCases;
@@ -70,7 +69,7 @@ public class LoginCodeExchangerShould
     public async Task NotIssueTokensWhenTheLoginCodeIsRejected()
     {
         _loginCodeConsumer.Consume(Arg.Any<LoginCode>())
-            .Returns(Error.New(new UnauthorizedException("Invalid login code")));
+            .Returns(new UnauthorizedError("Invalid login code"));
 
         var result = await _exchanger.Execute(new ExchangeInfo(LoginCodeValue));
 
@@ -78,7 +77,7 @@ public class LoginCodeExchangerShould
             tokens => tokens.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<UnauthorizedException>();
+                error.ShouldBeOfType<UnauthorizedError>();
                 _accessTokenIssuer.DidNotReceive().Issue(Arg.Any<AdminUsername>());
                 _refreshTokenSaver.DidNotReceive().Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>());
             }

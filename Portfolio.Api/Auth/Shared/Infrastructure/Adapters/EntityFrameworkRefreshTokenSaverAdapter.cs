@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Entities;
@@ -18,7 +17,7 @@ public class EntityFrameworkRefreshTokenSaverAdapter(
     TimeProvider timeProvider
 ) : IRefreshTokenSaverRepository
 {
-    public async Task<Either<Error, Unit>> Save(RefreshToken refreshToken, AdminUsername owner)
+    public async Task<Either<DomainError, Unit>> Save(RefreshToken refreshToken, AdminUsername owner)
     {
         return await (
             from tokenHash in refreshTokenHasher.Hash(refreshToken).ToAsync()
@@ -33,7 +32,7 @@ public class EntityFrameworkRefreshTokenSaverAdapter(
         );
     }
 
-    private async Task<Either<Error, Unit>> Persist(StoredRefreshToken stored)
+    private async Task<Either<DomainError, Unit>> Persist(StoredRefreshToken stored)
     {
         try
         {
@@ -53,7 +52,7 @@ public class EntityFrameworkRefreshTokenSaverAdapter(
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

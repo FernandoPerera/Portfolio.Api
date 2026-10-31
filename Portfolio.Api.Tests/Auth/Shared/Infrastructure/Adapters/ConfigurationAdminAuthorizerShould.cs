@@ -34,7 +34,7 @@ public class ConfigurationAdminAuthorizerShould
         authorizer.EnsureIsAdmin(ExternalUserIdBuilder.Build(givenUserId))
             .Match(
                 unit => unit.ShouldBeEquivalentTo(null),
-                error => error.Exception.Case.ShouldBeOfType<ForbiddenException>()
+                error => error.ShouldBeOfType<ForbiddenError>()
                     .Message.ShouldBe($"GitHub user '{givenUserId}' is not allowed to manage the portfolio")
             );
     }

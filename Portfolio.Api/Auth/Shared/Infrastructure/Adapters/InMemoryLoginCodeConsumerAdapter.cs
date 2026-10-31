@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.Extensions.Caching.Memory;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
@@ -14,7 +13,7 @@ public class InMemoryLoginCodeConsumerAdapter(
 {
     private readonly Lock _consumeLock = new();
 
-    public Either<Error, Unit> Consume(LoginCode loginCode)
+    public Either<DomainError, Unit> Consume(LoginCode loginCode)
     {
         lock (_consumeLock)
         {
@@ -24,7 +23,7 @@ public class InMemoryLoginCodeConsumerAdapter(
 
             if (!found || expiresAt <= timeProvider.GetUtcNow())
             {
-                return Error.New(new UnauthorizedException("Invalid login code"));
+                return new UnauthorizedError("Invalid login code");
             }
 
             return Unit.Default;

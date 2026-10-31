@@ -47,7 +47,7 @@ public class StoredRefreshTokenShould
             .Consume(Now)
             .Match(
                 consumed => consumed.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<RefreshTokenReuseException>()
+                error => error.ShouldBeOfType<RefreshTokenReuseError>()
                     .Message.ShouldBe("Refresh token has already been used")
             );
     }
@@ -61,7 +61,7 @@ public class StoredRefreshTokenShould
             .Consume(Now)
             .Match(
                 consumed => consumed.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+                error => error.ShouldBeOfType<UnauthorizedError>()
                     .Message.ShouldBe("Invalid refresh token")
             );
     }

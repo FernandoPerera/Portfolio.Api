@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Auth.Shared.Domain.Errors;
 using Portfolio.Api.Auth.Shared.Domain.Models;
@@ -11,7 +10,7 @@ namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
 public class EntityFrameworkRefreshTokenConsumerAdapter(AppDbContext dbContext) : IRefreshTokenConsumerRepository
 {
-    public async Task<Either<Error, Unit>> Consume(StoredRefreshToken consumedRefreshToken)
+    public async Task<Either<DomainError, Unit>> Consume(StoredRefreshToken consumedRefreshToken)
     {
         try
         {
@@ -19,7 +18,7 @@ public class EntityFrameworkRefreshTokenConsumerAdapter(AppDbContext dbContext) 
 
             if (entity is null)
             {
-                return Error.New(new UnauthorizedException("Invalid refresh token"));
+                return new UnauthorizedError("Invalid refresh token");
             }
 
             var entry = dbContext.Entry(entity);
@@ -35,11 +34,11 @@ public class EntityFrameworkRefreshTokenConsumerAdapter(AppDbContext dbContext) 
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 
-    private async Task<Either<Error, Unit>> ReuseOrUnknown(StoredRefreshToken consumedRefreshToken)
+    private async Task<Either<DomainError, Unit>> ReuseOrUnknown(StoredRefreshToken consumedRefreshToken)
     {
         try
         {
@@ -47,12 +46,12 @@ public class EntityFrameworkRefreshTokenConsumerAdapter(AppDbContext dbContext) 
             var stillExists = await dbContext.RefreshTokens.AsNoTracking().AnyAsync(token => token.Id == id);
 
             return stillExists
-                ? Error.New(new RefreshTokenReuseException("Refresh token has already been used"))
-                : Error.New(new UnauthorizedException("Invalid refresh token"));
+                ? new RefreshTokenReuseError("Refresh token has already been used")
+                : new UnauthorizedError("Invalid refresh token");
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

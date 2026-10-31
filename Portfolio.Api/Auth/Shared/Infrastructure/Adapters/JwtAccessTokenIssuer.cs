@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Text;
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Api.Auth.Shared.Domain.Models;
@@ -14,7 +13,7 @@ namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
 public class JwtAccessTokenIssuer(JwtOptions options, TimeProvider timeProvider) : IAccessTokenIssuer
 {
-    public Either<Error, AccessToken> Issue(AdminUsername username)
+    public Either<DomainError, AccessToken> Issue(AdminUsername username)
     {
         try
         {
@@ -42,7 +41,7 @@ public class JwtAccessTokenIssuer(JwtOptions options, TimeProvider timeProvider)
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Access token cannot be issued, error: " + error.Message, error));
+            return new ServiceUnavailableError("Access token cannot be issued, error: " + error.Message, error);
         }
     }
 }

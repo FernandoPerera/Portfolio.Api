@@ -1,7 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
@@ -13,21 +12,21 @@ public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, GitHub
 {
     public const string ClientName = "github";
 
-    public async Task<Either<Error, ExternalUserId>> Identify(AuthorizationCode code)
+    public async Task<Either<DomainError, ExternalUserId>> Identify(AuthorizationCode code)
     {
         try
         {
             var accessToken = await ExchangeCode(code);
             if (accessToken is null)
             {
-                return Error.New(new UnauthorizedException("The authorization code was rejected by GitHub"));
+                return new UnauthorizedError("The authorization code was rejected by GitHub");
             }
 
             return await FindUserId(accessToken);
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("GitHub is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("GitHub is unavailable, error: " + error.Message, error);
         }
     }
 
@@ -56,7 +55,7 @@ public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, GitHub
             : null;
     }
 
-    private async Task<Either<Error, ExternalUserId>> FindUserId(string accessToken)
+    private async Task<Either<DomainError, ExternalUserId>> FindUserId(string accessToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, options.UserEndpoint);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

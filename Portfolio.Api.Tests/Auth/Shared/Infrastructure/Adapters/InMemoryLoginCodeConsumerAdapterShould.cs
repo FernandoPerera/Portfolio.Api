@@ -41,7 +41,7 @@ public class InMemoryLoginCodeConsumerAdapterShould
     {
         _consumer.Consume(LoginCodeBuilder.Build("unknown")).Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+            error => error.ShouldBeOfType<UnauthorizedError>()
                 .Message.ShouldBe("Invalid login code")
         );
     }
@@ -54,7 +54,7 @@ public class InMemoryLoginCodeConsumerAdapterShould
 
         _consumer.Consume(loginCode).Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+            error => error.ShouldBeOfType<UnauthorizedError>()
         );
     }
 
@@ -67,7 +67,7 @@ public class InMemoryLoginCodeConsumerAdapterShould
 
         _consumer.Consume(loginCode).Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+            error => error.ShouldBeOfType<UnauthorizedError>()
         );
     }
 }
