@@ -17,6 +17,7 @@ Backend API built with .NET 10 / C# 14 using Clean Architecture, Tactical DDD, a
 * **Architecture Rules:** See [`docs/architecture.md`](./docs/architecture.md)
 * **Testing Guidelines:** See [`docs/testing.md`](./docs/testing.md)
 * **Planning Workflow:** See [`docs/planning.md`](./docs/planning.md)
+* **Logging:** See [`docs/logging.md`](./docs/logging.md)
 
 ---
 ## Quick Start
