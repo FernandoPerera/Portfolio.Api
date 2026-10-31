@@ -7,8 +7,8 @@ using Portfolio.Api.Profiles.Find.Domain.Ports;
 using Portfolio.Api.Profiles.Find.Infrastructure.Controllers;
 using Portfolio.Api.Profiles.Find.Infrastructure.Dtos;
 using Portfolio.Api.Shared.Domain.Errors;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Tests.Profiles.Find.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Find.Infrastructure.Controllers;
@@ -22,7 +22,7 @@ public class ProfileFinderControllerShould
     {
         _repository = Substitute.For<IProfileFinderRepository>();
         var finder = new ProfileFinder(_repository);
-        _controller = new ProfileFinderController(finder, new ProblemDetailsMapper());
+        _controller = new ProfileFinderController(finder, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

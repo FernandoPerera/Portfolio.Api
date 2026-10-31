@@ -8,8 +8,8 @@ using Portfolio.Api.Languages.Find.Domain.Ports;
 using Portfolio.Api.Languages.Find.Infrastructure.Controllers;
 using Portfolio.Api.Languages.Find.Infrastructure.Dtos;
 using Portfolio.Api.Shared.Domain.Errors;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Tests.Languages.Find.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Find.Infrastructure.Controllers;
@@ -23,7 +23,7 @@ public class LanguageFinderControllerShould
     {
         _repository = Substitute.For<ILanguageFinderRepository>();
         var finder = new LanguageFinder(_repository);
-        _controller = new LanguageFinderController(finder, new ProblemDetailsMapper());
+        _controller = new LanguageFinderController(finder, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

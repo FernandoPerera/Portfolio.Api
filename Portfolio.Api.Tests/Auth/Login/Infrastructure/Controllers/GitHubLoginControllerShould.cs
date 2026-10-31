@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Portfolio.Api.Auth.Login.Application.UseCases;
-using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Auth.Login.Infrastructure.Controllers;
+using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Login.Infrastructure.Controllers;
@@ -43,7 +43,7 @@ public class GitHubLoginControllerShould
             new GitHubAuthorizationUrlBuilder(options)
         );
 
-        return new GitHubLoginController(starter, new ProblemDetailsMapper())
+        return new GitHubLoginController(starter, ProblemDetailsMapperBuilder.Build())
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };

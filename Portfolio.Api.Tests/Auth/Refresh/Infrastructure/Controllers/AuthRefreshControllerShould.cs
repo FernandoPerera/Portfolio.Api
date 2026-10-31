@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Portfolio.Api.Auth.Refresh.Application.UseCases;
 using Portfolio.Api.Auth.Refresh.Infrastructure.Controllers;
 using Portfolio.Api.Auth.Refresh.Infrastructure.Dtos;
@@ -11,6 +12,7 @@ using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Auth.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
@@ -52,10 +54,14 @@ public class AuthRefreshControllerShould
                 jwtOptions,
                 timeProvider
             ),
-            new EntityFrameworkExpiredRefreshTokenCleanerAdapter(_appDbContext, timeProvider),
+            new EntityFrameworkExpiredRefreshTokenCleanerAdapter(
+                _appDbContext,
+                timeProvider,
+                NullLogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter>.Instance
+            ),
             timeProvider
         );
-        _controller = new AuthRefreshController(refresher, new ProblemDetailsMapper());
+        _controller = new AuthRefreshController(refresher, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

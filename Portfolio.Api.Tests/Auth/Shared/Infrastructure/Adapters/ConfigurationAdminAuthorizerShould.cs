@@ -35,7 +35,7 @@ public class ConfigurationAdminAuthorizerShould
             .Match(
                 unit => unit.ShouldBeEquivalentTo(null),
                 error => error.Exception.Case.ShouldBeOfType<ForbiddenException>()
-                    .Message.ShouldBe("This user is not allowed to manage the portfolio")
+                    .Message.ShouldBe($"GitHub user '{givenUserId}' is not allowed to manage the portfolio")
             );
     }
 

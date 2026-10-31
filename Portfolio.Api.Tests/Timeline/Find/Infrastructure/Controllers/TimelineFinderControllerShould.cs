@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using Portfolio.Api.Shared.Domain.Errors;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
 using Portfolio.Api.Timeline.Find.Application.UseCases;
@@ -24,7 +24,7 @@ public class TimelineFinderControllerShould
     {
         _repository = Substitute.For<ITimelineFinderRepository>();
         var finder = new TimelineFinder(_repository);
-        _controller = new TimelineFinderController(finder, new ProblemDetailsMapper());
+        _controller = new TimelineFinderController(finder, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

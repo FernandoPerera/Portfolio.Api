@@ -22,6 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApiDocumentation();
 builder.Services.AddHealthChecks();
+builder.Services.AddRequestLogging();
 
 // Shared dependencies
 builder.Services.AddSharedInfrastructure();
@@ -59,6 +60,7 @@ builder.Services.AddTimelineUpdate();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseRequestLogging();
 app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();

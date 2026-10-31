@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Testing;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
@@ -23,7 +26,11 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
             .Options;
 
         _appDbContext = new AppDbContext(options);
-        _cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(_appDbContext, new FixedTimeProvider(Now));
+        _cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(
+            _appDbContext,
+            new FixedTimeProvider(Now),
+            NullLogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter>.Instance
+        );
     }
 
     [Fact]
@@ -57,7 +64,7 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
     }
 
     [Fact]
-    public async Task NotFailAndDiscardTheDeletionsWhenTheCleaningCannotBeDone()
+    public async Task NotFailAndDiscardTheDeletionsAndWarnWhenTheCleaningCannotBeDone()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -66,7 +73,8 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
         failingContext.RefreshTokens.Add(
             RefreshTokenEntityBuilder.Build(RefreshTokenBuilder.Build("expired"), expiresAt: Now.AddDays(-1))
         );
-        var cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(failingContext, new FixedTimeProvider(Now));
+        var logger = new FakeLogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter>();
+        var cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(failingContext, new FixedTimeProvider(Now), logger);
 
         var result = await cleaner.Clean();
 
@@ -75,6 +83,9 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
             {
                 unit.ShouldBeUnit();
                 failingContext.ChangeTracker.Entries().ShouldBeEmpty();
+                var entry = logger.Collector.GetSnapshot().ShouldHaveSingleItem();
+                entry.Level.ShouldBe(LogLevel.Warning);
+                entry.Exception.ShouldBeOfType<InvalidOperationException>();
             },
             error => error.ShouldBeNull()
         );

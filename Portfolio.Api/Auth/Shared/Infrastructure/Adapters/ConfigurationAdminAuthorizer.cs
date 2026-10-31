@@ -14,7 +14,7 @@ public class ConfigurationAdminAuthorizer(AdminOptions adminOptions) : IAdminAut
         var adminUserId = adminOptions.GitHubUserId;
         if (string.IsNullOrWhiteSpace(adminUserId) || adminUserId.Trim() != userId.ToString())
         {
-            return Error.New(new ForbiddenException("This user is not allowed to manage the portfolio"));
+            return Error.New(new ForbiddenException($"GitHub user '{userId}' is not allowed to manage the portfolio"));
         }
 
         return Unit.Default;

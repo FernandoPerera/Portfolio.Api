@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Timeline.Update.Application.UseCases;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
@@ -30,7 +30,7 @@ public class TimelineUpdaterControllerShould
             new EntityFrameworkTimelineEntryFinderAdapter(_appDbContext),
             new EntityFrameworkTimelineUpdaterAdapter(_appDbContext)
         );
-        _controller = new TimelineUpdaterController(updater, new ProblemDetailsMapper());
+        _controller = new TimelineUpdaterController(updater, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

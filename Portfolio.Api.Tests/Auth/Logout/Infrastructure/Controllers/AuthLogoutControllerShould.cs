@@ -4,10 +4,10 @@ using Portfolio.Api.Auth.Logout.Application.UseCases;
 using Portfolio.Api.Auth.Logout.Infrastructure.Controllers;
 using Portfolio.Api.Auth.Logout.Infrastructure.Dtos;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Auth.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Logout.Infrastructure.Controllers;
@@ -34,7 +34,7 @@ public class AuthLogoutControllerShould
             new EntityFrameworkRefreshTokenFinderAdapter(_appDbContext),
             new EntityFrameworkRefreshTokenRevokerAdapter(_appDbContext)
         );
-        _controller = new AuthLogoutController(closer, new ProblemDetailsMapper());
+        _controller = new AuthLogoutController(closer, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

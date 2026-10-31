@@ -7,8 +7,8 @@ using Portfolio.Api.Languages.Update.Infrastructure.Controllers;
 using Portfolio.Api.Languages.Update.Infrastructure.Dtos;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Update.Infrastructure.Controllers;
@@ -29,7 +29,7 @@ public class LanguageUpdaterControllerShould
             new EntityFrameworkLanguageExistenceAdapter(_appDbContext),
             new EntityFrameworkLanguageUpdaterAdapter(_appDbContext)
         );
-        _controller = new LanguageUpdaterController(updater, new ProblemDetailsMapper());
+        _controller = new LanguageUpdaterController(updater, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]
