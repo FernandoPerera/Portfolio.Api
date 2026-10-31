@@ -29,7 +29,7 @@ public class EntityFrameworkLanguageUpdaterAdapter(AppDbContext dbContext) : ILa
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message));
+            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
         }
     }
 }
