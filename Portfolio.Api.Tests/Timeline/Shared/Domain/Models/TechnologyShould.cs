@@ -26,7 +26,7 @@ public class TechnologyShould
         Technology.Create(givenTechnology)
             .Match(
                 technology => technology.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Technology cannot be empty")
             );
     }
@@ -39,7 +39,7 @@ public class TechnologyShould
         Technology.Create(givenTechnology)
             .Match(
                 technology => technology.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The technology cannot exceed 50 characters")
             );
     }

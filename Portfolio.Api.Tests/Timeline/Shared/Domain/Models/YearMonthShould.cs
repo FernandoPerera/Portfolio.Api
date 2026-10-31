@@ -36,7 +36,7 @@ public class YearMonthShould
         YearMonth.Create(givenDate)
             .Match(
                 yearMonth => yearMonth.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Date cannot be empty")
             );
     }
@@ -54,7 +54,7 @@ public class YearMonthShould
         YearMonth.Create(givenDate)
             .Match(
                 yearMonth => yearMonth.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Date must have the format yyyy-MM")
             );
     }

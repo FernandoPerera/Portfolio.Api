@@ -80,7 +80,7 @@ public class EntityFrameworkTimelineCreatorAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

@@ -31,7 +31,7 @@ public class ProfileFoundShould
         profile.GetTranslation(languageCode)
             .Match(
                 translation => translation.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+                error => error.ShouldBeOfType<NotFoundError>()
                     .Message.ShouldBe("Profile translation for language 'fr' was not found")
             );
     }

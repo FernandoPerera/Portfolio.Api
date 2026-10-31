@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Shared.Domain.Ports;
 
 public interface ILanguageExistenceRepository
 {
-    Task<Either<Error, Unit>> Exists(LanguageCode languageCode);
+    Task<Either<DomainError, Unit>> Exists(LanguageCode languageCode);
 }

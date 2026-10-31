@@ -47,7 +47,7 @@ When a `5xx` happens, the client receives a generic message:
 
 The real cause (the message of the database or of GitHub, and the stack trace) is written to the log with the `Error` level. It is not returned in the response, so internal details do not leak. The `4xx` answers keep their own message, because it is written for the client.
 
-To keep the cause, `ServiceUnavailableException` carries the original exception as `InnerException`. This is temporary: the errors are domain types and should not hold an infrastructure exception, so a later refactor will replace this mechanism.
+To keep the cause, `ServiceUnavailableError` carries the original exception in its `Cause` property, and the mapper passes it to the logger. It is the only domain error that holds an infrastructure exception, and only to be logged.
 
 ---
 ## 5. Configuration

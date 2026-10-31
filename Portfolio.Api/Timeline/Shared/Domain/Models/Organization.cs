@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
@@ -15,23 +14,23 @@ public class Organization
         _organization = organization;
     }
 
-    public static Either<Error, Organization> Create(string organization)
+    public static Either<DomainError, Organization> Create(string organization)
     {
         if (string.IsNullOrWhiteSpace(organization))
         {
-            return Error.New(new ValidationException("Organization cannot be empty"));
+            return new ValidationError("Organization cannot be empty");
         }
 
         var trimmed = organization.Trim();
         if (trimmed.Length > CharacterLimit)
         {
-            return Error.New(new ValidationException($"The organization cannot exceed {CharacterLimit} characters"));
+            return new ValidationError($"The organization cannot exceed {CharacterLimit} characters");
         }
 
         return new Organization(trimmed);
     }
 
-    public static Either<Error, Organization> CreateUnsafe(string organization) => new Organization(organization);
+    public static Either<DomainError, Organization> CreateUnsafe(string organization) => new Organization(organization);
 
     public override string ToString() => _organization;
 }

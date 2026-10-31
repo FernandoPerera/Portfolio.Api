@@ -1,8 +1,8 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.Extensions.Logging;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
@@ -12,7 +12,7 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapter(
     ILogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter> logger
 ) : IExpiredRefreshTokenCleanerRepository
 {
-    public async Task<Either<Error, Unit>> Clean()
+    public async Task<Either<DomainError, Unit>> Clean()
     {
         try
         {

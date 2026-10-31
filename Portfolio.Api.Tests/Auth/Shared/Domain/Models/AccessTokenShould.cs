@@ -26,7 +26,7 @@ public class AccessTokenShould
         AccessToken.Create(given)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Access token cannot be empty")
             );
     }

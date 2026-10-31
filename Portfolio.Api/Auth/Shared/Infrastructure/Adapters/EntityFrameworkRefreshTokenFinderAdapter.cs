@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
@@ -10,7 +9,7 @@ namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
 public class EntityFrameworkRefreshTokenFinderAdapter(AppDbContext dbContext) : IRefreshTokenFinderRepository
 {
-    public async Task<Either<Error, StoredRefreshToken>> Find(RefreshTokenHash tokenHash)
+    public async Task<Either<DomainError, StoredRefreshToken>> Find(RefreshTokenHash tokenHash)
     {
         try
         {
@@ -20,7 +19,7 @@ public class EntityFrameworkRefreshTokenFinderAdapter(AppDbContext dbContext) : 
 
             if (entity is null)
             {
-                return Error.New(new UnauthorizedException("Invalid refresh token"));
+                return new UnauthorizedError("Invalid refresh token");
             }
 
             return StoredRefreshToken.CreateUnsafe(
@@ -33,7 +32,7 @@ public class EntityFrameworkRefreshTokenFinderAdapter(AppDbContext dbContext) : 
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

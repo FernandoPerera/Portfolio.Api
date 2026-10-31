@@ -29,7 +29,7 @@ public class OAuthStateShould
         OAuthState.Create(given)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("OAuth state cannot be empty")
             );
     }
@@ -52,7 +52,7 @@ public class OAuthStateShould
         OAuthStateBuilder.Build("state").EnsureMatches(OAuthStateBuilder.Build(other))
             .Match(
                 unit => unit.ShouldBeEquivalentTo(null),
-                error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+                error => error.ShouldBeOfType<UnauthorizedError>()
                     .Message.ShouldBe("Invalid OAuth state")
             );
     }

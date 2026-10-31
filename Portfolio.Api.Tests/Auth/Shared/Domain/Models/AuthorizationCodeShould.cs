@@ -26,7 +26,7 @@ public class AuthorizationCodeShould
         AuthorizationCode.Create(given)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Authorization code cannot be empty")
             );
     }

@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Update.Application.Dtos;
 using Portfolio.Api.Timeline.Update.Domain.Models;
 using Portfolio.Api.Timeline.Update.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Update.Application.UseCases;
 
@@ -12,7 +12,7 @@ public class TimelineUpdater(
     ITimelineUpdaterRepository updater
 )
 {
-    public async Task<Either<Error, Unit>> Execute(TimelineUpdaterInfo timelineUpdaterInfo)
+    public async Task<Either<DomainError, Unit>> Execute(TimelineUpdaterInfo timelineUpdaterInfo)
     {
         return await (
             from id in TimelineId.Create(timelineUpdaterInfo.Id).ToAsync()

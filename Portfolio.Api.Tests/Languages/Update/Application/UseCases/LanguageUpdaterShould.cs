@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Languages.Update.Application.Dtos;
 using Portfolio.Api.Languages.Update.Application.UseCases;
@@ -58,7 +57,7 @@ public class LanguageUpdaterShould
             unit => unit.ShouldBeEquivalentTo(null),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<ValidationException>();
+                error.ShouldBeOfType<ValidationError>();
                 _updaterRepository.DidNotReceive().UpdateLanguage(Arg.Any<LanguageToBeUpdated>());
             }
         );
@@ -69,7 +68,7 @@ public class LanguageUpdaterShould
     {
         var updaterInfo = new LanguageUpdaterInfo("fr", "Français");
         _languageExistenceRepository.Exists(Arg.Any<LanguageCode>())
-            .Returns(Error.New(new NotFoundException("Language 'fr' was not found")));
+            .Returns(new NotFoundError("Language 'fr' was not found"));
 
         var result = await _updater.Execute(updaterInfo);
 
@@ -77,7 +76,7 @@ public class LanguageUpdaterShould
             unit => unit.ShouldBeEquivalentTo(null),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<NotFoundException>();
+                error.ShouldBeOfType<NotFoundError>();
                 _updaterRepository.DidNotReceive().UpdateLanguage(Arg.Any<LanguageToBeUpdated>());
             }
         );

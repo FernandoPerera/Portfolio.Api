@@ -149,7 +149,7 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
                 .Message.ShouldBe("Profile was not found")
         );
     }
@@ -166,7 +166,7 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
                 .Message.ShouldBe("Profile translation for language 'fr' was not found")
         );
     }
@@ -180,7 +180,7 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 

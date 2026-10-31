@@ -37,7 +37,7 @@ public class TimelinePeriodShould
         TimelinePeriod.Create("2023-01", "2022-12")
             .Match(
                 period => period.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The end date cannot be earlier than the start date")
             );
     }

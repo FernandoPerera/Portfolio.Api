@@ -24,7 +24,7 @@ public class RefreshTokenIdShould
         RefreshTokenId.Create(Guid.Empty)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Refresh token id cannot be empty")
             );
     }

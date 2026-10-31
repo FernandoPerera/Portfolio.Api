@@ -55,7 +55,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
         );
     }
 
@@ -70,7 +70,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

@@ -1,5 +1,5 @@
 using LanguageExt;
-using LanguageExt.Common;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Domain.Models;
 
@@ -12,12 +12,12 @@ public class ConsumedAt
         _consumedAt = consumedAt;
     }
 
-    public static Either<Error, ConsumedAt> Create(DateTimeOffset consumedAt) =>
+    public static Either<DomainError, ConsumedAt> Create(DateTimeOffset consumedAt) =>
         new ConsumedAt(Option<DateTimeOffset>.Some(consumedAt));
 
-    public static Either<Error, ConsumedAt> NotConsumed() => new ConsumedAt(Option<DateTimeOffset>.None);
+    public static Either<DomainError, ConsumedAt> NotConsumed() => new ConsumedAt(Option<DateTimeOffset>.None);
 
-    public static Either<Error, ConsumedAt> CreateUnsafe(DateTimeOffset? consumedAt) =>
+    public static Either<DomainError, ConsumedAt> CreateUnsafe(DateTimeOffset? consumedAt) =>
         new ConsumedAt(consumedAt is { } value ? Option<DateTimeOffset>.Some(value) : Option<DateTimeOffset>.None);
 
     public bool IsConsumed() => _consumedAt.IsSome;

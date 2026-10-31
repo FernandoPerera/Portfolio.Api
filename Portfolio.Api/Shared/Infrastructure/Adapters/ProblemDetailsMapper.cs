@@ -1,4 +1,3 @@
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,52 +11,53 @@ public class ProblemDetailsMapper(ILogger<ProblemDetailsMapper> logger) : IError
     private const string ServiceUnavailableDetail = "The service is unavailable right now. Try again later.";
     private const string UnexpectedErrorDetail = "An unexpected error occurred.";
 
-    public ActionResult ToActionResult(ControllerBase controller, Error error)
+    public ActionResult ToActionResult(ControllerBase controller, DomainError error)
     {
-        return error.Exception.Case switch
+        return error switch
         {
-            NotFoundException => CreateProblemResult(
+            NotFoundError => CreateProblemResult(
                 controller,
                 StatusCodes.Status404NotFound,
                 "Not Found",
                 "https://http.cat/404",
                 error.Message
             ),
-            ValidationException => CreateProblemResult(
+            ValidationError => CreateProblemResult(
                 controller,
                 StatusCodes.Status400BadRequest,
                 "Bad Request",
                 "https://http.cat/400",
                 error.Message
             ),
-            UnauthorizedException => CreateRejectedResult(
+            UnauthorizedError => CreateRejectedResult(
                 controller,
                 StatusCodes.Status401Unauthorized,
                 "Unauthorized",
                 "https://http.cat/401",
-                error
+                error.Message
             ),
-            ForbiddenException => CreateRejectedResult(
+            ForbiddenError => CreateRejectedResult(
                 controller,
                 StatusCodes.Status403Forbidden,
                 "Forbidden",
                 "https://http.cat/403",
-                error
+                error.Message
             ),
-            ConflictException => CreateProblemResult(
+            ConflictError => CreateProblemResult(
                 controller,
                 StatusCodes.Status409Conflict,
                 "Conflict",
                 "https://http.cat/409",
                 error.Message
             ),
-            ServiceUnavailableException => CreateServerErrorResult(
+            ServiceUnavailableError unavailable => CreateServerErrorResult(
                 controller,
                 StatusCodes.Status503ServiceUnavailable,
                 "Service Unavailable",
                 "https://http.cat/503",
                 ServiceUnavailableDetail,
-                error
+                error.Message,
+                unavailable.Cause
             ),
             _ => CreateServerErrorResult(
                 controller,
@@ -65,7 +65,8 @@ public class ProblemDetailsMapper(ILogger<ProblemDetailsMapper> logger) : IError
                 "Internal Server Error",
                 "https://http.cat/500",
                 UnexpectedErrorDetail,
-                error
+                error.Message,
+                null
             )
         };
     }
@@ -75,17 +76,17 @@ public class ProblemDetailsMapper(ILogger<ProblemDetailsMapper> logger) : IError
         int statusCode,
         string title,
         string type,
-        Error error
+        string message
     )
     {
         logger.LogWarning(
             "Request to {Path} rejected with {StatusCode}: {Message}",
             GetPath(controller),
             statusCode,
-            error.Message
+            message
         );
 
-        return CreateProblemResult(controller, statusCode, title, type, error.Message);
+        return CreateProblemResult(controller, statusCode, title, type, message);
     }
 
     private ObjectResult CreateServerErrorResult(
@@ -94,15 +95,16 @@ public class ProblemDetailsMapper(ILogger<ProblemDetailsMapper> logger) : IError
         string title,
         string type,
         string detail,
-        Error error
+        string message,
+        Exception? cause
     )
     {
         logger.LogError(
-            error.ToException(),
+            cause,
             "Request to {Path} failed with {StatusCode}: {Message}",
             GetPath(controller),
             statusCode,
-            error.Message
+            message
         );
 
         return CreateProblemResult(controller, statusCode, title, type, detail);

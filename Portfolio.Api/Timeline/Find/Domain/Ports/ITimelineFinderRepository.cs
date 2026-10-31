@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Timeline.Find.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Find.Domain.Ports;
 
 public interface ITimelineFinderRepository
 {
-    Task<Either<Error, List<TimelineEntryFound>>> FindEntries();
+    Task<Either<DomainError, List<TimelineEntryFound>>> FindEntries();
 }

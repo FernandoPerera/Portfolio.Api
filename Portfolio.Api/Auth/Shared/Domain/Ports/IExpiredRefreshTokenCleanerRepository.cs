@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Domain.Ports;
 
 public interface IExpiredRefreshTokenCleanerRepository
 {
-    Task<Either<Error, Unit>> Clean();
+    Task<Either<DomainError, Unit>> Clean();
 }

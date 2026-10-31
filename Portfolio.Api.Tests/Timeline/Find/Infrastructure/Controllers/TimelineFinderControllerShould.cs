@@ -1,4 +1,3 @@
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -57,7 +56,7 @@ public class TimelineFinderControllerShould
     [Fact]
     public async Task NotFindTheTimelineWhenUnexpectedErrorOccurs()
     {
-        var serviceUnavailableError = Error.New(new ServiceUnavailableException("Database down"));
+        var serviceUnavailableError = new ServiceUnavailableError("Database down");
         _repository.FindEntries().Returns(serviceUnavailableError);
 
         var actionResult = await _controller.Find();

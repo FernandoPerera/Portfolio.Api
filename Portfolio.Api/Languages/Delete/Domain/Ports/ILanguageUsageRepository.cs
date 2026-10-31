@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Delete.Domain.Ports;
 
 public interface ILanguageUsageRepository
 {
-    Task<Either<Error, Unit>> EnsureIsNotInUse(LanguageCode languageCode);
+    Task<Either<DomainError, Unit>> EnsureIsNotInUse(LanguageCode languageCode);
 }

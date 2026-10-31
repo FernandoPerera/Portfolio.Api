@@ -51,7 +51,7 @@ public class EntityFrameworkLanguageUsageAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ConflictException>()
+            error => error.ShouldBeOfType<ConflictError>()
                 .Message.ShouldBe("Language 'es' is used by existing translations")
         );
     }
@@ -70,7 +70,7 @@ public class EntityFrameworkLanguageUsageAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ConflictException>()
+            error => error.ShouldBeOfType<ConflictError>()
         );
     }
 
@@ -84,7 +84,7 @@ public class EntityFrameworkLanguageUsageAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 

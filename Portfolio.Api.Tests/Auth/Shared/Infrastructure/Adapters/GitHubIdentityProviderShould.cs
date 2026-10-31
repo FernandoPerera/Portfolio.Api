@@ -62,7 +62,7 @@ public class GitHubIdentityProviderShould
             userId => userId.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<UnauthorizedException>();
+                error.ShouldBeOfType<UnauthorizedError>();
                 handler.Requests.Count.ShouldBe(1);
             }
         );
@@ -78,7 +78,7 @@ public class GitHubIdentityProviderShould
 
         result.Match(
             userId => userId.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 
@@ -96,7 +96,7 @@ public class GitHubIdentityProviderShould
 
         result.Match(
             userId => userId.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 

@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
@@ -15,23 +14,23 @@ public class TimelineTitle
         _title = title;
     }
 
-    public static Either<Error, TimelineTitle> Create(string title)
+    public static Either<DomainError, TimelineTitle> Create(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
-            return Error.New(new ValidationException("Title cannot be empty"));
+            return new ValidationError("Title cannot be empty");
         }
 
         var trimmed = title.Trim();
         if (trimmed.Length > CharacterLimit)
         {
-            return Error.New(new ValidationException($"The title cannot exceed {CharacterLimit} characters"));
+            return new ValidationError($"The title cannot exceed {CharacterLimit} characters");
         }
 
         return new TimelineTitle(trimmed);
     }
 
-    public static Either<Error, TimelineTitle> CreateUnsafe(string title) => new TimelineTitle(title);
+    public static Either<DomainError, TimelineTitle> CreateUnsafe(string title) => new TimelineTitle(title);
 
     public override string ToString() => _title;
 }

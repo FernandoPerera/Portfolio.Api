@@ -8,23 +8,37 @@ Clean Architecture coupled with Tactical Domain-Driven Design (DDD) and Function
 ## Layer Implementation Patterns
 
 ### 1. Domain Layer
-- **Value Objects:** Immutable, `private` constructor, `public static Either<Error, T> Create(...)`.
+- **Value Objects:** Immutable, `private` constructor, `public static Either<DomainError, T> Create(...)`.
 - **Domain Models / Entities:** `private` constructor, monadic LINQ composition from Value Objects. Expose values via explicit `GetX()` getter methods for infrastructure adapters.
 - **Rules Live in Value Objects:** Models only compose Value Objects and keep invariants that span several of them (e.g., end date not before start date). Any rule about a single concept gets its own Value Object instead of a private helper in the model: optional values (`EndDate` wraps `Option<YearMonth>`), and collections with rules such as non-empty or no duplicates (`Technologies`, `TimelineTranslations`).
 - **No Primitives in the Domain:** Domain Models hold only Value Objects, never `Guid`, `string`, `DateTimeOffset` or `bool` fields (ids and dates included, e.g., `RefreshTokenId`, `ExpiresAt`, `ConsumedAt`). Primitives appear only at the edges: the `Create` and `CreateUnsafe` factories of a Model, which receive primitives and compose the Value Objects' own factories with monadic LINQ, and the `GetX()` getters for the infrastructure. A Model never asks its caller to build the Value Objects.
 - **Tell, Don't Ask:** Whenever it applies, tell the object to do the work instead of pulling its state out and deciding outside (e.g., a controller calls `startDate.ToString()` to get the `yyyy-MM` text rather than formatting a `DateOnly` itself). Formats and rules stay with the Value Object that owns them.
-- **Factory Methods Always Return `Either`:** Every `Create(...)` returns `Either<Error, T>`, even when the input is already trusted. No `Create` variant returns a bare `T`.
-- **Ports:** Interfaces in `Domain/Ports/`. Accept strongly-typed Domain Models or Value Objects (never raw primitives). Return `Task<Either<Error, Unit>>` or `Task<Either<Error, TResult>>`.
+- **Factory Methods Always Return `Either`:** Every `Create(...)` returns `Either<DomainError, T>`, even when the input is already trusted. No `Create` variant returns a bare `T`.
+- **Ports:** Interfaces in `Domain/Ports/`. Accept strongly-typed Domain Models or Value Objects (never raw primitives). Return `Task<Either<DomainError, Unit>>` or `Task<Either<DomainError, TResult>>`.
 - **Canonical Examples:** `src/Domain/ValueObjects/Name.cs`, `src/Domain/Models/ProfileToBeCreated.cs`, `src/Domain/Ports/IProfileCreatorRepository.cs`.
 
 ### 2. Application Layer
 - **Application DTOs:** Immutable `record` with primitive types required for execution.
-- **Use Cases:** Class with Primary Constructor injecting ports. Execute method returning `Task<Either<Error, Unit>>` or `Task<Either<Error, TResult>>` orchestrated via LINQ `.ToAsync()`.
+- **Use Cases:** Class with Primary Constructor injecting ports. Execute method returning `Task<Either<DomainError, Unit>>` or `Task<Either<DomainError, TResult>>` orchestrated via LINQ `.ToAsync()`.
 - **Canonical Examples:** `src/Application/DTOs/ProfileCreatorInfo.cs`, `src/Application/UseCases/ProfileCreator.cs`.
 
 ### 3. Infrastructure Layer
 - **Infrastructure DTOs:** Immutable `record` representing HTTP payloads.
 - **Controllers:** Primary Constructor injecting Use Case and `IErrorResponseMapper`. `[ApiController]`, `[Route("v1/...")]`, `[Produces("application/json")]`. Functional result mapping via `.ToAsync().Match(...)`, delegating errors with `error => errorResponseMapper.ToActionResult(this, error)`. No `switch` on errors in controllers.
 - **Error Mapping:** Port `IErrorResponseMapper` (`Shared/Infrastructure/Ports/`), adapter `ProblemDetailsMapper` (`Shared/Infrastructure/Adapters/`), registered in `SharedInfrastructureExtensions`. Maps domain errors to RFC 7807 `ProblemDetails` responses.
-- **Adapters:** Implement domain ports. Primary Constructor injecting `DbContext` and dependencies. Wrap low-level exception throwing inside `try/catch` and map to `Error.New(new ServiceUnavailableException(...))`.
+- **Domain Errors:** `DomainError` is an abstract `record` (`Shared/Domain/Errors/`) that does not extend `Exception`; they travel as the `Left` of `Either<DomainError, T>` and are never thrown. Create them directly (`new NotFoundError("...")`), without `Error.New`. Checks on the kind of error use type patterns (`error is UnauthorizedError`).
+
+  | Error | HTTP | Logged |
+  |---|---|---|
+  | `ValidationError` | 400 | no |
+  | `UnauthorizedError` | 401 | warning |
+  | `RefreshTokenReuseError` (extends `UnauthorizedError`) | 401 | warning |
+  | `ForbiddenError` | 403 | warning |
+  | `NotFoundError` | 404 | no |
+  | `ConflictError` | 409 | no |
+  | `ServiceUnavailableError` (carries the `Cause` exception for the log) | 503 | error |
+  | any other `DomainError` | 500 | error |
+
+  `RefreshTokenReuseError` exists so `TokenRefresher` can tell a reused refresh token (revokes the session) from any other `401`.
+- **Adapters:** Implement domain ports. Primary Constructor injecting `DbContext` and dependencies. Wrap low-level exception throwing inside `try/catch` and map to `new ServiceUnavailableError(message, cause)`.
 - **Canonical Examples:** `src/Infrastructure/Controllers/ProfileCreatorController.cs`, `src/Infrastructure/Adapters/EntityFrameworkProfileCreatorAdapter.cs`.

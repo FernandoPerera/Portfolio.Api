@@ -83,7 +83,7 @@ public class ProfileToBeUpdatedShould
         ProfileToBeUpdated.Create(current, null, null, null, null, "fr")
             .Match(
                 profile => profile.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+                error => error.ShouldBeOfType<NotFoundError>()
                     .Message.ShouldBe("Profile translation for language 'fr' was not found")
             );
     }

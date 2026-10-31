@@ -27,7 +27,7 @@ public class TimelineTranslationsShould
         TimelineTranslations.Create([])
             .Match(
                 translations => translations.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("At least one translation is required")
             );
     }
@@ -41,7 +41,7 @@ public class TimelineTranslationsShould
         TimelineTranslations.Create([first, second])
             .Match(
                 translations => translations.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Translations cannot repeat the same language")
             );
     }

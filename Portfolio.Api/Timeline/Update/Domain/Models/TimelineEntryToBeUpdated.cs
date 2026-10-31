@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Find.Domain.Models;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
 using static LanguageExt.Prelude;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Update.Domain.Models;
 
@@ -39,7 +39,7 @@ public class TimelineEntryToBeUpdated
         _description = description;
     }
 
-    public static Either<Error, TimelineEntryToBeUpdated> Create(
+    public static Either<DomainError, TimelineEntryToBeUpdated> Create(
         TimelineEntryFound current,
         string? givenOrganization,
         string? givenCategory,

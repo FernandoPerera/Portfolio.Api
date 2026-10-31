@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
 using static LanguageExt.Prelude;
@@ -19,7 +18,7 @@ public class ProfileFound
         _translations = translations;
     }
 
-    public static Either<Error, ProfileFound> CreateUnsafe(
+    public static Either<DomainError, ProfileFound> CreateUnsafe(
         string givenName,
         string? givenEnterpriseName,
         List<ProfileTranslationFound> translations
@@ -34,7 +33,7 @@ public class ProfileFound
 
     public List<ProfileTranslationFound> GetTranslations() => _translations;
 
-    public Either<Error, ProfileTranslationFound> GetTranslation(LanguageCode languageCode) =>
+    public Either<DomainError, ProfileTranslationFound> GetTranslation(LanguageCode languageCode) =>
         Optional(_translations.FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
-            .ToEither(Error.New(new NotFoundException($"Profile translation for language '{languageCode}' was not found")));
+            .ToEither((DomainError)new NotFoundError($"Profile translation for language '{languageCode}' was not found"));
 }

@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Auth.Refresh.Application.UseCases;
 using Portfolio.Api.Auth.Shared.Domain.Errors;
@@ -99,7 +98,7 @@ public class TokenRefresherShould
             tokens => tokens.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<RefreshTokenReuseException>();
+                error.ShouldBeOfType<RefreshTokenReuseError>();
                 _refreshTokenRevoker.Received(1).Revoke(
                     Arg.Is<StoredRefreshToken>(stored => stored.GetOwner() == Username)
                 );
@@ -113,7 +112,7 @@ public class TokenRefresherShould
     public async Task RevokeTheSessionWhenAnotherRequestConsumedTheRefreshTokenFirst()
     {
         _refreshTokenConsumer.Consume(Arg.Any<StoredRefreshToken>())
-            .Returns(Error.New(new RefreshTokenReuseException("Refresh token has already been used")));
+            .Returns(new RefreshTokenReuseError("Refresh token has already been used"));
 
         var result = await _refresher.Execute(RefreshInfoBuilder.Build());
 
@@ -121,7 +120,7 @@ public class TokenRefresherShould
             tokens => tokens.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<RefreshTokenReuseException>();
+                error.ShouldBeOfType<RefreshTokenReuseError>();
                 _refreshTokenRevoker.Received(1).Revoke(Arg.Any<StoredRefreshToken>());
             }
         );
@@ -139,7 +138,7 @@ public class TokenRefresherShould
             tokens => tokens.ShouldBeNull(),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<UnauthorizedException>();
+                error.ShouldBeOfType<UnauthorizedError>();
                 _refreshTokenRevoker.DidNotReceive().Revoke(Arg.Any<StoredRefreshToken>());
             }
         );
@@ -151,13 +150,13 @@ public class TokenRefresherShould
         _refreshTokenFinder.Find(Arg.Any<RefreshTokenHash>())
             .Returns(StoredRefreshTokenBuilder.Build(Now.AddDays(1), consumedAt: Now.AddMinutes(-5), owner: Username));
         _refreshTokenRevoker.Revoke(Arg.Any<StoredRefreshToken>())
-            .Returns(Error.New(new ServiceUnavailableException("Database is unavailable")));
+            .Returns(new ServiceUnavailableError("Database is unavailable"));
 
         var result = await _refresher.Execute(RefreshInfoBuilder.Build());
 
         result.Match(
             tokens => tokens.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

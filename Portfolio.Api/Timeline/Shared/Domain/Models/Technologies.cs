@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
@@ -13,14 +12,14 @@ public class Technologies
         _technologies = technologies;
     }
 
-    public static Either<Error, Technologies> Create(List<string> givenTechnologies)
+    public static Either<DomainError, Technologies> Create(List<string> givenTechnologies)
     {
         var hasRepeatedTechnologies = givenTechnologies
             .GroupBy(technology => technology.Trim().ToLowerInvariant())
             .Any(group => group.Count() > 1);
         if (hasRepeatedTechnologies)
         {
-            return Error.New(new ValidationException("Technologies cannot be repeated"));
+            return new ValidationError("Technologies cannot be repeated");
         }
 
         return givenTechnologies
@@ -29,7 +28,7 @@ public class Technologies
             .Map(technologies => new Technologies(technologies.ToList()));
     }
 
-    public static Either<Error, Technologies> CreateUnsafe(List<string> givenTechnologies) =>
+    public static Either<DomainError, Technologies> CreateUnsafe(List<string> givenTechnologies) =>
         givenTechnologies
             .Select(Technology.CreateUnsafe)
             .Sequence()

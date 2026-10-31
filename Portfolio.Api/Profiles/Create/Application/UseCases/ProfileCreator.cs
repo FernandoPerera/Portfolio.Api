@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Create.Application.Dtos;
 using Portfolio.Api.Profiles.Create.Domain.Models;
 using Portfolio.Api.Profiles.Create.Domain.Ports;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Create.Application.UseCases;
 
@@ -12,7 +12,7 @@ public class ProfileCreator(
     ILanguageExistenceRepository languageExistence
 )
 {
-    public async Task<Either<Error, Unit>> Execute(ProfileCreatorInfo profileCreatorInfo)
+    public async Task<Either<DomainError, Unit>> Execute(ProfileCreatorInfo profileCreatorInfo)
     {
         return await (
             from profile in ProfileToBeCreated.Create(

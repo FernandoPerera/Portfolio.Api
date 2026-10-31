@@ -1,5 +1,5 @@
 using LanguageExt;
-using LanguageExt.Common;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
 
@@ -12,7 +12,7 @@ public class EndDate
         _endDate = endDate;
     }
 
-    public static Either<Error, EndDate> Create(string? endDate)
+    public static Either<DomainError, EndDate> Create(string? endDate)
     {
         if (endDate is null)
         {
@@ -22,7 +22,7 @@ public class EndDate
         return YearMonth.Create(endDate).Map(yearMonth => new EndDate(yearMonth));
     }
 
-    public static Either<Error, EndDate> CreateUnsafe(DateOnly? endDate)
+    public static Either<DomainError, EndDate> CreateUnsafe(DateOnly? endDate)
     {
         if (endDate is null)
         {

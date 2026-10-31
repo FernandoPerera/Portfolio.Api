@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Domain.Errors;
 
@@ -28,7 +27,7 @@ public class StoredRefreshToken
         _consumedAt = consumedAt;
     }
 
-    public static Either<Error, StoredRefreshToken> Create(
+    public static Either<DomainError, StoredRefreshToken> Create(
         Guid id,
         string tokenHash,
         string owner,
@@ -41,7 +40,7 @@ public class StoredRefreshToken
         from consumption in ConsumedAt.NotConsumed()
         select new StoredRefreshToken(refreshTokenId, hash, adminUsername, expiration, consumption);
 
-    public static Either<Error, StoredRefreshToken> CreateUnsafe(
+    public static Either<DomainError, StoredRefreshToken> CreateUnsafe(
         Guid id,
         string tokenHash,
         string owner,
@@ -55,21 +54,21 @@ public class StoredRefreshToken
         from consumption in ConsumedAt.CreateUnsafe(consumedAt)
         select new StoredRefreshToken(refreshTokenId, hash, adminUsername, expiration, consumption);
 
-    public Either<Error, StoredRefreshToken> Consume(DateTimeOffset now) =>
+    public Either<DomainError, StoredRefreshToken> Consume(DateTimeOffset now) =>
         from consumedAt in ConsumedAt.Create(now)
         from consumed in Consume(consumedAt)
         select consumed;
 
-    private Either<Error, StoredRefreshToken> Consume(ConsumedAt consumedAt)
+    private Either<DomainError, StoredRefreshToken> Consume(ConsumedAt consumedAt)
     {
         if (_consumedAt.IsConsumed())
         {
-            return Error.New(new RefreshTokenReuseException("Refresh token has already been used"));
+            return new RefreshTokenReuseError("Refresh token has already been used");
         }
 
         if (_expiresAt.HasExpired(consumedAt))
         {
-            return Error.New(new UnauthorizedException("Invalid refresh token"));
+            return new UnauthorizedError("Invalid refresh token");
         }
 
         return new StoredRefreshToken(_id, _tokenHash, _owner, _expiresAt, consumedAt);

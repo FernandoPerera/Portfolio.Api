@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
 using Portfolio.Api.Timeline.AddTranslation.Application.Dtos;
@@ -7,6 +6,7 @@ using Portfolio.Api.Timeline.AddTranslation.Domain.Models;
 using Portfolio.Api.Timeline.AddTranslation.Domain.Ports;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
 using Portfolio.Api.Timeline.Update.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.AddTranslation.Application.UseCases;
 
@@ -16,7 +16,7 @@ public class TimelineTranslationAdder(
     ITimelineTranslationAdderRepository adder
 )
 {
-    public async Task<Either<Error, Unit>> Execute(TimelineTranslationAdderInfo timelineTranslationAdderInfo)
+    public async Task<Either<DomainError, Unit>> Execute(TimelineTranslationAdderInfo timelineTranslationAdderInfo)
     {
         return await (
             from id in TimelineId.Create(timelineTranslationAdderInfo.Id).ToAsync()

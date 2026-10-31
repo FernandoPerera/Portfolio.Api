@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Languages.Update.Domain.Models;
 using Portfolio.Api.Languages.Update.Domain.Ports;
@@ -10,7 +9,7 @@ namespace Portfolio.Api.Languages.Update.Infrastructure.Adapters;
 
 public class EntityFrameworkLanguageUpdaterAdapter(AppDbContext dbContext) : ILanguageUpdaterRepository
 {
-    public async Task<Either<Error, Unit>> UpdateLanguage(LanguageToBeUpdated languageToBeUpdated)
+    public async Task<Either<DomainError, Unit>> UpdateLanguage(LanguageToBeUpdated languageToBeUpdated)
     {
         try
         {
@@ -18,7 +17,7 @@ public class EntityFrameworkLanguageUpdaterAdapter(AppDbContext dbContext) : ILa
             var entity = await dbContext.Languages.SingleOrDefaultAsync(language => language.LanguageCode == languageCode);
             if (entity is null)
             {
-                return Error.New(new NotFoundException($"Language '{languageCode}' was not found"));
+                return new NotFoundError($"Language '{languageCode}' was not found");
             }
 
             entity.Name = languageToBeUpdated.GetName();
@@ -29,7 +28,7 @@ public class EntityFrameworkLanguageUpdaterAdapter(AppDbContext dbContext) : ILa
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

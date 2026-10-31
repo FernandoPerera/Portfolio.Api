@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -12,7 +11,7 @@ namespace Portfolio.Api.Timeline.Find.Infrastructure.Adapters;
 
 public class EntityFrameworkTimelineFinderAdapter(AppDbContext dbContext) : ITimelineFinderRepository
 {
-    public async Task<Either<Error, List<TimelineEntryFound>>> FindEntries()
+    public async Task<Either<DomainError, List<TimelineEntryFound>>> FindEntries()
     {
         try
         {
@@ -28,11 +27,11 @@ public class EntityFrameworkTimelineFinderAdapter(AppDbContext dbContext) : ITim
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 
-    private static Either<Error, TimelineEntryFound> ToEntry(TimelineEntryEntity entity) =>
+    private static Either<DomainError, TimelineEntryFound> ToEntry(TimelineEntryEntity entity) =>
         entity.Translations
             .Select(ToTranslation)
             .Sequence()
@@ -46,6 +45,6 @@ public class EntityFrameworkTimelineFinderAdapter(AppDbContext dbContext) : ITim
                 translations.ToList()
             ));
 
-    private static Either<Error, TimelineTranslation> ToTranslation(TimelineEntryTranslationEntity entity) =>
+    private static Either<DomainError, TimelineTranslation> ToTranslation(TimelineEntryTranslationEntity entity) =>
         TimelineTranslation.CreateUnsafe(entity.LanguageCode, entity.Title, entity.Description);
 }

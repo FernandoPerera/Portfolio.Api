@@ -26,7 +26,7 @@ public class LoginCodeShould
         LoginCode.Create(given)
             .Match(
                 created => created.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Login code cannot be empty")
             );
     }

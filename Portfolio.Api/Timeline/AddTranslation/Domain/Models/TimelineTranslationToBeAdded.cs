@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Timeline.Find.Domain.Models;
@@ -27,7 +26,7 @@ public class TimelineTranslationToBeAdded
         _description = description;
     }
 
-    public static Either<Error, TimelineTranslationToBeAdded> Create(
+    public static Either<DomainError, TimelineTranslationToBeAdded> Create(
         TimelineEntryFound current,
         string givenLanguageCode,
         string givenTitle,
@@ -49,9 +48,9 @@ public class TimelineTranslationToBeAdded
 
     public string GetDescription() => _description.ToString();
 
-    private static Either<Error, Unit> EnsureTranslationIsNew(TimelineEntryFound current, LanguageCode languageCode) =>
-        current.GetTranslation(languageCode).Match<Either<Error, Unit>>(
-            _ => Error.New(new ConflictException($"Timeline entry already has a translation for language '{languageCode}'")),
+    private static Either<DomainError, Unit> EnsureTranslationIsNew(TimelineEntryFound current, LanguageCode languageCode) =>
+        current.GetTranslation(languageCode).Match<Either<DomainError, Unit>>(
+            _ => new ConflictError($"Timeline entry already has a translation for language '{languageCode}'"),
             _ => Unit.Default
         );
 }

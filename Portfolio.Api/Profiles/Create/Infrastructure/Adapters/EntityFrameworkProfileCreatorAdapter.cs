@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Create.Domain.Models;
 using Portfolio.Api.Profiles.Create.Domain.Ports;
 using Portfolio.Api.Profiles.Create.Infrastructure.Entities;
@@ -14,7 +13,7 @@ public class EntityFrameworkProfileCreatorAdapter(
     IGeneratorIdentifier generatorIdentifier
 ) : IProfileCreatorRepository
 {
-    public async Task<Either<Error, Unit>> CreateProfile(ProfileToBeCreated profileToBeCreated)
+    public async Task<Either<DomainError, Unit>> CreateProfile(ProfileToBeCreated profileToBeCreated)
     {
         try
         {
@@ -43,7 +42,7 @@ public class EntityFrameworkProfileCreatorAdapter(
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

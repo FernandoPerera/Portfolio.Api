@@ -62,7 +62,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
 
         result.Match(
             languages => languages.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

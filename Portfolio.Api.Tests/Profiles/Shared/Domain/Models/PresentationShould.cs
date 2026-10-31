@@ -24,7 +24,7 @@ public class PresentationShould
     {
         Presentation.Create(givenPresentation).Match(
             presentation => presentation.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+            error => error.ShouldBeOfType<ValidationError>()
                 .Message.ShouldBe("Presentation cannot be empty")
         );
     }
@@ -36,7 +36,7 @@ public class PresentationShould
         
         Presentation.Create(givenPresentation).Match(
             presentation => presentation.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+            error => error.ShouldBeOfType<ValidationError>()
                 .Message.ShouldBe("The presentation cannot exceed 750 characters")
         );
     }

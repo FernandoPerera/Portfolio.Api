@@ -55,7 +55,7 @@ public class EntityFrameworkRefreshTokenConsumerAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+            error => error.ShouldBeOfType<UnauthorizedError>()
                 .Message.ShouldBe("Invalid refresh token")
         );
     }
@@ -74,7 +74,7 @@ public class EntityFrameworkRefreshTokenConsumerAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<RefreshTokenReuseException>()
+            error => error.ShouldBeOfType<RefreshTokenReuseError>()
                 .Message.ShouldBe("Refresh token has already been used")
         );
     }
@@ -95,7 +95,7 @@ public class EntityFrameworkRefreshTokenConsumerAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+            error => error.ShouldBeOfType<UnauthorizedError>()
                 .Message.ShouldBe("Invalid refresh token")
         );
     }

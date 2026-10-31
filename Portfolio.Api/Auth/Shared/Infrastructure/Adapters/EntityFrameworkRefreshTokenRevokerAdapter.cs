@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Domain.Errors;
@@ -9,7 +8,7 @@ namespace Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 
 public class EntityFrameworkRefreshTokenRevokerAdapter(AppDbContext dbContext) : IRefreshTokenRevokerRepository
 {
-    public async Task<Either<Error, Unit>> Revoke(StoredRefreshToken refreshToken)
+    public async Task<Either<DomainError, Unit>> Revoke(StoredRefreshToken refreshToken)
     {
         try
         {
@@ -22,7 +21,7 @@ public class EntityFrameworkRefreshTokenRevokerAdapter(AppDbContext dbContext) :
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

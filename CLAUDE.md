@@ -6,8 +6,8 @@
 - Test Single: `dotnet test --filter "FullyQualifiedName~ProfileCreatorShould"`
 
 ## Critical Architecture & Code Rules
-- **Functional Core:** Control flow via `Either<Error, T>`. No unhandled exceptions. Monadic LINQ via `.ToAsync()`.
-- **Domain:** Private constructors + `Create(...)` returning `Either<Error, T>`. Expose values via explicit `GetX()` methods for infrastructure mapping. Zero framework dependencies.
+- **Functional Core:** Control flow via `Either<DomainError, T>`. No unhandled exceptions. Monadic LINQ via `.ToAsync()`.
+- **Domain:** Private constructors + `Create(...)` returning `Either<DomainError, T>`. Expose values via explicit `GetX()` methods for infrastructure mapping. Zero framework dependencies.
 - **Dependency Injection:** Mandatory C# 14 Primary Constructors across Use Cases, Controllers, and Adapters.
 - **DTOs:** Records for both App and Infra DTOs.
 

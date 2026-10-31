@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Refresh.Application.Dtos;
 using Portfolio.Api.Auth.Shared.Domain.Errors;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Refresh.Application.UseCases;
 
@@ -19,7 +19,7 @@ public class TokenRefresher(
     TimeProvider timeProvider
 )
 {
-    public async Task<Either<Error, AuthTokens>> Execute(RefreshInfo refreshInfo)
+    public async Task<Either<DomainError, AuthTokens>> Execute(RefreshInfo refreshInfo)
     {
         return await (
             from currentRefreshToken in RefreshToken.Create(refreshInfo.RefreshToken).ToAsync()
@@ -34,14 +34,14 @@ public class TokenRefresher(
         );
     }
 
-    private async Task<Either<Error, StoredRefreshToken>> Consume(StoredRefreshToken stored) =>
+    private async Task<Either<DomainError, StoredRefreshToken>> Consume(StoredRefreshToken stored) =>
         await (
             from consumedRefreshToken in stored.Consume(timeProvider.GetUtcNow()).ToAsync()
             from _ in refreshTokenConsumer.Consume(consumedRefreshToken).ToAsync()
             select consumedRefreshToken
         ).MapLeftAsync(async error =>
         {
-            if (error.Exception.Case is not RefreshTokenReuseException)
+            if (error is not RefreshTokenReuseError)
             {
                 return error;
             }

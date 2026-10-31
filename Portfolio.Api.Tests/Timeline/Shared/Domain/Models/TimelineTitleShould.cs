@@ -26,7 +26,7 @@ public class TimelineTitleShould
         TimelineTitle.Create(givenTitle)
             .Match(
                 title => title.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Title cannot be empty")
             );
     }
@@ -39,7 +39,7 @@ public class TimelineTitleShould
         TimelineTitle.Create(givenTitle)
             .Match(
                 title => title.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The title cannot exceed 100 characters")
             );
     }

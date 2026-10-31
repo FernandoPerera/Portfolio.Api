@@ -1,6 +1,6 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
 
@@ -17,7 +17,7 @@ public class TimelineTranslation
         _description = description;
     }
 
-    public static Either<Error, TimelineTranslation> Create(
+    public static Either<DomainError, TimelineTranslation> Create(
         string givenLanguageCode,
         string givenTitle,
         string givenDescription
@@ -27,7 +27,7 @@ public class TimelineTranslation
         from description in TimelineDescription.Create(givenDescription)
         select new TimelineTranslation(languageCode, title, description);
 
-    public static Either<Error, TimelineTranslation> CreateUnsafe(
+    public static Either<DomainError, TimelineTranslation> CreateUnsafe(
         string givenLanguageCode,
         string givenTitle,
         string givenDescription

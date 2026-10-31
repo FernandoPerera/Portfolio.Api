@@ -32,7 +32,7 @@ public class TimelineEntryFoundShould
         entry.GetTranslation(languageCode)
             .Match(
                 translation => translation.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+                error => error.ShouldBeOfType<NotFoundError>()
                     .Message.ShouldBe("Timeline translation for language 'fr' was not found")
             );
     }

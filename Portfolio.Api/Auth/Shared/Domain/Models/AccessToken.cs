@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Auth.Shared.Domain.Models;
@@ -13,11 +12,11 @@ public class AccessToken
         _accessToken = accessToken;
     }
 
-    public static Either<Error, AccessToken> Create(string accessToken)
+    public static Either<DomainError, AccessToken> Create(string accessToken)
     {
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            return Error.New(new ValidationException("Access token cannot be empty"));
+            return new ValidationError("Access token cannot be empty");
         }
 
         return new AccessToken(accessToken.Trim());

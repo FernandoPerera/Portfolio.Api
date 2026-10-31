@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Languages.Update.Application.Dtos;
 using Portfolio.Api.Languages.Update.Domain.Models;
 using Portfolio.Api.Languages.Update.Domain.Ports;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Update.Application.UseCases;
 
@@ -12,7 +12,7 @@ public class LanguageUpdater(
     ILanguageUpdaterRepository updater
 )
 {
-    public async Task<Either<Error, Unit>> Execute(LanguageUpdaterInfo languageUpdaterInfo)
+    public async Task<Either<DomainError, Unit>> Execute(LanguageUpdaterInfo languageUpdaterInfo)
     {
         return await (
             from language in LanguageToBeUpdated.Create(

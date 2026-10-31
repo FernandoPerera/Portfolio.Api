@@ -26,7 +26,7 @@ public class NameShould
         Name.Create(givenName)
             .Match(
                 name => name.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Name cannot be empty")
             );
     }
@@ -39,7 +39,7 @@ public class NameShould
         Name.Create(givenName)
             .Match(
                 name => name.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The name cannot exceed 100 characters")
             );
     }

@@ -56,7 +56,7 @@ public class EntityFrameworkRefreshTokenFinderAdapterShould
 
         result.Match(
             stored => stored.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<UnauthorizedException>()
+            error => error.ShouldBeOfType<UnauthorizedError>()
                 .Message.ShouldBe("Invalid refresh token")
         );
     }

@@ -27,7 +27,7 @@ public class LanguageCodeShould
         LanguageCode.Create(givenLanguageCode)
             .Match(
                 languageCode => languageCode.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Language code cannot be empty")
             );
     }
@@ -41,7 +41,7 @@ public class LanguageCodeShould
         LanguageCode.Create(givenLanguageCode)
             .Match(
                 languageCode => languageCode.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Language code must have 2 letters")
             );
     }
@@ -56,7 +56,7 @@ public class LanguageCodeShould
         LanguageCode.Create(givenLanguageCode)
             .Match(
                 languageCode => languageCode.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Language code must have 2 letters")
             );
     }

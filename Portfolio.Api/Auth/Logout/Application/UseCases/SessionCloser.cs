@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Auth.Logout.Application.Dtos;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
@@ -13,7 +12,7 @@ public class SessionCloser(
     IRefreshTokenRevokerRepository refreshTokenRevoker
 )
 {
-    public async Task<Either<Error, Unit>> Execute(LogoutInfo logoutInfo)
+    public async Task<Either<DomainError, Unit>> Execute(LogoutInfo logoutInfo)
     {
         return await (
             from refreshToken in RefreshToken.Create(logoutInfo.RefreshToken).ToAsync()
@@ -23,12 +22,12 @@ public class SessionCloser(
         );
     }
 
-    private async Task<Either<Error, Unit>> CloseSession(RefreshTokenHash tokenHash) =>
+    private async Task<Either<DomainError, Unit>> CloseSession(RefreshTokenHash tokenHash) =>
         await (await refreshTokenFinder.Find(tokenHash))
             .Match(
                 Right: refreshTokenRevoker.Revoke,
-                Left: error => Task.FromResult<Either<Error, Unit>>(
-                    error.Exception.Case is UnauthorizedException
+                Left: error => Task.FromResult<Either<DomainError, Unit>>(
+                    error is UnauthorizedError
                         ? Unit.Default
                         : error
                 )

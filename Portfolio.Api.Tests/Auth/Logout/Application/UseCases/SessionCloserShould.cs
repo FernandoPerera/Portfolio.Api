@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Auth.Logout.Application.UseCases;
 using Portfolio.Api.Auth.Shared.Domain.Models;
@@ -56,7 +55,7 @@ public class SessionCloserShould
     public async Task CloseNothingWhenTheRefreshTokenIsUnknown()
     {
         _refreshTokenFinder.Find(Arg.Any<RefreshTokenHash>())
-            .Returns(Error.New(new UnauthorizedException("Invalid refresh token")));
+            .Returns(new UnauthorizedError("Invalid refresh token"));
 
         var result = await _closer.Execute(LogoutInfoBuilder.Build(RefreshTokenValue));
 

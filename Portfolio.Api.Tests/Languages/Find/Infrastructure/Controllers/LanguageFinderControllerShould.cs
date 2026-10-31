@@ -1,4 +1,3 @@
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -59,7 +58,7 @@ public class LanguageFinderControllerShould
     [Fact]
     public async Task NotFindTheLanguagesWhenUnexpectedErrorOccurs()
     {
-        var serviceUnavailableError = Error.New(new ServiceUnavailableException("Database down"));
+        var serviceUnavailableError = new ServiceUnavailableError("Database down");
         _repository.FindLanguages().Returns(serviceUnavailableError);
 
         var actionResult = await _controller.Find();

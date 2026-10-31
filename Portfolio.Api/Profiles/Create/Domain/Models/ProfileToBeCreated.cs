@@ -1,6 +1,6 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Create.Domain.Models;
 
@@ -27,7 +27,7 @@ public class ProfileToBeCreated
         _languageCode = languageCode;
     }
 
-    public static Either<Error, ProfileToBeCreated> Create(
+    public static Either<DomainError, ProfileToBeCreated> Create(
         string givenName,
         string givenPresentation,
         string givenJobRole,

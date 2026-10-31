@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -14,7 +13,7 @@ public class EntityFrameworkTimelineCreatorAdapter(
     IGeneratorIdentifier generatorIdentifier
 ) : ITimelineCreatorRepository
 {
-    public async Task<Either<Error, Unit>> CreateEntry(TimelineEntryToBeCreated timelineEntryToBeCreated)
+    public async Task<Either<DomainError, Unit>> CreateEntry(TimelineEntryToBeCreated timelineEntryToBeCreated)
     {
         try
         {
@@ -45,7 +44,7 @@ public class EntityFrameworkTimelineCreatorAdapter(
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

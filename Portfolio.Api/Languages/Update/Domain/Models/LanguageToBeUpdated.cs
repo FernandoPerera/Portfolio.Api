@@ -1,7 +1,7 @@
 using Ci.Languages.Create.Domain.Models;
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Update.Domain.Models;
 
@@ -16,7 +16,7 @@ public class LanguageToBeUpdated
         _name = name;
     }
 
-    public static Either<Error, LanguageToBeUpdated> Create(
+    public static Either<DomainError, LanguageToBeUpdated> Create(
         string givenLanguageCode,
         string givenName
     ) =>
