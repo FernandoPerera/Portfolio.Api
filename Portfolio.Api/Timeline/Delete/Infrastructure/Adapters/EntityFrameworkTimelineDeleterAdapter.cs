@@ -31,7 +31,7 @@ public class EntityFrameworkTimelineDeleterAdapter(AppDbContext dbContext) : ITi
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message));
+            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
         }
     }
 }
