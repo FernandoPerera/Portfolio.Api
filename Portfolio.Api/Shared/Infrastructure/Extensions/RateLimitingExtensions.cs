@@ -33,9 +33,7 @@ public static class RateLimitingExtensions
 
     private static RateLimitPartition<string> PartitionByClient(HttpContext context, RateLimitPolicyOptions policy)
     {
-        var client = context.Connection.RemoteIpAddress?.ToString() ?? UnknownClient;
-
-        return RateLimitPartition.GetFixedWindowLimiter(client, _ => new FixedWindowRateLimiterOptions
+        return RateLimitPartition.GetFixedWindowLimiter(GetClient(context), _ => new FixedWindowRateLimiterOptions
         {
             PermitLimit = policy.PermitLimit,
             Window = TimeSpan.FromSeconds(policy.WindowSeconds),
@@ -43,8 +41,19 @@ public static class RateLimitingExtensions
         });
     }
 
+    private static string GetClient(HttpContext context) =>
+        context.Connection.RemoteIpAddress?.ToString() ?? UnknownClient;
+
     private static async ValueTask WriteTooManyRequests(OnRejectedContext context, CancellationToken cancellationToken)
     {
+        context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger(typeof(RateLimitingExtensions).FullName!)
+            .LogWarning(
+                "Rate limit exceeded by {Client} on {Path}",
+                GetClient(context.HttpContext),
+                context.HttpContext.Request.Path
+            );
+
         var response = context.HttpContext.Response;
         if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
         {
