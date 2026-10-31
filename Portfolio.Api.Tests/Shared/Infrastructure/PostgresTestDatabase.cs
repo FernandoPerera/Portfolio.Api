@@ -28,17 +28,15 @@ public static class PostgresTestDatabase
         }
     }
 
-    public static AppDbContext CreateContext() => CreateContext(CreateConnectionString());
+    public static DbContextOptions<AppDbContext> CreateOptions() => CreateOptions(CreateConnectionString());
+
+    public static AppDbContext CreateContext() => new(CreateOptions());
 
     public static AppDbContext CreateUnreachableContext() =>
-        CreateContext("Host=localhost;Port=1;Database=unreachable;Username=none;Password=none;Timeout=1");
+        new(CreateOptions("Host=localhost;Port=1;Database=unreachable;Username=none;Password=none;Timeout=1"));
 
-    private static AppDbContext CreateContext(string connectionString)
-    {
-        var options = new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(connectionString).Options;
-
-        return new AppDbContext(options);
-    }
+    private static DbContextOptions<AppDbContext> CreateOptions(string connectionString) =>
+        new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(connectionString).Options;
 
     private static PostgreSqlContainer StartContainer()
     {
