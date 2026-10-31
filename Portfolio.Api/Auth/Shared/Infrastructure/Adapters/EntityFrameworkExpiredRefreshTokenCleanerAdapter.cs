@@ -1,4 +1,5 @@
 using LanguageExt;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -17,15 +18,12 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapter(
         try
         {
             var now = timeProvider.GetUtcNow();
-            var expired = dbContext.RefreshTokens.Where(token => token.ExpiresAt <= now);
-            dbContext.RefreshTokens.RemoveRange(expired);
-            await dbContext.SaveChangesAsync();
+            await dbContext.RefreshTokens.Where(token => token.ExpiresAt <= now).ExecuteDeleteAsync();
         }
         catch (Exception error)
         {
             // Cleaning is best effort: a failure here must never break a login or a refresh.
             logger.LogWarning(error, "The expired refresh tokens could not be removed");
-            dbContext.ChangeTracker.Clear();
         }
 
         return Unit.Default;

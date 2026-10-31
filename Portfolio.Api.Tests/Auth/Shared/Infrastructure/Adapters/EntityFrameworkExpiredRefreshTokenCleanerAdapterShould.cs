@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Testing;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -12,24 +10,21 @@ using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Shared.Infrastructure.Adapters;
 
-public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
+public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould : IDisposable
 {
     private static readonly DateTimeOffset Now = new(2026, 1, 2, 10, 0, 0, TimeSpan.Zero);
 
     private readonly AppDbContext _appDbContext;
+    private readonly FakeLogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter> _logger = new();
     private readonly EntityFrameworkExpiredRefreshTokenCleanerAdapter _cleaner;
 
     public EntityFrameworkExpiredRefreshTokenCleanerAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _appDbContext = new AppDbContext(options);
+        _appDbContext = PostgresTestDatabase.CreateContext();
         _cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(
             _appDbContext,
             new FixedTimeProvider(Now),
-            NullLogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter>.Instance
+            _logger
         );
     }
 
@@ -64,17 +59,29 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
     }
 
     [Fact]
-    public async Task NotFailAndDiscardTheDeletionsAndWarnWhenTheCleaningCannotBeDone()
+    public async Task RemoveNothingWhenNoRefreshTokenHasExpired()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        var failingContext = new FailingSaveDbContext(options);
-        failingContext.RefreshTokens.Add(
-            RefreshTokenEntityBuilder.Build(RefreshTokenBuilder.Build("expired"), expiresAt: Now.AddDays(-1))
+        var active = RefreshTokenEntityBuilder.Build(RefreshTokenBuilder.Build("active"), expiresAt: Now.AddSeconds(1));
+        _appDbContext.RefreshTokens.Add(active);
+        await _appDbContext.SaveChangesAsync();
+
+        var result = await _cleaner.Clean();
+
+        result.Match(
+            unit =>
+            {
+                unit.ShouldBeUnit();
+                _appDbContext.RefreshTokens.ShouldHaveSingleItem().Id.ShouldBe(active.Id);
+            },
+            error => error.ShouldBeNull()
         );
-        var logger = new FakeLogger<EntityFrameworkExpiredRefreshTokenCleanerAdapter>();
-        var cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(failingContext, new FixedTimeProvider(Now), logger);
+    }
+
+    [Fact]
+    public async Task NotFailAndWarnWhenTheCleaningCannotBeDone()
+    {
+        var unreachable = PostgresTestDatabase.CreateUnreachableContext();
+        var cleaner = new EntityFrameworkExpiredRefreshTokenCleanerAdapter(unreachable, new FixedTimeProvider(Now), _logger);
 
         var result = await cleaner.Clean();
 
@@ -82,12 +89,16 @@ public class EntityFrameworkExpiredRefreshTokenCleanerAdapterShould
             unit =>
             {
                 unit.ShouldBeUnit();
-                failingContext.ChangeTracker.Entries().ShouldBeEmpty();
-                var entry = logger.Collector.GetSnapshot().ShouldHaveSingleItem();
+                var entry = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
                 entry.Level.ShouldBe(LogLevel.Warning);
-                entry.Exception.ShouldBeOfType<InvalidOperationException>();
+                entry.Exception.ShouldNotBeNull();
             },
             error => error.ShouldBeNull()
         );
+    }
+
+    public void Dispose()
+    {
+        _appDbContext.Dispose();
     }
 }

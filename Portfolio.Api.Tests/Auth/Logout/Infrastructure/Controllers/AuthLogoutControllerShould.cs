@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Auth.Logout.Application.UseCases;
 using Portfolio.Api.Auth.Logout.Infrastructure.Controllers;
 using Portfolio.Api.Auth.Logout.Infrastructure.Dtos;
@@ -8,11 +7,12 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Auth.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Logout.Infrastructure.Controllers;
 
-public class AuthLogoutControllerShould
+public class AuthLogoutControllerShould : IDisposable
 {
     private const string OwnerRefreshTokenValue = "owner-refresh-token";
     private const string OtherOwnerRefreshTokenValue = "other-owner-refresh-token";
@@ -24,11 +24,7 @@ public class AuthLogoutControllerShould
 
     public AuthLogoutControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _appDbContext = new AppDbContext(options);
+        _appDbContext = PostgresTestDatabase.CreateContext();
         var closer = new SessionCloser(
             new Sha256RefreshTokenHasher(),
             new EntityFrameworkRefreshTokenFinderAdapter(_appDbContext),
@@ -65,5 +61,10 @@ public class AuthLogoutControllerShould
 
         response.ShouldBeOfType<NoContentResult>();
         _appDbContext.RefreshTokens.Count().ShouldBe(1);
+    }
+
+    public void Dispose()
+    {
+        _appDbContext.Dispose();
     }
 }

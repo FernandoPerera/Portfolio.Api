@@ -1,4 +1,5 @@
 using LanguageExt;
+using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Domain.Errors;
@@ -13,9 +14,7 @@ public class EntityFrameworkRefreshTokenRevokerAdapter(AppDbContext dbContext) :
         try
         {
             var owner = refreshToken.GetOwner();
-            var session = dbContext.RefreshTokens.Where(token => token.Owner == owner);
-            dbContext.RefreshTokens.RemoveRange(session);
-            await dbContext.SaveChangesAsync();
+            await dbContext.RefreshTokens.Where(token => token.Owner == owner).ExecuteDeleteAsync();
 
             return Unit.Default;
         }

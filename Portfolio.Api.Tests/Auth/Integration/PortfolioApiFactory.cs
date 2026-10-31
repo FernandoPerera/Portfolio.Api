@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 
 namespace Portfolio.Api.Tests.Auth.Integration;
 
@@ -18,7 +14,7 @@ public class PortfolioApiFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("Database:ConnectionString", "Host=unused");
+        builder.UseSetting("Database:ConnectionString", PostgresTestDatabase.CreateConnectionString());
         builder.UseSetting("Jwt:Issuer", Issuer);
         builder.UseSetting("Jwt:Audience", Audience);
         builder.UseSetting("Jwt:SigningKey", SigningKey);
@@ -30,11 +26,5 @@ public class PortfolioApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Admin:GitHubUserId", AdminGitHubUserId);
         builder.UseSetting("RateLimiting:Auth:PermitLimit", "1000");
         builder.UseSetting("RateLimiting:Public:PermitLimit", "1000");
-        builder.ConfigureServices(services =>
-        {
-            services.RemoveAll<DbContextOptions<AppDbContext>>();
-            services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("PortfolioDb"));
-        });
     }
 }
