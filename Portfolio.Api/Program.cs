@@ -25,7 +25,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddRequestLogging();
 
 // Shared dependencies
-builder.Services.AddSharedInfrastructure();
+builder.Services.AddSharedInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAdminAuthorization(builder.Configuration);
 builder.Services.AddAuthShared(builder.Configuration);
