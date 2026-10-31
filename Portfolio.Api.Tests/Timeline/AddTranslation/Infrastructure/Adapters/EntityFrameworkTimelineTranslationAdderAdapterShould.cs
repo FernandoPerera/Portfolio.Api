@@ -4,6 +4,7 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.AddTranslation.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.AddTranslation.Infrastructure.Adapters;
 using Portfolio.Api.Timeline.Create.Infrastructure.Entities;
 using Shouldly;
@@ -17,11 +18,11 @@ public class EntityFrameworkTimelineTranslationAdderAdapterShould
 
     public EntityFrameworkTimelineTranslationAdderAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _dbContext = new AppDbContext(options);
+
+        _dbContext.SeedLanguages("es", "en");
         _adder = new EntityFrameworkTimelineTranslationAdderAdapter(_dbContext);
     }
 
