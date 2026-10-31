@@ -42,7 +42,7 @@ public class JwtAccessTokenIssuer(JwtOptions options, TimeProvider timeProvider)
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Access token cannot be issued, error: " + error.Message));
+            return Error.New(new ServiceUnavailableException("Access token cannot be issued, error: " + error.Message, error));
         }
     }
 }

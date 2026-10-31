@@ -27,7 +27,7 @@ public class GitHubIdentityProvider(IHttpClientFactory httpClientFactory, GitHub
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("GitHub is unavailable, error: " + error.Message));
+            return Error.New(new ServiceUnavailableException("GitHub is unavailable, error: " + error.Message, error));
         }
     }
 
