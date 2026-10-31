@@ -10,8 +10,8 @@ using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Dtos;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
@@ -43,7 +43,7 @@ public class LoginCodeExchangeControllerShould
             _refreshTokenSaver,
             _expiredRefreshTokenCleaner
         );
-        _controller = new LoginCodeExchangeController(exchanger, new ProblemDetailsMapper());
+        _controller = new LoginCodeExchangeController(exchanger, ProblemDetailsMapperBuilder.Build());
         _refreshTokenSaver.Save(Arg.Any<RefreshToken>(), Arg.Any<AdminUsername>()).Returns(LanguageExt.Unit.Default);
         _expiredRefreshTokenCleaner.Clean().Returns(LanguageExt.Unit.Default);
     }

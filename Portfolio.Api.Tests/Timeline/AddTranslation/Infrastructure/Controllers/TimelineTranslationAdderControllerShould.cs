@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Timeline.AddTranslation.Application.UseCases;
 using Portfolio.Api.Timeline.AddTranslation.Infrastructure.Adapters;
@@ -35,7 +35,7 @@ public class TimelineTranslationAdderControllerShould
             new EntityFrameworkLanguageExistenceAdapter(_appDbContext),
             new EntityFrameworkTimelineTranslationAdderAdapter(_appDbContext)
         );
-        _controller = new TimelineTranslationAdderController(adder, new ProblemDetailsMapper());
+        _controller = new TimelineTranslationAdderController(adder, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

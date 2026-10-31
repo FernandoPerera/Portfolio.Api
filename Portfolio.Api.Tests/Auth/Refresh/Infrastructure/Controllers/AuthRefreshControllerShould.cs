@@ -11,6 +11,7 @@ using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Auth.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
@@ -55,7 +56,7 @@ public class AuthRefreshControllerShould
             new EntityFrameworkExpiredRefreshTokenCleanerAdapter(_appDbContext, timeProvider),
             timeProvider
         );
-        _controller = new AuthRefreshController(refresher, new ProblemDetailsMapper());
+        _controller = new AuthRefreshController(refresher, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

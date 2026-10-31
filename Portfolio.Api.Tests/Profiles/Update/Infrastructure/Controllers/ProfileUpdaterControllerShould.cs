@@ -5,10 +5,10 @@ using Portfolio.Api.Profiles.Find.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Update.Application.UseCases;
 using Portfolio.Api.Profiles.Update.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Update.Infrastructure.Controllers;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Profiles.Update.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Update.Infrastructure.Controllers;
@@ -28,7 +28,7 @@ public class ProfileUpdaterControllerShould
         var updaterRepository = new EntityFrameworkProfileUpdaterAdapter(_appDbContext);
         var finderRepository = new EntityFrameworkProfileFinderAdapter(_appDbContext);
         var updater = new ProfileUpdater(finderRepository, updaterRepository);
-        var errorResponseMapper = new ProblemDetailsMapper();
+        var errorResponseMapper = ProblemDetailsMapperBuilder.Build();
         _controller = new ProfileUpdaterController(updater, errorResponseMapper);
     }
 

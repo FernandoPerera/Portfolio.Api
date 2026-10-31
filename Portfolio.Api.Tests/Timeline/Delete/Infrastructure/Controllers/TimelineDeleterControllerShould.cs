@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Timeline.Delete.Application.UseCases;
 using Portfolio.Api.Timeline.Delete.Infrastructure.Adapters;
@@ -24,7 +24,7 @@ public class TimelineDeleterControllerShould
 
         _appDbContext = new AppDbContext(options);
         var deleter = new TimelineDeleter(new EntityFrameworkTimelineDeleterAdapter(_appDbContext));
-        _controller = new TimelineDeleterController(deleter, new ProblemDetailsMapper());
+        _controller = new TimelineDeleterController(deleter, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

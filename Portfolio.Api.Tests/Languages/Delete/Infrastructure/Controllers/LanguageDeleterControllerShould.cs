@@ -6,9 +6,9 @@ using Portfolio.Api.Languages.Delete.Infrastructure.Adapters;
 using Portfolio.Api.Languages.Delete.Infrastructure.Controllers;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Delete.Infrastructure.Controllers;
@@ -32,7 +32,7 @@ public class LanguageDeleterControllerShould
             new EntityFrameworkLanguageUsageAdapter(_appDbContext),
             new EntityFrameworkLanguageDeleterAdapter(_appDbContext)
         );
-        _controller = new LanguageDeleterController(deleter, new ProblemDetailsMapper());
+        _controller = new LanguageDeleterController(deleter, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

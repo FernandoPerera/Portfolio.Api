@@ -8,8 +8,9 @@ using Portfolio.Api.Profiles.Create.Infrastructure.Dtos;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Adapters;
-using Portfolio.Api.Tests.Profiles.Create.Infrastructure.Builders;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Profiles.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Create.Infrastructure.Controllers;
@@ -30,7 +31,7 @@ public class ProfileCreatorControllerShould
         var creatorRepository = new EntityFrameworkProfileCreatorAdapter(_appDbContext, generatorIdentifier);
         var languageFinderRepository = new EntityFrameworkLanguageExistenceAdapter(_appDbContext);
         var creator = new ProfileCreator(creatorRepository, languageFinderRepository);
-        var errorResponseMapper = new ProblemDetailsMapper();
+        var errorResponseMapper = ProblemDetailsMapperBuilder.Build();
         _controller = new ProfileCreatorController(creator, errorResponseMapper);
     }
 

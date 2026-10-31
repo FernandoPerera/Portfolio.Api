@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using NSubstitute;
 using Portfolio.Api.Auth.Login.Application.UseCases;
-using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Auth.Login.Infrastructure.Controllers;
+using Portfolio.Api.Auth.Login.Infrastructure.Cookies;
 using Portfolio.Api.Auth.Shared.Domain.Models;
 using Portfolio.Api.Auth.Shared.Domain.Ports;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Login.Infrastructure.Controllers;
@@ -34,7 +34,7 @@ public class GitHubAdminAuthenticationControllerShould
         _controller = new GitHubAdminAuthenticationController(
             authenticator,
             new AuthOptions { FrontendRedirectUri = FrontendRedirectUri },
-            new ProblemDetailsMapper()
+            ProblemDetailsMapperBuilder.Build()
         )
         {
             ControllerContext = new ControllerContext { HttpContext = httpContext }

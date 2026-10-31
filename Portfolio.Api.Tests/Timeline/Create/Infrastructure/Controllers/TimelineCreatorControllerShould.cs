@@ -5,6 +5,7 @@ using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Timeline.Create.Application.UseCases;
 using Portfolio.Api.Timeline.Create.Infrastructure.Adapters;
 using Portfolio.Api.Timeline.Create.Infrastructure.Controllers;
@@ -28,7 +29,7 @@ public class TimelineCreatorControllerShould
         var creatorRepository = new EntityFrameworkTimelineCreatorAdapter(_appDbContext, new GuidGeneratorIdentifier());
         var languageExistenceRepository = new EntityFrameworkLanguageExistenceAdapter(_appDbContext);
         var creator = new TimelineCreator(creatorRepository, languageExistenceRepository);
-        _controller = new TimelineCreatorController(creator, new ProblemDetailsMapper());
+        _controller = new TimelineCreatorController(creator, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]

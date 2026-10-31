@@ -5,8 +5,8 @@ using Portfolio.Api.Languages.Create.Application.UseCases;
 using Portfolio.Api.Languages.Create.Infrastructure.Adapters;
 using Portfolio.Api.Languages.Create.Infrastructure.Controllers;
 using Portfolio.Api.Languages.Create.Infrastructure.Dtos;
-using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
+using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Create.Infrastructure.Controllers;
@@ -23,7 +23,7 @@ public class LanguageCreatorControllerShould
 
         var creatorRepository = new EntityFrameworkLanguageCreatorAdapter(new AppDbContext(options));
         var creator = new LanguageCreator(creatorRepository);
-        _controller = new LanguageCreatorController(creator, new ProblemDetailsMapper());
+        _controller = new LanguageCreatorController(creator, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]
