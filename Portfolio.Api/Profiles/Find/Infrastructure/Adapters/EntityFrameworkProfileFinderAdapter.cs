@@ -39,7 +39,7 @@ public class EntityFrameworkProfileFinderAdapter(AppDbContext dbContext) : IProf
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message));
+            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
         }
     }
 }
