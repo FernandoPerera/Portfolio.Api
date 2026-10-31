@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Shared.Domain.Models;
@@ -14,23 +13,23 @@ public class LanguageCode
         _code = code;
     }
 
-    public static Either<Error, LanguageCode> Create(string languageCode)
+    public static Either<DomainError, LanguageCode> Create(string languageCode)
     {
         if (string.IsNullOrWhiteSpace(languageCode))
         {
-            return Error.New(new ValidationException("Language code cannot be empty"));
+            return new ValidationError("Language code cannot be empty");
         }
 
         var trimmed = languageCode.Trim();
         if (trimmed.Length != RequiredLength || !trimmed.All(char.IsLetter))
         {
-            return Error.New(new ValidationException("Language code must have 2 letters"));
+            return new ValidationError("Language code must have 2 letters");
         }
 
         return new LanguageCode(trimmed.ToLowerInvariant());
     }
 
-    public static Either<Error, LanguageCode> CreateUnsafe(string languageCode) => new LanguageCode(languageCode);
+    public static Either<DomainError, LanguageCode> CreateUnsafe(string languageCode) => new LanguageCode(languageCode);
 
     public override string ToString() => _code;
 }

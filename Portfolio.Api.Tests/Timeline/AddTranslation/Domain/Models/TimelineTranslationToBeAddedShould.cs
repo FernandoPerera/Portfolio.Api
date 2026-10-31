@@ -36,7 +36,7 @@ public class TimelineTranslationToBeAddedShould
         TimelineTranslationToBeAdded.Create(current, "es", "Frontend Lead", "Technical leadership.")
             .Match(
                 translation => translation.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ConflictException>()
+                error => error.ShouldBeOfType<ConflictError>()
                     .Message.ShouldBe("Timeline entry already has a translation for language 'es'")
             );
     }
@@ -47,7 +47,7 @@ public class TimelineTranslationToBeAddedShould
         TimelineTranslationToBeAdded.Create(TimelineEntryFoundBuilder.Build(), "eng", "Frontend Lead", "Technical leadership.")
             .Match(
                 translation => translation.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
             );
     }
 
@@ -59,7 +59,7 @@ public class TimelineTranslationToBeAddedShould
         TimelineTranslationToBeAdded.Create(current, "en", " ", "Technical leadership.")
             .Match(
                 translation => translation.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
             );
     }
 }

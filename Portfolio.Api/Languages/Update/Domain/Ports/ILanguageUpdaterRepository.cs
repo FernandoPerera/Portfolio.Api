@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Languages.Update.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Update.Domain.Ports;
 
 public interface ILanguageUpdaterRepository
 {
-    Task<Either<Error, Unit>> UpdateLanguage(LanguageToBeUpdated languageToBeUpdated);
+    Task<Either<DomainError, Unit>> UpdateLanguage(LanguageToBeUpdated languageToBeUpdated);
 }

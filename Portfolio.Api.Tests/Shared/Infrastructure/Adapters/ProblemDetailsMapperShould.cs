@@ -29,7 +29,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void MapToNotFound()
     {
-        var error = Error.New(new NotFoundException("Resource not found"));
+        var error = new NotFoundError("Resource not found");
 
         var result = _mapper.ToActionResult(_controller, error);
 
@@ -45,7 +45,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void MapToBadRequest()
     {
-        var error = Error.New(new ValidationException("Invalid field format"));
+        var error = new ValidationError("Invalid field format");
 
         var result = _mapper.ToActionResult(_controller, error);
 
@@ -61,7 +61,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void MapToForbidden()
     {
-        var error = Error.New(new ForbiddenException("Not allowed"));
+        var error = new ForbiddenError("Not allowed");
 
         var result = _mapper.ToActionResult(_controller, error);
 
@@ -77,7 +77,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void MapToUnauthorized()
     {
-        var error = Error.New(new UnauthorizedException("Invalid credentials"));
+        var error = new UnauthorizedError("Invalid credentials");
 
         var result = _mapper.ToActionResult(_controller, error);
 
@@ -93,7 +93,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void MapToConflict()
     {
-        var error = Error.New(new ConflictException("Language already exists"));
+        var error = new ConflictError("Language already exists");
 
         var result = _mapper.ToActionResult(_controller, error);
 
@@ -109,7 +109,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void MapToServiceUnavailable()
     {
-        var error = Error.New(new ServiceUnavailableException(DatabaseFailureMessage));
+        var error = new ServiceUnavailableError(DatabaseFailureMessage);
 
         var result = _mapper.ToActionResult(_controller, error);
 
@@ -169,7 +169,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void WarnWhenTheRequestIsUnauthorized()
     {
-        _mapper.ToActionResult(_controller, Error.New(new UnauthorizedException("Invalid credentials")));
+        _mapper.ToActionResult(_controller, new UnauthorizedError("Invalid credentials"));
 
         var entry = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
         entry.Level.ShouldBe(LogLevel.Warning);
@@ -179,7 +179,7 @@ public class ProblemDetailsMapperShould
     [Fact]
     public void WarnWhenTheRequestIsForbidden()
     {
-        _mapper.ToActionResult(_controller, Error.New(new ForbiddenException("Not allowed")));
+        _mapper.ToActionResult(_controller, new ForbiddenError("Not allowed"));
 
         var entry = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
         entry.Level.ShouldBe(LogLevel.Warning);

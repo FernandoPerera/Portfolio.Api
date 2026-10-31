@@ -24,7 +24,7 @@ public class TimelineIdShould
         TimelineId.Create(Guid.Empty)
             .Match(
                 timelineId => timelineId.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Timeline id cannot be empty")
             );
     }

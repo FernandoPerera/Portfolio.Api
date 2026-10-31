@@ -117,7 +117,7 @@ public class EntityFrameworkTimelineFinderAdapterShould
 
         result.Match(
             entries => entries.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

@@ -1,14 +1,14 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Languages.Create.Application.Dtos;
 using Portfolio.Api.Languages.Create.Domain.Models;
 using Portfolio.Api.Languages.Create.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Create.Application.UseCases;
 
 public class LanguageCreator(ILanguageCreatorRepository creator)
 {
-    public async Task<Either<Error, Unit>> Execute(LanguageCreatorInfo languageCreatorInfo)
+    public async Task<Either<DomainError, Unit>> Execute(LanguageCreatorInfo languageCreatorInfo)
     {
         return await (
             from language in LanguageToBeCreated.Create(

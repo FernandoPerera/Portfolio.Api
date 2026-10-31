@@ -28,7 +28,7 @@ public class TimelineCategoryShould
         TimelineCategory.Create(givenCategory)
             .Match(
                 category => category.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Category cannot be empty")
             );
     }
@@ -41,7 +41,7 @@ public class TimelineCategoryShould
         TimelineCategory.Create(givenCategory)
             .Match(
                 category => category.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Category must be 'work' or 'education'")
             );
     }

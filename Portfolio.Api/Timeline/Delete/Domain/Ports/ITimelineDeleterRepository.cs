@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Delete.Domain.Ports;
 
 public interface ITimelineDeleterRepository
 {
-    Task<Either<Error, Unit>> DeleteEntry(TimelineId id);
+    Task<Either<DomainError, Unit>> DeleteEntry(TimelineId id);
 }

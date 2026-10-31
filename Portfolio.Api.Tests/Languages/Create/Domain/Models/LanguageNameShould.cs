@@ -36,7 +36,7 @@ public class LanguageNameShould
         LanguageName.Create(givenName)
             .Match(
                 name => name.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Language name cannot be empty")
             );
     }
@@ -49,7 +49,7 @@ public class LanguageNameShould
         LanguageName.Create(givenName)
             .Match(
                 name => name.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The language name cannot exceed 20 characters")
             );
     }

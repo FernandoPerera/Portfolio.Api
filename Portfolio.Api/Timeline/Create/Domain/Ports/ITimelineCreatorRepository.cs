@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Timeline.Create.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Create.Domain.Ports;
 
 public interface ITimelineCreatorRepository
 {
-    Task<Either<Error, Unit>> CreateEntry(TimelineEntryToBeCreated timelineEntryToBeCreated);
+    Task<Either<DomainError, Unit>> CreateEntry(TimelineEntryToBeCreated timelineEntryToBeCreated);
 }

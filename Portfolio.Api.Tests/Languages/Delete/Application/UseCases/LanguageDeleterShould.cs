@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using NSubstitute;
 using Portfolio.Api.Languages.Delete.Application.Dtos;
 using Portfolio.Api.Languages.Delete.Application.UseCases;
@@ -53,7 +52,7 @@ public class LanguageDeleterShould
             unit => unit.ShouldBeEquivalentTo(null),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<ValidationException>();
+                error.ShouldBeOfType<ValidationError>();
                 _deleterRepository.DidNotReceive().DeleteLanguage(Arg.Any<LanguageCode>());
             }
         );
@@ -63,7 +62,7 @@ public class LanguageDeleterShould
     public async Task FailWhenLanguageDoesNotExist()
     {
         _languageExistenceRepository.Exists(Arg.Any<LanguageCode>())
-            .Returns(Error.New(new NotFoundException("Language 'fr' was not found")));
+            .Returns(new NotFoundError("Language 'fr' was not found"));
 
         var result = await _deleter.Execute(new LanguageDeleterInfo("fr"));
 
@@ -71,7 +70,7 @@ public class LanguageDeleterShould
             unit => unit.ShouldBeEquivalentTo(null),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<NotFoundException>();
+                error.ShouldBeOfType<NotFoundError>();
                 _deleterRepository.DidNotReceive().DeleteLanguage(Arg.Any<LanguageCode>());
             }
         );
@@ -81,7 +80,7 @@ public class LanguageDeleterShould
     public async Task FailWhenLanguageIsInUse()
     {
         _languageUsageRepository.EnsureIsNotInUse(Arg.Any<LanguageCode>())
-            .Returns(Error.New(new ConflictException("Language 'es' is used by existing translations")));
+            .Returns(new ConflictError("Language 'es' is used by existing translations"));
 
         var result = await _deleter.Execute(new LanguageDeleterInfo("es"));
 
@@ -89,7 +88,7 @@ public class LanguageDeleterShould
             unit => unit.ShouldBeEquivalentTo(null),
             error =>
             {
-                error.Exception.Case.ShouldBeOfType<ConflictException>();
+                error.ShouldBeOfType<ConflictError>();
                 _deleterRepository.DidNotReceive().DeleteLanguage(Arg.Any<LanguageCode>());
             }
         );

@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Languages.Find.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Find.Domain.Ports;
 
 public interface ILanguageFinderRepository
 {
-    Task<Either<Error, List<LanguageFound>>> FindLanguages();
+    Task<Either<DomainError, List<LanguageFound>>> FindLanguages();
 }

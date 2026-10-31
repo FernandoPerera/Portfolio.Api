@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -12,7 +11,7 @@ namespace Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 
 public class EntityFrameworkTimelineUpdaterAdapter(AppDbContext dbContext) : ITimelineUpdaterRepository
 {
-    public async Task<Either<Error, Unit>> UpdateEntry(TimelineEntryToBeUpdated timelineEntryToBeUpdated)
+    public async Task<Either<DomainError, Unit>> UpdateEntry(TimelineEntryToBeUpdated timelineEntryToBeUpdated)
     {
         try
         {
@@ -23,14 +22,14 @@ public class EntityFrameworkTimelineUpdaterAdapter(AppDbContext dbContext) : ITi
 
             if (entity is null)
             {
-                return Error.New(new NotFoundException($"Timeline entry '{id}' was not found"));
+                return new NotFoundError($"Timeline entry '{id}' was not found");
             }
 
             var languageCode = timelineEntryToBeUpdated.GetLanguageCode();
             var translation = entity.Translations.SingleOrDefault(current => current.LanguageCode == languageCode);
             if (translation is null)
             {
-                return Error.New(new NotFoundException($"Timeline translation for language '{languageCode}' was not found"));
+                return new NotFoundError($"Timeline translation for language '{languageCode}' was not found");
             }
 
             entity.Organization = timelineEntryToBeUpdated.GetOrganization();
@@ -47,7 +46,7 @@ public class EntityFrameworkTimelineUpdaterAdapter(AppDbContext dbContext) : ITi
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

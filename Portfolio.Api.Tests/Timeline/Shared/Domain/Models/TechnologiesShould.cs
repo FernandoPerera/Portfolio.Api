@@ -37,7 +37,7 @@ public class TechnologiesShould
         Technologies.Create([first, second])
             .Match(
                 technologies => technologies.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Technologies cannot be repeated")
             );
     }

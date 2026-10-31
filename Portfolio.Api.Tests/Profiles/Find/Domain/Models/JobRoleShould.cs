@@ -26,7 +26,7 @@ public class JobRoleShould
         JobRole.Create(givenJobRole)
             .Match(
                 name => name.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Job role cannot be empty")
             );
     }

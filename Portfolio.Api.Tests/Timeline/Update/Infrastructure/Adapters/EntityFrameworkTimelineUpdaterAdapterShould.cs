@@ -147,7 +147,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
         );
     }
 
@@ -167,7 +167,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
                 .Message.ShouldBe("Timeline translation for language 'fr' was not found")
         );
     }
@@ -182,7 +182,7 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 

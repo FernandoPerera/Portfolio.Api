@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -10,7 +9,7 @@ namespace Portfolio.Api.Timeline.Delete.Infrastructure.Adapters;
 
 public class EntityFrameworkTimelineDeleterAdapter(AppDbContext dbContext) : ITimelineDeleterRepository
 {
-    public async Task<Either<Error, Unit>> DeleteEntry(TimelineId id)
+    public async Task<Either<DomainError, Unit>> DeleteEntry(TimelineId id)
     {
         try
         {
@@ -20,7 +19,7 @@ public class EntityFrameworkTimelineDeleterAdapter(AppDbContext dbContext) : ITi
                 .SingleOrDefaultAsync(entry => entry.Id == entryId);
             if (entity is null)
             {
-                return Error.New(new NotFoundException($"Timeline entry '{entryId}' was not found"));
+                return new NotFoundError($"Timeline entry '{entryId}' was not found");
             }
 
             dbContext.TimelineEntryTranslations.RemoveRange(entity.Translations);
@@ -31,7 +30,7 @@ public class EntityFrameworkTimelineDeleterAdapter(AppDbContext dbContext) : ITi
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

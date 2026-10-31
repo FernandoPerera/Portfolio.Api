@@ -26,7 +26,7 @@ public class OrganizationShould
         Organization.Create(givenOrganization)
             .Match(
                 organization => organization.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Organization cannot be empty")
             );
     }
@@ -39,7 +39,7 @@ public class OrganizationShould
         Organization.Create(givenOrganization)
             .Match(
                 organization => organization.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The organization cannot exceed 100 characters")
             );
     }

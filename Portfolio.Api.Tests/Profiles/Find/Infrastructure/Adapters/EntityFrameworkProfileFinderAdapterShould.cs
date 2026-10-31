@@ -85,7 +85,7 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
 
         result.Match(
             profile => profile.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
                 .Message.ShouldBe("Profile was not found")
         );
     }
@@ -99,7 +99,7 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
 
         result.Match(
             profile => profile.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

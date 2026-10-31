@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Update.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Update.Domain.Ports;
 
 public interface IProfileUpdaterRepository
 {
-    Task<Either<Error, Unit>> UpdateProfile(ProfileToBeUpdated profileToBeUpdated);
+    Task<Either<DomainError, Unit>> UpdateProfile(ProfileToBeUpdated profileToBeUpdated);
 }

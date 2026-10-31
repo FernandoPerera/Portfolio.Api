@@ -26,7 +26,7 @@ public class LanguageToBeUpdatedShould
         LanguageToBeUpdated.Create("esp", "Español")
             .Match(
                 language => language.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Language code must have 2 letters")
             );
     }
@@ -37,7 +37,7 @@ public class LanguageToBeUpdatedShould
         LanguageToBeUpdated.Create("es", " ")
             .Match(
                 language => language.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Language name cannot be empty")
             );
     }

@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Timeline.AddTranslation.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.AddTranslation.Domain.Ports;
 
 public interface ITimelineTranslationAdderRepository
 {
-    Task<Either<Error, Unit>> AddTranslation(TimelineTranslationToBeAdded translationToBeAdded);
+    Task<Either<DomainError, Unit>> AddTranslation(TimelineTranslationToBeAdded translationToBeAdded);
 }

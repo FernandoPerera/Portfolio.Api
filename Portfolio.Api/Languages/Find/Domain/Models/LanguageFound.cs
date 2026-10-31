@@ -1,7 +1,7 @@
 using Ci.Languages.Create.Domain.Models;
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Find.Domain.Models;
 
@@ -16,7 +16,7 @@ public class LanguageFound
         _name = name;
     }
 
-    public static Either<Error, LanguageFound> CreateUnsafe(
+    public static Either<DomainError, LanguageFound> CreateUnsafe(
         string givenLanguageCode,
         string givenName
     ) =>

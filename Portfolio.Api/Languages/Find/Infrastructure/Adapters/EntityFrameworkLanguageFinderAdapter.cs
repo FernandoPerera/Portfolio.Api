@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Languages.Find.Domain.Models;
 using Portfolio.Api.Languages.Find.Domain.Ports;
@@ -11,7 +10,7 @@ namespace Portfolio.Api.Languages.Find.Infrastructure.Adapters;
 
 public class EntityFrameworkLanguageFinderAdapter(AppDbContext dbContext) : ILanguageFinderRepository
 {
-    public async Task<Either<Error, List<LanguageFound>>> FindLanguages()
+    public async Task<Either<DomainError, List<LanguageFound>>> FindLanguages()
     {
         try
         {
@@ -26,10 +25,10 @@ public class EntityFrameworkLanguageFinderAdapter(AppDbContext dbContext) : ILan
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 
-    private static Either<Error, LanguageFound> ToLanguage(LanguageEntity entity) =>
+    private static Either<DomainError, LanguageFound> ToLanguage(LanguageEntity entity) =>
         LanguageFound.CreateUnsafe(entity.LanguageCode, entity.Name);
 }

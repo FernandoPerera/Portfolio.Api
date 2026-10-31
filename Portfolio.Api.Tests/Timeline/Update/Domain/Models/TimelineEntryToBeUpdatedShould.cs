@@ -86,7 +86,7 @@ public class TimelineEntryToBeUpdatedShould
         TimelineEntryToBeUpdated.Create(current, null, null, null, null, null, null, null, "fr")
             .Match(
                 entry => entry.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+                error => error.ShouldBeOfType<NotFoundError>()
             );
     }
 
@@ -98,7 +98,7 @@ public class TimelineEntryToBeUpdatedShould
         TimelineEntryToBeUpdated.Create(current, null, null, "2024-01", null, null, null, null, "es")
             .Match(
                 entry => entry.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
             );
     }
 
@@ -110,7 +110,7 @@ public class TimelineEntryToBeUpdatedShould
         TimelineEntryToBeUpdated.Create(current, null, null, null, "2022-12", null, null, null, "es")
             .Match(
                 entry => entry.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
             );
     }
 }

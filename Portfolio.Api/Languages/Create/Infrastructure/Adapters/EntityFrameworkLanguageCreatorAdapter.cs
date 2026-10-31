@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Languages.Create.Domain.Models;
 using Portfolio.Api.Languages.Create.Domain.Ports;
@@ -11,7 +10,7 @@ namespace Portfolio.Api.Languages.Create.Infrastructure.Adapters;
 
 public class EntityFrameworkLanguageCreatorAdapter(AppDbContext dbContext) : ILanguageCreatorRepository
 {
-    public async Task<Either<Error, Unit>> CreateLanguage(LanguageToBeCreated languageToBeCreated)
+    public async Task<Either<DomainError, Unit>> CreateLanguage(LanguageToBeCreated languageToBeCreated)
     {
         try
         {
@@ -33,7 +32,7 @@ public class EntityFrameworkLanguageCreatorAdapter(AppDbContext dbContext) : ILa
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

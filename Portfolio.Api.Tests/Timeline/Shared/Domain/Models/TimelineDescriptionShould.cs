@@ -26,7 +26,7 @@ public class TimelineDescriptionShould
         TimelineDescription.Create(givenDescription)
             .Match(
                 description => description.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("Description cannot be empty")
             );
     }
@@ -39,7 +39,7 @@ public class TimelineDescriptionShould
         TimelineDescription.Create(givenDescription)
             .Match(
                 description => description.ShouldBeNull(),
-                error => error.Exception.Case.ShouldBeOfType<ValidationException>()
+                error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The description cannot exceed 1000 characters")
             );
     }

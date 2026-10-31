@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Create.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Create.Domain.Ports;
 
 public interface IProfileCreatorRepository
 {
-    Task<Either<Error, Unit>> CreateProfile(ProfileToBeCreated profileToBeCreated);
+    Task<Either<DomainError, Unit>> CreateProfile(ProfileToBeCreated profileToBeCreated);
 }

@@ -52,7 +52,7 @@ public class EntityFrameworkLanguageDeleterAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
                 .Message.ShouldBe("Language 'fr' was not found")
         );
     }
@@ -67,7 +67,7 @@ public class EntityFrameworkLanguageDeleterAdapterShould
 
         result.Match(
             unit => unit.ShouldBeEquivalentTo(null),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 

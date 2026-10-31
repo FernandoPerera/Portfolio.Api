@@ -1,6 +1,6 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Find.Domain.Models;
 
@@ -17,7 +17,7 @@ public class ProfileTranslationFound
         _jobRole = jobRole;
     }
 
-    public static Either<Error, ProfileTranslationFound> CreateUnsafe(
+    public static Either<DomainError, ProfileTranslationFound> CreateUnsafe(
         string givenLanguageCode,
         string givenPresentation,
         string givenJobRole

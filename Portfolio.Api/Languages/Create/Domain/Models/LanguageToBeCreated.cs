@@ -1,7 +1,7 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Ci.Languages.Create.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Create.Domain.Models;
 
@@ -16,7 +16,7 @@ public class LanguageToBeCreated
         _name = name;
     }
 
-    public static Either<Error, LanguageToBeCreated> Create(
+    public static Either<DomainError, LanguageToBeCreated> Create(
         string givenLanguageCode,
         string givenName
     ) =>

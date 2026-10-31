@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Profiles.Find.Domain.Models;
 using Portfolio.Api.Profiles.Find.Domain.Ports;
@@ -10,14 +9,14 @@ namespace Portfolio.Api.Profiles.Find.Infrastructure.Adapters;
 
 public class EntityFrameworkProfileFinderAdapter(AppDbContext dbContext) : IProfileFinderRepository
 {
-    public async Task<Either<Error, ProfileFound>> FindProfile()
+    public async Task<Either<DomainError, ProfileFound>> FindProfile()
     {
         try
         {
             var entity = await dbContext.Profiles.Include(p => p.Translations).FirstOrDefaultAsync();
             if (entity is null)
             {
-                return Error.New(new NotFoundException("Profile was not found"));
+                return new NotFoundError("Profile was not found");
             }
 
             return (
@@ -39,7 +38,7 @@ public class EntityFrameworkProfileFinderAdapter(AppDbContext dbContext) : IProf
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

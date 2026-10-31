@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Timeline.AddTranslation.Domain.Models;
@@ -10,7 +9,7 @@ namespace Portfolio.Api.Timeline.AddTranslation.Infrastructure.Adapters;
 
 public class EntityFrameworkTimelineTranslationAdderAdapter(AppDbContext dbContext) : ITimelineTranslationAdderRepository
 {
-    public async Task<Either<Error, Unit>> AddTranslation(TimelineTranslationToBeAdded translationToBeAdded)
+    public async Task<Either<DomainError, Unit>> AddTranslation(TimelineTranslationToBeAdded translationToBeAdded)
     {
         try
         {
@@ -27,7 +26,7 @@ public class EntityFrameworkTimelineTranslationAdderAdapter(AppDbContext dbConte
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 }

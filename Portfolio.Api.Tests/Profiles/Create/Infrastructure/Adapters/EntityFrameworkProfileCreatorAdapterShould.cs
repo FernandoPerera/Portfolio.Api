@@ -72,7 +72,7 @@ public class EntityFrameworkProfileCreatorAdapterShould
 
         result.Match(
             Right: unit => unit.ShouldBeEquivalentTo(null),
-            Left: error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            Left: error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

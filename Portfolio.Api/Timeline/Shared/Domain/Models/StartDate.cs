@@ -1,5 +1,5 @@
 using LanguageExt;
-using LanguageExt.Common;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
 
@@ -12,10 +12,10 @@ public class StartDate
         _startDate = startDate;
     }
 
-    public static Either<Error, StartDate> Create(string startDate) =>
+    public static Either<DomainError, StartDate> Create(string startDate) =>
         YearMonth.Create(startDate).Map(yearMonth => new StartDate(yearMonth));
 
-    public static Either<Error, StartDate> CreateUnsafe(DateOnly startDate) =>
+    public static Either<DomainError, StartDate> CreateUnsafe(DateOnly startDate) =>
         YearMonth.CreateUnsafe(startDate).Map(yearMonth => new StartDate(yearMonth));
 
     public override string ToString() => _startDate.ToString();

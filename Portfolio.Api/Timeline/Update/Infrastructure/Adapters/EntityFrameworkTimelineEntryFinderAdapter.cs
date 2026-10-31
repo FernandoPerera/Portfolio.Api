@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
@@ -12,7 +11,7 @@ namespace Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 
 public class EntityFrameworkTimelineEntryFinderAdapter(AppDbContext dbContext) : ITimelineEntryFinderRepository
 {
-    public async Task<Either<Error, TimelineEntryFound>> FindEntry(TimelineId id)
+    public async Task<Either<DomainError, TimelineEntryFound>> FindEntry(TimelineId id)
     {
         try
         {
@@ -23,18 +22,18 @@ public class EntityFrameworkTimelineEntryFinderAdapter(AppDbContext dbContext) :
 
             if (entity is null)
             {
-                return Error.New(new NotFoundException($"Timeline entry '{entryId}' was not found"));
+                return new NotFoundError($"Timeline entry '{entryId}' was not found");
             }
 
             return ToEntry(entity);
         }
         catch (Exception error)
         {
-            return Error.New(new ServiceUnavailableException("Database is unavailable, error: " + error.Message, error));
+            return new ServiceUnavailableError("Database is unavailable, error: " + error.Message, error);
         }
     }
 
-    private static Either<Error, TimelineEntryFound> ToEntry(TimelineEntryEntity entity) =>
+    private static Either<DomainError, TimelineEntryFound> ToEntry(TimelineEntryEntity entity) =>
         entity.Translations
             .Select(translation => TimelineTranslation.CreateUnsafe(
                 translation.LanguageCode,

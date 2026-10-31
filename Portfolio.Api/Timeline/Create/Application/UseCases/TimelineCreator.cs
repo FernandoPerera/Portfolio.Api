@@ -1,10 +1,10 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
 using Portfolio.Api.Timeline.Create.Application.Dtos;
 using Portfolio.Api.Timeline.Create.Domain.Models;
 using Portfolio.Api.Timeline.Create.Domain.Ports;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Create.Application.UseCases;
 
@@ -13,7 +13,7 @@ public class TimelineCreator(
     ILanguageExistenceRepository languageExistence
 )
 {
-    public async Task<Either<Error, Unit>> Execute(TimelineCreatorInfo timelineCreatorInfo)
+    public async Task<Either<DomainError, Unit>> Execute(TimelineCreatorInfo timelineCreatorInfo)
     {
         return await (
             from translations in timelineCreatorInfo.Translations
@@ -38,7 +38,7 @@ public class TimelineCreator(
         );
     }
 
-    private async Task<Either<Error, Unit>> EnsureLanguagesExist(TimelineEntryToBeCreated entry)
+    private async Task<Either<DomainError, Unit>> EnsureLanguagesExist(TimelineEntryToBeCreated entry)
     {
         foreach (var translation in entry.GetTranslations())
         {

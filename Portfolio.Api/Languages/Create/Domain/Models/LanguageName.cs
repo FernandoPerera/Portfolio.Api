@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Ci.Languages.Create.Domain.Models;
@@ -15,23 +14,23 @@ public class LanguageName
         _name = name;
     }
 
-    public static Either<Error, LanguageName> Create(string name)
+    public static Either<DomainError, LanguageName> Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            return Error.New(new ValidationException("Language name cannot be empty"));
+            return new ValidationError("Language name cannot be empty");
         }
 
         var trimmed = name.Trim();
         if (trimmed.Length > CharacterLimit)
         {
-            return Error.New(new ValidationException("The language name cannot exceed 20 characters"));
+            return new ValidationError("The language name cannot exceed 20 characters");
         }
 
         return new LanguageName(trimmed);
     }
 
-    public static Either<Error, LanguageName> CreateUnsafe(string name) => new LanguageName(name);
+    public static Either<DomainError, LanguageName> CreateUnsafe(string name) => new LanguageName(name);
 
     public override string ToString() => _name;
 }

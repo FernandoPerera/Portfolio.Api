@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Shared.Domain.Models;
@@ -15,13 +14,13 @@ public class TimelinePeriod
         _endDate = endDate;
     }
 
-    public static Either<Error, TimelinePeriod> Create(string givenStartDate, string? givenEndDate) =>
+    public static Either<DomainError, TimelinePeriod> Create(string givenStartDate, string? givenEndDate) =>
         from startDate in StartDate.Create(givenStartDate)
         from endDate in EndDate.Create(givenEndDate)
         from _ in EnsureEndIsNotBeforeStart(startDate, endDate)
         select new TimelinePeriod(startDate, endDate);
 
-    public static Either<Error, TimelinePeriod> CreateUnsafe(DateOnly givenStartDate, DateOnly? givenEndDate) =>
+    public static Either<DomainError, TimelinePeriod> CreateUnsafe(DateOnly givenStartDate, DateOnly? givenEndDate) =>
         from startDate in StartDate.CreateUnsafe(givenStartDate)
         from endDate in EndDate.CreateUnsafe(givenEndDate)
         select new TimelinePeriod(startDate, endDate);
@@ -30,11 +29,11 @@ public class TimelinePeriod
 
     public EndDate GetEndDate() => _endDate;
 
-    private static Either<Error, Unit> EnsureEndIsNotBeforeStart(StartDate startDate, EndDate endDate)
+    private static Either<DomainError, Unit> EnsureEndIsNotBeforeStart(StartDate startDate, EndDate endDate)
     {
         if (endDate.IsBefore(startDate))
         {
-            return Error.New(new ValidationException("The end date cannot be earlier than the start date"));
+            return new ValidationError("The end date cannot be earlier than the start date");
         }
 
         return Unit.Default;

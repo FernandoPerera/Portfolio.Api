@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Find.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using static LanguageExt.Prelude;
@@ -7,6 +6,7 @@ using EnterpriseName = Portfolio.Api.Profiles.Shared.Domain.Models.EnterpriseNam
 using JobRole = Portfolio.Api.Profiles.Shared.Domain.Models.JobRole;
 using Name = Portfolio.Api.Profiles.Shared.Domain.Models.Name;
 using Presentation = Portfolio.Api.Profiles.Shared.Domain.Models.Presentation;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Profiles.Update.Domain.Models;
 
@@ -33,7 +33,7 @@ public class ProfileToBeUpdated
         _languageCode = languageCode;
     }
 
-    public static Either<Error, ProfileToBeUpdated> Create(
+    public static Either<DomainError, ProfileToBeUpdated> Create(
         ProfileFound current,
         string? givenName,
         string? givenEnterpriseName,

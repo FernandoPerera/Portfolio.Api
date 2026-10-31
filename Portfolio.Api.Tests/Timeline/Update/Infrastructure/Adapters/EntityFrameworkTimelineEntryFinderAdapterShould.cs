@@ -75,7 +75,7 @@ public class EntityFrameworkTimelineEntryFinderAdapterShould
 
         result.Match(
             entry => entry.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<NotFoundException>()
+            error => error.ShouldBeOfType<NotFoundError>()
         );
     }
 
@@ -88,7 +88,7 @@ public class EntityFrameworkTimelineEntryFinderAdapterShould
 
         result.Match(
             entry => entry.ShouldBeNull(),
-            error => error.Exception.Case.ShouldBeOfType<ServiceUnavailableException>()
+            error => error.ShouldBeOfType<ServiceUnavailableError>()
         );
     }
 }

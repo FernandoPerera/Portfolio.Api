@@ -1,6 +1,6 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Timeline.Create.Domain.Models;
 
@@ -27,7 +27,7 @@ public class TimelineEntryToBeCreated
         _translations = translations;
     }
 
-    public static Either<Error, TimelineEntryToBeCreated> Create(
+    public static Either<DomainError, TimelineEntryToBeCreated> Create(
         string givenOrganization,
         string givenCategory,
         string givenStartDate,

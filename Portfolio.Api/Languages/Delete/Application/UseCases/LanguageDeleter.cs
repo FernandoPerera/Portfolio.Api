@@ -1,9 +1,9 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Languages.Delete.Application.Dtos;
 using Portfolio.Api.Languages.Delete.Domain.Ports;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
+using Portfolio.Api.Shared.Domain.Errors;
 
 namespace Portfolio.Api.Languages.Delete.Application.UseCases;
 
@@ -13,7 +13,7 @@ public class LanguageDeleter(
     ILanguageDeleterRepository deleter
 )
 {
-    public async Task<Either<Error, Unit>> Execute(LanguageDeleterInfo languageDeleterInfo)
+    public async Task<Either<DomainError, Unit>> Execute(LanguageDeleterInfo languageDeleterInfo)
     {
         return await (
             from languageCode in LanguageCode.Create(languageDeleterInfo.LanguageCode).ToAsync()

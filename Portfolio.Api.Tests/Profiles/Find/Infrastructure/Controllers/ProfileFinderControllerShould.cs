@@ -1,4 +1,3 @@
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
@@ -51,7 +50,7 @@ public class ProfileFinderControllerShould
     [Fact]
     public async Task NotFindTheProfileWhenNotExists()
     {
-        var notFoundError = Error.New(new NotFoundException("Profile was not found"));
+        var notFoundError = new NotFoundError("Profile was not found");
         _repository.FindProfile().Returns(notFoundError);
 
         var actionResult = await _controller.Find();
@@ -63,7 +62,7 @@ public class ProfileFinderControllerShould
     [Fact]
     public async Task NotFindTheProfileWhenUnexpectedErrorOccurs()
     {
-        var serviceUnavailableError = Error.New(new ServiceUnavailableException("Database down"));
+        var serviceUnavailableError = new ServiceUnavailableError("Database down");
         _repository.FindProfile().Returns(serviceUnavailableError);
 
         var actionResult = await _controller.Find();

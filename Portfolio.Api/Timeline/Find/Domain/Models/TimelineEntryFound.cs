@@ -1,5 +1,4 @@
 using LanguageExt;
-using LanguageExt.Common;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Timeline.Shared.Domain.Models;
@@ -33,7 +32,7 @@ public class TimelineEntryFound
         _translations = translations;
     }
 
-    public static Either<Error, TimelineEntryFound> CreateUnsafe(
+    public static Either<DomainError, TimelineEntryFound> CreateUnsafe(
         Guid givenId,
         string givenOrganization,
         string givenCategory,
@@ -63,7 +62,7 @@ public class TimelineEntryFound
 
     public List<TimelineTranslation> GetTranslations() => _translations.GetValues();
 
-    public Either<Error, TimelineTranslation> GetTranslation(LanguageCode languageCode) =>
+    public Either<DomainError, TimelineTranslation> GetTranslation(LanguageCode languageCode) =>
         Optional(_translations.GetValues().FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
-            .ToEither(Error.New(new NotFoundException($"Timeline translation for language '{languageCode}' was not found")));
+            .ToEither((DomainError)new NotFoundError($"Timeline translation for language '{languageCode}' was not found"));
 }
