@@ -7,6 +7,7 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Delete.Infrastructure.Adapters;
@@ -21,11 +22,11 @@ public class EntityFrameworkLanguageUsageAdapterShould
 
     public EntityFrameworkLanguageUsageAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
+
+        _appDbContext.SeedLanguages("es", "en");
         _usage = new EntityFrameworkLanguageUsageAdapter(_appDbContext);
     }
 

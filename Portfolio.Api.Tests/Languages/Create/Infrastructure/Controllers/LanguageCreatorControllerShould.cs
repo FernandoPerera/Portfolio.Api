@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Languages.Create.Application.UseCases;
 using Portfolio.Api.Languages.Create.Infrastructure.Adapters;
 using Portfolio.Api.Languages.Create.Infrastructure.Controllers;
 using Portfolio.Api.Languages.Create.Infrastructure.Dtos;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Create.Infrastructure.Controllers;
@@ -17,9 +17,7 @@ public class LanguageCreatorControllerShould
 
     public LanguageCreatorControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         var creatorRepository = new EntityFrameworkLanguageCreatorAdapter(new AppDbContext(options));
         var creator = new LanguageCreator(creatorRepository);

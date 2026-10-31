@@ -9,6 +9,7 @@ using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Delete.Infrastructure.Controllers;
@@ -22,9 +23,7 @@ public class LanguageDeleterControllerShould
 
     public LanguageDeleterControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         var deleter = new LanguageDeleter(
