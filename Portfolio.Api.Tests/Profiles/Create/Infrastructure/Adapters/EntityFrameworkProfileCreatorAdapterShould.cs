@@ -7,6 +7,7 @@ using Portfolio.Api.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Create.Domain.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Create.Infrastructure.Adapters;
@@ -19,11 +20,11 @@ public class EntityFrameworkProfileCreatorAdapterShould
 
     public EntityFrameworkProfileCreatorAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "example_db")
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
+
+        _appDbContext.SeedLanguages("es", "en");
         _creator = new EntityFrameworkProfileCreatorAdapter(_appDbContext, _idGenerator);
     }
 

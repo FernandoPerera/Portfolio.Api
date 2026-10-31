@@ -4,6 +4,7 @@ using Portfolio.Api.Profiles.Find.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Find.Infrastructure.Adapters;
@@ -15,11 +16,11 @@ public class EntityFrameworkProfileFinderAdapterShould: IDisposable
 
     public EntityFrameworkProfileFinderAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _dbContext = new AppDbContext(options);
+
+        _dbContext.SeedLanguages("es", "en");
         _dbContext.Database.EnsureCreated();
 
         _adapter = new EntityFrameworkProfileFinderAdapter(_dbContext);

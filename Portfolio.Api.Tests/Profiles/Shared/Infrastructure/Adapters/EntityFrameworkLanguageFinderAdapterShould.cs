@@ -5,6 +5,7 @@ using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Extensions;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Adapters;
@@ -16,9 +17,7 @@ public class EntityFrameworkLanguageFinderAdapterShould
 
     public EntityFrameworkLanguageFinderAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         _existence = new EntityFrameworkLanguageExistenceAdapter(_appDbContext);

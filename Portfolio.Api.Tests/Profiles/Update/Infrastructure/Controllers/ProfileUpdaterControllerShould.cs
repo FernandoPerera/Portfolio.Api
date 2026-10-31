@@ -9,6 +9,7 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Profiles.Update.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Update.Infrastructure.Controllers;
@@ -20,11 +21,11 @@ public class ProfileUpdaterControllerShould
 
     public ProfileUpdaterControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
+
+        _appDbContext.SeedLanguages("es", "en", "fr");
         var updaterRepository = new EntityFrameworkProfileUpdaterAdapter(_appDbContext);
         var finderRepository = new EntityFrameworkProfileFinderAdapter(_appDbContext);
         var updater = new ProfileUpdater(finderRepository, updaterRepository);
