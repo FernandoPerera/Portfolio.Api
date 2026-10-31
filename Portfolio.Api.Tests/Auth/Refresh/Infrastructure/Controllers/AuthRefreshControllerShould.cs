@@ -27,9 +27,7 @@ public class AuthRefreshControllerShould
 
     public AuthRefreshControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
         var jwtOptions = new JwtOptions
         {
             Issuer = "portfolio-api",

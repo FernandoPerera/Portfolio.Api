@@ -6,6 +6,7 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Auth.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Shared.Infrastructure.Adapters;
@@ -14,9 +15,7 @@ public class EntityFrameworkRefreshTokenConsumerAdapterShould
 {
     private static readonly DateTimeOffset Now = new(2026, 1, 2, 10, 0, 0, TimeSpan.Zero);
 
-    private readonly DbContextOptions<AppDbContext> _options = new DbContextOptionsBuilder<AppDbContext>()
-        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-        .Options;
+    private readonly DbContextOptions<AppDbContext> _options = PostgresTestDatabase.CreateOptions();
 
     private readonly AppDbContext _appDbContext;
     private readonly EntityFrameworkRefreshTokenConsumerAdapter _consumer;

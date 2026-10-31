@@ -4,6 +4,7 @@ using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Auth.Shared.Domain.Builders;
 using Portfolio.Api.Tests.Auth.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Auth.Shared.Infrastructure.Adapters;
@@ -18,9 +19,7 @@ public class EntityFrameworkRefreshTokenFinderAdapterShould
 
     public EntityFrameworkRefreshTokenFinderAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         _finder = new EntityFrameworkRefreshTokenFinderAdapter(_appDbContext);

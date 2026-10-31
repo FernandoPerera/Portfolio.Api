@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Portfolio.Api.Auth.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Auth.Shared.Infrastructure.Options;
@@ -22,9 +21,7 @@ public class EntityFrameworkRefreshTokenSaverAdapterShould
 
     public EntityFrameworkRefreshTokenSaverAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         _saver = new EntityFrameworkRefreshTokenSaverAdapter(
