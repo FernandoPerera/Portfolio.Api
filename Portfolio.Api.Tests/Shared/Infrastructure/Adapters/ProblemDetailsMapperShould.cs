@@ -62,7 +62,7 @@ public class ProblemDetailsMapperShould
         var result = _mapper.ToActionResult(_controller, new ServiceUnavailableError(DatabaseFailureMessage, cause));
 
         var problemDetails = result.ShouldBeOfType<ObjectResult>().Value.ShouldBeOfType<ProblemDetails>();
-        problemDetails.Detail.ShouldNotContain(cause.Message);
+        problemDetails.Detail.ShouldNotBeNull().ShouldNotContain(cause.Message);
         var entry = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
         entry.Level.ShouldBe(LogLevel.Error);
         entry.Exception.ShouldBe(cause);

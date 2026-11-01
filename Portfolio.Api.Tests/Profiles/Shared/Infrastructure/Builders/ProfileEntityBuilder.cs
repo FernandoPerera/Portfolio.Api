@@ -15,7 +15,7 @@ public static class ProfileEntityBuilder
         {
             Id = id,
             Name = name,
-            Enterprise = enterprise,
+            Enterprise = enterprise ?? string.Empty,
             Translations = translations ?? []
         };
     }
