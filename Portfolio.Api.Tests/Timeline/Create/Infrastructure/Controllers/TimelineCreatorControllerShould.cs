@@ -6,6 +6,7 @@ using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.Create.Application.UseCases;
 using Portfolio.Api.Timeline.Create.Infrastructure.Adapters;
 using Portfolio.Api.Timeline.Create.Infrastructure.Controllers;
@@ -21,9 +22,7 @@ public class TimelineCreatorControllerShould
 
     public TimelineCreatorControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         var creatorRepository = new EntityFrameworkTimelineCreatorAdapter(_appDbContext, new GuidGeneratorIdentifier());

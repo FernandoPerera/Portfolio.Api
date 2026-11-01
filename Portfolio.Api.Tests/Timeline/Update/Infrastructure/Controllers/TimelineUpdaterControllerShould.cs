@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.Update.Application.UseCases;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
 using Portfolio.Api.Timeline.Update.Infrastructure.Controllers;
@@ -21,11 +22,11 @@ public class TimelineUpdaterControllerShould
 
     public TimelineUpdaterControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
+
+        _appDbContext.SeedLanguages("es", "en", "fr");
         var updater = new TimelineUpdater(
             new EntityFrameworkTimelineEntryFinderAdapter(_appDbContext),
             new EntityFrameworkTimelineUpdaterAdapter(_appDbContext)

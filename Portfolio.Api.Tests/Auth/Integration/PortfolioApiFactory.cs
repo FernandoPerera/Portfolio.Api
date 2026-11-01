@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 
 namespace Portfolio.Api.Tests.Auth.Integration;
 
@@ -13,6 +14,7 @@ public class PortfolioApiFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("Database:ConnectionString", PostgresTestDatabase.CreateConnectionString());
         builder.UseSetting("Jwt:Issuer", Issuer);
         builder.UseSetting("Jwt:Audience", Audience);
         builder.UseSetting("Jwt:SigningKey", SigningKey);

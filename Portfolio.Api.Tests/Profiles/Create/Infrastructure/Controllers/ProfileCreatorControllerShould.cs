@@ -11,6 +11,7 @@ using Portfolio.Api.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Profiles.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Create.Infrastructure.Controllers;
@@ -22,9 +23,7 @@ public class ProfileCreatorControllerShould
 
     public ProfileCreatorControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         var generatorIdentifier = new GuidGeneratorIdentifier();

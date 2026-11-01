@@ -7,6 +7,7 @@ using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.Create.Infrastructure.Adapters;
 using Shouldly;
 
@@ -20,11 +21,11 @@ public class EntityFrameworkTimelineCreatorAdapterShould
 
     public EntityFrameworkTimelineCreatorAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
+
+        _appDbContext.SeedLanguages("es", "en");
         _creator = new EntityFrameworkTimelineCreatorAdapter(_appDbContext, _idGenerator);
     }
 

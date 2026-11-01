@@ -5,6 +5,7 @@ using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Find.Domain.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.Find.Domain.Models;
 using Portfolio.Api.Timeline.Update.Domain.Models;
 using Portfolio.Api.Timeline.Update.Infrastructure.Adapters;
@@ -19,11 +20,11 @@ public class EntityFrameworkTimelineUpdaterAdapterShould
 
     public EntityFrameworkTimelineUpdaterAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _dbContext = new AppDbContext(options);
+
+        _dbContext.SeedLanguages("es", "en", "fr");
         _updater = new EntityFrameworkTimelineUpdaterAdapter(_dbContext);
     }
 

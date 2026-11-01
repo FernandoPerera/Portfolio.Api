@@ -9,6 +9,7 @@ using Portfolio.Api.Profiles.Shared.Infrastructure.Adapters;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Update.Infrastructure.Controllers;
@@ -20,9 +21,7 @@ public class LanguageUpdaterControllerShould
 
     public LanguageUpdaterControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         var updater = new LanguageUpdater(

@@ -8,6 +8,7 @@ using Portfolio.Api.Tests.Profiles.Find.Domain.Builders;
 using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Profiles.Update.Domain.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Profiles.Update.Infrastructure.Adapters;
@@ -19,11 +20,11 @@ public class EntityFrameworkProfileUpdaterAdapterShould : IDisposable
 
     public EntityFrameworkProfileUpdaterAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _dbContext = new AppDbContext(options);
+
+        _dbContext.SeedLanguages("es", "en", "fr");
         _dbContext.Database.EnsureCreated();
 
         _adapter = new EntityFrameworkProfileUpdaterAdapter(_dbContext);

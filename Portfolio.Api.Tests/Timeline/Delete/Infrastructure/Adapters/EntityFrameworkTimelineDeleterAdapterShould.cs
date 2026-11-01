@@ -4,6 +4,7 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Shared.Domain.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.Delete.Infrastructure.Adapters;
 using Shouldly;
 
@@ -16,11 +17,11 @@ public class EntityFrameworkTimelineDeleterAdapterShould
 
     public EntityFrameworkTimelineDeleterAdapterShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _dbContext = new AppDbContext(options);
+
+        _dbContext.SeedLanguages("es", "en");
         _deleter = new EntityFrameworkTimelineDeleterAdapter(_dbContext);
     }
 

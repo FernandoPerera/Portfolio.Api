@@ -6,6 +6,7 @@ using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
+using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Timeline.AddTranslation.Application.UseCases;
 using Portfolio.Api.Timeline.AddTranslation.Infrastructure.Adapters;
 using Portfolio.Api.Timeline.AddTranslation.Infrastructure.Controllers;
@@ -25,9 +26,7 @@ public class TimelineTranslationAdderControllerShould
 
     public TimelineTranslationAdderControllerShould()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
         var adder = new TimelineTranslationAdder(
@@ -84,7 +83,6 @@ public class TimelineTranslationAdderControllerShould
     public async Task FailWhenTheTranslationAlreadyExists()
     {
         var entryId = await AddEntry();
-        await AddLanguage(ExistingLanguage);
 
         var response = await _controller.Add(entryId, ExistingLanguage, BuildRequest());
 
@@ -94,6 +92,7 @@ public class TimelineTranslationAdderControllerShould
     private async Task<Guid> AddEntry()
     {
         var entryId = Guid.NewGuid();
+        _appDbContext.SeedLanguages(ExistingLanguage);
         await _appDbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(
             entryId,
             translations: [TimelineEntryTranslationEntityBuilder.Build(entryId, ExistingLanguage)]
