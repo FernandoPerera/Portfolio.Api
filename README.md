@@ -60,7 +60,7 @@ dotnet user-secrets set "Admin:GitHubUserId" "<value>" --project Portfolio.Api
 Requests are limited per client IP with two fixed-window policies: `auth` for `v1/auth/*` and `public` for the anonymous `GET` endpoints. A request over the limit gets `429 Too Many Requests` as `ProblemDetails`, with a `Retry-After` header. The limits are the `RateLimiting:*` settings above.
 
 * **Behind a proxy:** the client IP is the one the API sees. If it is deployed behind a reverse proxy or a PaaS, `ForwardedHeaders` must be configured first; otherwise every visitor shares the proxy IP and the same quota. Pending until the hosting is decided.
-* **Multiple instances:** the counters live in memory, so each instance counts on its own.
+* **Multiple instances:** the counters live in memory, so each instance counts on its own. The login codes also live in memory, so the API must run as a single instance that does not scale to zero (see [Where the Login Codes Live](./docs/authentication.md#where-the-login-codes-live)).
 
 ### Database
 The API stores its data in PostgreSQL. The API never changes the schema: it is created by the SQL scripts in [`database/migrations`](./database/migrations), which are plain `CREATE ... IF NOT EXISTS` statements numbered in the order they must run (`001_initial_create.sql`, `002_...`).

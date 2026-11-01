@@ -79,6 +79,16 @@ The URL carries a `code` parameter at two different moments. They are not the sa
 | Where it arrives | At the callback | At your web, and from there at `exchange` |
 | Where it dies | At the callback | At `exchange` (single use, 60 s) |
 
+### Where the Login Codes Live
+
+The `LoginCode`s are kept in memory (`InMemoryLoginCodeSaverAdapter` and `InMemoryLoginCodeConsumerAdapter`), only as a hash, and not in PostgreSQL. It is a deliberate choice: the owner is the only user of the back office and also controls the deploys, so a lost code only means signing in again. This has three consequences:
+
+- **Run a single instance of the API.** With two instances, the callback can land on one and the `exchange` on the other, which answers `401`. The single use is guaranteed by a lock inside the process.
+- **Do not scale to zero.** The instance that handled the callback must still be alive when `exchange` arrives, up to 60 s later.
+- **Do not deploy between the callback and the `exchange`.** A restart drops the code; if it happens, sign in again.
+
+If the hosting ever needs more than one instance or scales to zero, the way out is to replace the two adapters with PostgreSQL ones, as the refresh tokens already are. The `Consume` would be a single `DELETE ... WHERE hash = ... AND expires > now`, which keeps the single use across instances.
+
 ---
 ## 3. Refresh Tokens
 
