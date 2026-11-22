@@ -17,6 +17,7 @@ using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Create.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Delete.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Find.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Reorder.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Extensions;
@@ -72,6 +73,7 @@ builder.Services.AddWayTranslationAdd();
 builder.Services.AddWayOfWorkingUpdate();
 builder.Services.AddWayTranslationUpdate();
 builder.Services.AddWayOrderUpdate();
+builder.Services.AddWayOfWorkingDelete();
 
 var app = builder.Build();
 
