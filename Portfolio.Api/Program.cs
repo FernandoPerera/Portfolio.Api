@@ -20,6 +20,7 @@ using Portfolio.Api.WaysOfWorking.Create.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Find.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Update.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.UpdateTranslation.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +69,7 @@ builder.Services.AddWayOfWorkingCreate();
 builder.Services.AddWayOfWorkingFind();
 builder.Services.AddWayTranslationAdd();
 builder.Services.AddWayOfWorkingUpdate();
+builder.Services.AddWayTranslationUpdate();
 
 var app = builder.Build();
 
