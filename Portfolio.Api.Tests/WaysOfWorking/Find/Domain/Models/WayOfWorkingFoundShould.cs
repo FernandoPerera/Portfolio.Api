@@ -39,4 +39,29 @@ public class WayOfWorkingFoundShould
                     .Message.ShouldBe("Way of working already has a translation for language 'es'")
             );
     }
+
+    [Fact]
+    public void ReturnTheTranslationOfTheGivenLanguage()
+    {
+        var languageCode = LanguageCode.Create("en").IfLeft(error => throw new Exception(error.Message));
+
+        _way.GetTranslation(languageCode)
+            .Match(
+                translation => translation.GetLanguageCode().ShouldBe("en"),
+                error => error.ShouldBeNull()
+            );
+    }
+
+    [Fact]
+    public void FailWhenTheLanguageIsNotInTheWayOfWorking()
+    {
+        var languageCode = LanguageCode.Create("fr").IfLeft(error => throw new Exception(error.Message));
+
+        _way.GetTranslation(languageCode)
+            .Match(
+                translation => translation.ShouldBeNull(),
+                error => error.ShouldBeOfType<NotFoundError>()
+                    .Message.ShouldBe("Way of working translation for language 'fr' was not found")
+            );
+    }
 }

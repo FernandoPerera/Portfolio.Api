@@ -2,6 +2,7 @@ using LanguageExt;
 using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Models;
+using static LanguageExt.Prelude;
 
 namespace Portfolio.Api.WaysOfWorking.Find.Domain.Models;
 
@@ -44,6 +45,10 @@ public class WayOfWorkingFound
     public string GetIllustration() => _illustration.ToString();
 
     public List<WayTranslation> GetTranslations() => _translations.GetValues();
+
+    public Either<DomainError, WayTranslation> GetTranslation(LanguageCode languageCode) =>
+        Optional(_translations.GetValues().FirstOrDefault(translation => translation.GetLanguageCode() == languageCode.ToString()))
+            .ToEither((DomainError)new NotFoundError($"Way of working translation for language '{languageCode}' was not found"));
 
     public Either<DomainError, Unit> EnsureTranslationIsNew(LanguageCode languageCode)
     {
