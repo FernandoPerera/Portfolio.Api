@@ -22,5 +22,7 @@ public class WayOfWorkingId
         return new WayOfWorkingId(id);
     }
 
+    public static Either<DomainError, WayOfWorkingId> CreateUnsafe(Guid id) => new WayOfWorkingId(id);
+
     public Guid ToGuid() => _id;
 }
