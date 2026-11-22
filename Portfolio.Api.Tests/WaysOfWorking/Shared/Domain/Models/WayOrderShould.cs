@@ -22,6 +22,23 @@ public class WayOrderShould
     }
 
     [Fact]
+    public void GiveThePositionOfEachWayOfWorking()
+    {
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
+
+        WayOrder.Create([second, first])
+            .Match(
+                order =>
+                {
+                    order.GetPositionOf(second).ShouldBe(1);
+                    order.GetPositionOf(first).ShouldBe(2);
+                },
+                error => error.ShouldBeNull()
+            );
+    }
+
+    [Fact]
     public void RejectAnOrderWithoutWaysOfWorking()
     {
         WayOrder.Create([])

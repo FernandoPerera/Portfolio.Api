@@ -33,6 +33,8 @@ public class WayOrder
 
     public List<Guid> GetValues() => _ids.Select(id => id.ToGuid()).ToList();
 
+    public int GetPositionOf(Guid id) => _ids.FindIndex(wayId => wayId.ToGuid() == id) + 1;
+
     public Either<DomainError, Unit> EnsureCoversExactly(List<WayOfWorkingFound> existingWays)
     {
         var existingIds = existingWays.Select(way => way.GetId()).ToHashSet();
