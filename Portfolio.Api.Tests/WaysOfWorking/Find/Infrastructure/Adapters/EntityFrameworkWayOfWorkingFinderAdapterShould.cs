@@ -48,12 +48,12 @@ public class EntityFrameworkWayOfWorkingFinderAdapterShould
                         translation.GetCaption(),
                         translation.GetTitle(),
                         translation.GetDescription(),
-                        translation.GetPoints()
+                        string.Join(" | ", translation.GetPoints())
                     ))
                     .ShouldBe(
                     [
-                        (english.LanguageCode, english.Label, english.Caption, english.Title, english.Description, english.Points),
-                        (spanish.LanguageCode, spanish.Label, spanish.Caption, spanish.Title, spanish.Description, spanish.Points)
+                        (english.LanguageCode, english.Label, english.Caption, english.Title, english.Description, string.Join(" | ", english.Points)),
+                        (spanish.LanguageCode, spanish.Label, spanish.Caption, spanish.Title, spanish.Description, string.Join(" | ", spanish.Points))
                     ]);
             },
             error => error.ShouldBeNull()

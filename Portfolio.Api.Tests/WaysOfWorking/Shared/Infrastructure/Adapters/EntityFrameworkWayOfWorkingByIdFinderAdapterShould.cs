@@ -46,12 +46,12 @@ public class EntityFrameworkWayOfWorkingByIdFinderAdapterShould
                     .Select(translation => (
                         translation.GetLanguageCode(),
                         translation.GetLabel(),
-                        translation.GetPoints()
+                        string.Join(" | ", translation.GetPoints())
                     ))
                     .ShouldBe(
                     [
-                        (english.LanguageCode, english.Label, english.Points),
-                        (spanish.LanguageCode, spanish.Label, spanish.Points)
+                        (english.LanguageCode, english.Label, string.Join(" | ", english.Points)),
+                        (spanish.LanguageCode, spanish.Label, string.Join(" | ", spanish.Points))
                     ]);
             },
             error => error.ShouldBeNull()
