@@ -25,7 +25,7 @@ public class WayTranslationAdder(
             from languageCode in LanguageCode.Create(wayTranslationAdderInfo.LanguageCode).ToAsync()
             from _ in current.EnsureTranslationIsNew(languageCode).ToAsync()
             from translation in WayTranslationToBeAdded.Create(
-                id,
+                wayTranslationAdderInfo.Id,
                 new WayTranslationInput(
                     wayTranslationAdderInfo.LanguageCode,
                     wayTranslationAdderInfo.Label,

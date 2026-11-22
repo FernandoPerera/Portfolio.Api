@@ -16,7 +16,7 @@ public abstract class WayTranslationToBeAddedBuilder
     )
     {
         return WayTranslationToBeAdded.Create(
-                WayOfWorkingIdBuilder.Build(wayId),
+                wayId ?? Guid.NewGuid(),
                 WayTranslationInputBuilder.Build(languageCode, label, caption, title, description, points)
             )
             .IfLeft(error => throw new Exception("Error in WayTranslationToBeAddedBuilder, error: " + error.Message));

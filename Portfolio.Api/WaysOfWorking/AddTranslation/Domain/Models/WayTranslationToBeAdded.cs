@@ -17,9 +17,10 @@ public class WayTranslationToBeAdded
     }
 
     public static Either<DomainError, WayTranslationToBeAdded> Create(
-        WayOfWorkingId wayId,
+        Guid givenWayId,
         WayTranslationInput givenTranslation
     ) =>
+        from wayId in WayOfWorkingId.Create(givenWayId)
         from translation in WayTranslation.Create(
             givenTranslation.LanguageCode,
             givenTranslation.Label,
