@@ -15,6 +15,7 @@ using Portfolio.Api.Timeline.Create.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Delete.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Create.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,9 @@ builder.Services.AddTimelineTranslationAdd();
 builder.Services.AddTimelineDelete();
 builder.Services.AddTimelineFind();
 builder.Services.AddTimelineUpdate();
+
+// Ways of working
+builder.Services.AddWayOfWorkingCreate();
 
 var app = builder.Build();
 
