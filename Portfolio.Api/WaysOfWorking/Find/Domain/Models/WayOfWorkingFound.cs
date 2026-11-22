@@ -1,4 +1,5 @@
 using LanguageExt;
+using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Models;
 
@@ -43,4 +44,7 @@ public class WayOfWorkingFound
     public string GetIllustration() => _illustration.ToString();
 
     public List<WayTranslation> GetTranslations() => _translations.GetValues();
+
+    public bool HasTranslationIn(LanguageCode languageCode) =>
+        _translations.GetValues().Any(translation => translation.GetLanguageCode() == languageCode.ToString());
 }
