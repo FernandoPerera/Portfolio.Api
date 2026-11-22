@@ -1,4 +1,5 @@
 using LanguageExt;
+using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Profiles.Shared.Domain.Ports;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.WaysOfWorking.AddTranslation.Application.Dtos;
@@ -21,8 +22,10 @@ public class WayTranslationAdder(
         return await (
             from id in WayOfWorkingId.Create(wayTranslationAdderInfo.Id).ToAsync()
             from current in finder.FindWay(id).ToAsync()
+            from languageCode in LanguageCode.Create(wayTranslationAdderInfo.LanguageCode).ToAsync()
+            from _ in current.EnsureTranslationIsNew(languageCode).ToAsync()
             from translation in WayTranslationToBeAdded.Create(
-                current,
+                id,
                 new WayTranslationInput(
                     wayTranslationAdderInfo.LanguageCode,
                     wayTranslationAdderInfo.Label,
@@ -32,8 +35,8 @@ public class WayTranslationAdder(
                     wayTranslationAdderInfo.Points
                 )
             ).ToAsync()
-            from _ in languageExistence.Exists(translation.GetTranslation().GetLanguageCodeModel()).ToAsync()
-            from __ in adder.AddTranslation(translation).ToAsync()
+            from __ in languageExistence.Exists(languageCode).ToAsync()
+            from ___ in adder.AddTranslation(translation).ToAsync()
             select Unit.Default
         );
     }

@@ -45,6 +45,15 @@ public class WayOfWorkingFound
 
     public List<WayTranslation> GetTranslations() => _translations.GetValues();
 
-    public bool HasTranslationIn(LanguageCode languageCode) =>
-        _translations.GetValues().Any(translation => translation.GetLanguageCode() == languageCode.ToString());
+    public Either<DomainError, Unit> EnsureTranslationIsNew(LanguageCode languageCode)
+    {
+        var hasTranslation = _translations.GetValues()
+            .Any(translation => translation.GetLanguageCode() == languageCode.ToString());
+        if (hasTranslation)
+        {
+            return new ConflictError($"Way of working already has a translation for language '{languageCode}'");
+        }
+
+        return Unit.Default;
+    }
 }

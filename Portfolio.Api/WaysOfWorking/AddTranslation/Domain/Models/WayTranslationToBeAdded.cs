@@ -1,7 +1,5 @@
 using LanguageExt;
-using Portfolio.Api.Profiles.Shared.Domain.Models;
 using Portfolio.Api.Shared.Domain.Errors;
-using Portfolio.Api.WaysOfWorking.Find.Domain.Models;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Inputs;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Models;
 
@@ -19,14 +17,11 @@ public class WayTranslationToBeAdded
     }
 
     public static Either<DomainError, WayTranslationToBeAdded> Create(
-        WayOfWorkingFound current,
+        WayOfWorkingId wayId,
         WayTranslationInput givenTranslation
     ) =>
-        from languageCode in LanguageCode.Create(givenTranslation.LanguageCode)
-        from _ in EnsureTranslationIsNew(current, languageCode)
-        from wayId in WayOfWorkingId.CreateUnsafe(current.GetId())
         from translation in WayTranslation.Create(
-            languageCode.ToString(),
+            givenTranslation.LanguageCode,
             givenTranslation.Label,
             givenTranslation.Caption,
             givenTranslation.Title,
@@ -38,14 +33,4 @@ public class WayTranslationToBeAdded
     public Guid GetWayId() => _wayId.ToGuid();
 
     public WayTranslation GetTranslation() => _translation;
-
-    private static Either<DomainError, Unit> EnsureTranslationIsNew(WayOfWorkingFound current, LanguageCode languageCode)
-    {
-        if (current.HasTranslationIn(languageCode))
-        {
-            return new ConflictError($"Way of working already has a translation for language '{languageCode}'");
-        }
-
-        return Unit.Default;
-    }
 }
