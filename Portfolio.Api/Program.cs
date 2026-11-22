@@ -16,6 +16,7 @@ using Portfolio.Api.Timeline.Delete.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Create.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Find.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,7 @@ builder.Services.AddTimelineUpdate();
 
 // Ways of working
 builder.Services.AddWayOfWorkingCreate();
+builder.Services.AddWayOfWorkingFind();
 
 var app = builder.Build();
 
