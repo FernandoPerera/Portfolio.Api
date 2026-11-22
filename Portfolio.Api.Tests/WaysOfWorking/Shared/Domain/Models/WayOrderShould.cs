@@ -1,4 +1,7 @@
 using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.Tests.Shared.Extensions;
+using Portfolio.Api.Tests.WaysOfWorking.Find.Domain.Builders;
+using Portfolio.Api.WaysOfWorking.Find.Domain.Models;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Models;
 using Shouldly;
 
@@ -39,6 +42,49 @@ public class WayOrderShould
                 order => order.ShouldBeNull(),
                 error => error.ShouldBeOfType<ValidationError>()
                     .Message.ShouldBe("The order cannot repeat a way of working")
+            );
+    }
+
+    [Fact]
+    public void CoverTheExistingWaysOfWorkingInAnyOrder()
+    {
+        var first = WayOfWorkingFoundBuilder.Build();
+        var second = WayOfWorkingFoundBuilder.Build(position: 2);
+
+        WayOrder.Create([second.GetId(), first.GetId()])
+            .Bind(order => order.EnsureCoversExactly([first, second]))
+            .Match(
+                unit => unit.ShouldBeUnit(),
+                error => error.ShouldBeNull()
+            );
+    }
+
+    [Fact]
+    public void RejectAnOrderThatLeavesAWayOfWorkingOut()
+    {
+        var first = WayOfWorkingFoundBuilder.Build();
+        var second = WayOfWorkingFoundBuilder.Build(position: 2);
+
+        WayOrder.Create([first.GetId()])
+            .Bind(order => order.EnsureCoversExactly([first, second]))
+            .Match(
+                unit => unit.ShouldBeEquivalentTo(null),
+                error => error.ShouldBeOfType<ValidationError>()
+                    .Message.ShouldBe("The order must contain exactly the existing ways of working")
+            );
+    }
+
+    [Fact]
+    public void RejectAnOrderWithAWayOfWorkingThatDoesNotExist()
+    {
+        var first = WayOfWorkingFoundBuilder.Build();
+
+        WayOrder.Create([first.GetId(), Guid.NewGuid()])
+            .Bind(order => order.EnsureCoversExactly([first]))
+            .Match(
+                unit => unit.ShouldBeEquivalentTo(null),
+                error => error.ShouldBeOfType<ValidationError>()
+                    .Message.ShouldBe("The order must contain exactly the existing ways of working")
             );
     }
 }

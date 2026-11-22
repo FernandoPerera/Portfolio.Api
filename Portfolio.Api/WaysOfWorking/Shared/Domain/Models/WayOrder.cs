@@ -1,5 +1,6 @@
 using LanguageExt;
 using Portfolio.Api.Shared.Domain.Errors;
+using Portfolio.Api.WaysOfWorking.Find.Domain.Models;
 
 namespace Portfolio.Api.WaysOfWorking.Shared.Domain.Models;
 
@@ -31,4 +32,15 @@ public class WayOrder
     }
 
     public List<Guid> GetValues() => _ids.Select(id => id.ToGuid()).ToList();
+
+    public Either<DomainError, Unit> EnsureCoversExactly(List<WayOfWorkingFound> existingWays)
+    {
+        var existingIds = existingWays.Select(way => way.GetId()).ToHashSet();
+        if (!existingIds.SetEquals(GetValues()))
+        {
+            return new ValidationError("The order must contain exactly the existing ways of working");
+        }
+
+        return Unit.Default;
+    }
 }
