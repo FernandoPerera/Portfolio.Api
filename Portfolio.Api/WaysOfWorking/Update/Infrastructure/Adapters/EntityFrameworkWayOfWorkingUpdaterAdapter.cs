@@ -13,11 +13,10 @@ public class EntityFrameworkWayOfWorkingUpdaterAdapter(AppDbContext dbContext) :
     {
         try
         {
-            var id = wayOfWorkingToBeUpdated.GetId();
-            var illustration = wayOfWorkingToBeUpdated.GetIllustration();
             await dbContext.WaysOfWorking
-                .Where(way => way.Id == id)
-                .ExecuteUpdateAsync(setters => setters.SetProperty(way => way.Illustration, illustration));
+                .Where(way => way.Id == wayOfWorkingToBeUpdated.GetId())
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(way => way.Illustration, wayOfWorkingToBeUpdated.GetIllustration()));
 
             return Unit.Default;
         }
