@@ -1,5 +1,5 @@
 using Portfolio.Api.Tests.WaysOfWorking.Shared.Domain.Builders;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Domain.Models;
+using Portfolio.Api.WaysOfWorking.Add.Domain.Models;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.WaysOfWorking.AddTranslation.Domain.Models;
@@ -12,7 +12,7 @@ public class WayTranslationToBeAddedShould
         var givenId = Guid.NewGuid();
         var given = WayTranslationInputBuilder.Build("EN", "Clear", "No jargon");
 
-        WayTranslationToBeAdded.Create(givenId, given)
+        WayToBeAdded.Create(givenId, given)
             .Match(
                 translation =>
                 {

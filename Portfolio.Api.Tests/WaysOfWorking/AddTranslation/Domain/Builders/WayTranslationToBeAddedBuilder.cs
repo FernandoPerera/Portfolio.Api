@@ -1,11 +1,11 @@
 using Portfolio.Api.Tests.WaysOfWorking.Shared.Domain.Builders;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Domain.Models;
+using Portfolio.Api.WaysOfWorking.Add.Domain.Models;
 
 namespace Portfolio.Api.Tests.WaysOfWorking.AddTranslation.Domain.Builders;
 
 public abstract class WayTranslationToBeAddedBuilder
 {
-    public static WayTranslationToBeAdded Build(
+    public static WayToBeAdded Build(
         Guid? wayId = null,
         string languageCode = "en",
         string label = "Clear",
@@ -15,7 +15,7 @@ public abstract class WayTranslationToBeAddedBuilder
         List<string>? points = null
     )
     {
-        return WayTranslationToBeAdded.Create(
+        return WayToBeAdded.Create(
                 wayId ?? Guid.NewGuid(),
                 WayTranslationInputBuilder.Build(languageCode, label, caption, title, description, points)
             )

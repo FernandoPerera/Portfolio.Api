@@ -1,22 +1,22 @@
 using LanguageExt;
 using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.Shared.Infrastructure.Data;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Domain.Models;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Domain.Ports;
+using Portfolio.Api.WaysOfWorking.Add.Domain.Models;
+using Portfolio.Api.WaysOfWorking.Add.Domain.Ports;
 using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Entities;
 
-namespace Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Adapters;
+namespace Portfolio.Api.WaysOfWorking.Add.Infrastructure.Adapters;
 
-public class EntityFrameworkWayTranslationAdderAdapter(AppDbContext dbContext) : IWayTranslationAdderRepository
+public class EntityFrameworkWayAdderAdapter(AppDbContext dbContext) : IWayAdderRepository
 {
-    public async Task<Either<DomainError, Unit>> AddTranslation(WayTranslationToBeAdded translationToBeAdded)
+    public async Task<Either<DomainError, Unit>> AddTranslation(WayToBeAdded toBeAdded)
     {
         try
         {
-            var translation = translationToBeAdded.GetTranslation();
+            var translation = toBeAdded.GetTranslation();
             await dbContext.WayOfWorkingTranslations.AddAsync(new WayOfWorkingTranslationEntity
             {
-                WayId = translationToBeAdded.GetWayId(),
+                WayId = toBeAdded.GetWayId(),
                 LanguageCode = translation.GetLanguageCode(),
                 Label = translation.GetLabel(),
                 Caption = translation.GetCaption(),

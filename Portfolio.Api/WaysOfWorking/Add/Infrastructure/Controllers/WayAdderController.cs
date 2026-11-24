@@ -2,18 +2,18 @@ using LanguageExt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Shared.Infrastructure.Ports;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Application.Dtos;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Application.UseCases;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Dtos;
+using Portfolio.Api.WaysOfWorking.Add.Application.Dtos;
+using Portfolio.Api.WaysOfWorking.Add.Application.UseCases;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Dtos;
 
-namespace Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Controllers;
+namespace Portfolio.Api.WaysOfWorking.Add.Infrastructure.Controllers;
 
 [ApiController]
 [Authorize]
 [Route("v1/ways-of-working")]
 [Tags("Ways of working")]
-public class WayTranslationAdderController(
-    WayTranslationAdder adder,
+public class WayAdderController(
+    WayAdder adder,
     IErrorResponseMapper errorResponseMapper
 ) : ControllerBase
 {
@@ -44,11 +44,11 @@ public class WayTranslationAdderController(
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
-    public async Task<ActionResult> Add(Guid id, string languageCode, AddWayTranslationRequest request)
+    public async Task<ActionResult> Add(Guid id, string languageCode, AddWayRequest request)
     {
         return await (
             from _ in adder.Execute(
-                new WayTranslationAdderInfo(
+                new WayAdderInfo(
                     id,
                     languageCode,
                     request.Label,

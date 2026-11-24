@@ -1,6 +1,6 @@
-namespace Portfolio.Api.WaysOfWorking.AddTranslation.Application.Dtos;
+namespace Portfolio.Api.WaysOfWorking.Add.Application.Dtos;
 
-public record WayTranslationAdderInfo(
+public record WayAdderInfo(
     Guid Id,
     string LanguageCode,
     string Label,

@@ -3,20 +3,20 @@ using Portfolio.Api.Shared.Domain.Errors;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Inputs;
 using Portfolio.Api.WaysOfWorking.Shared.Domain.Models;
 
-namespace Portfolio.Api.WaysOfWorking.AddTranslation.Domain.Models;
+namespace Portfolio.Api.WaysOfWorking.Add.Domain.Models;
 
-public class WayTranslationToBeAdded
+public class WayToBeAdded
 {
     private readonly WayOfWorkingId _wayId;
     private readonly WayTranslation _translation;
 
-    private WayTranslationToBeAdded(WayOfWorkingId wayId, WayTranslation translation)
+    private WayToBeAdded(WayOfWorkingId wayId, WayTranslation translation)
     {
         _wayId = wayId;
         _translation = translation;
     }
 
-    public static Either<DomainError, WayTranslationToBeAdded> Create(
+    public static Either<DomainError, WayToBeAdded> Create(
         Guid givenWayId,
         WayTranslationInput givenTranslation
     ) =>
@@ -29,7 +29,7 @@ public class WayTranslationToBeAdded
             givenTranslation.Description,
             givenTranslation.Points
         )
-        select new WayTranslationToBeAdded(wayId, translation);
+        select new WayToBeAdded(wayId, translation);
 
     public Guid GetWayId() => _wayId.ToGuid();
 

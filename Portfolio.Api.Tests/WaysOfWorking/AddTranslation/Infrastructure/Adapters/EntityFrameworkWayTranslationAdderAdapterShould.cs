@@ -4,7 +4,7 @@ using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Tests.WaysOfWorking.AddTranslation.Domain.Builders;
 using Portfolio.Api.Tests.WaysOfWorking.Create.Infrastructure.Builders;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Adapters;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Adapters;
 using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Entities;
 using Shouldly;
 
@@ -13,7 +13,7 @@ namespace Portfolio.Api.Tests.WaysOfWorking.AddTranslation.Infrastructure.Adapte
 public class EntityFrameworkWayTranslationAdderAdapterShould
 {
     private readonly AppDbContext _dbContext;
-    private readonly EntityFrameworkWayTranslationAdderAdapter _adder;
+    private readonly EntityFrameworkWayAdderAdapter _adder;
 
     public EntityFrameworkWayTranslationAdderAdapterShould()
     {
@@ -22,7 +22,7 @@ public class EntityFrameworkWayTranslationAdderAdapterShould
         _dbContext = new AppDbContext(options);
 
         _dbContext.SeedLanguages("es", "en");
-        _adder = new EntityFrameworkWayTranslationAdderAdapter(_dbContext);
+        _adder = new EntityFrameworkWayAdderAdapter(_dbContext);
     }
 
     [Fact]

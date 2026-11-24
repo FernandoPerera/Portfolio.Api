@@ -6,10 +6,10 @@ using Portfolio.Api.Shared.Infrastructure.Data;
 using Portfolio.Api.Tests.Shared.Infrastructure;
 using Portfolio.Api.Tests.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.WaysOfWorking.Create.Infrastructure.Builders;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Application.UseCases;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Adapters;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Controllers;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Dtos;
+using Portfolio.Api.WaysOfWorking.Add.Application.UseCases;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Adapters;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Controllers;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Dtos;
 using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Adapters;
 using Shouldly;
 
@@ -21,19 +21,19 @@ public class WayTranslationAdderControllerShould
     private const string ExistingLanguage = "es";
 
     private readonly AppDbContext _appDbContext;
-    private readonly WayTranslationAdderController _controller;
+    private readonly WayAdderController _controller;
 
     public WayTranslationAdderControllerShould()
     {
         var options = PostgresTestDatabase.CreateOptions();
 
         _appDbContext = new AppDbContext(options);
-        var adder = new WayTranslationAdder(
+        var adder = new WayAdder(
             new EntityFrameworkWayOfWorkingByIdFinderAdapter(_appDbContext),
             new EntityFrameworkLanguageExistenceAdapter(_appDbContext),
-            new EntityFrameworkWayTranslationAdderAdapter(_appDbContext)
+            new EntityFrameworkWayAdderAdapter(_appDbContext)
         );
-        _controller = new WayTranslationAdderController(adder, ProblemDetailsMapperBuilder.Build());
+        _controller = new WayAdderController(adder, ProblemDetailsMapperBuilder.Build());
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class WayTranslationAdderControllerShould
         await _appDbContext.SaveChangesAsync();
     }
 
-    private static AddWayTranslationRequest BuildRequest(string label = "Clear") =>
+    private static AddWayRequest BuildRequest(string label = "Clear") =>
         new(label, "No jargon", "I explain it without jargon", "Before writing a line we talk in plain words.", ["A short chat"]);
 
     private static void AssertProblem(ActionResult response, int statusCode)

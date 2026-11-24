@@ -15,7 +15,7 @@ using Portfolio.Api.Timeline.Create.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Delete.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
-using Portfolio.Api.WaysOfWorking.AddTranslation.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Create.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Delete.Infrastructure.Extensions;
 using Portfolio.Api.WaysOfWorking.Find.Infrastructure.Extensions;
