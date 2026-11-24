@@ -8,6 +8,7 @@ using Portfolio.Api.Tests.Profiles.Shared.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Extensions;
 using Portfolio.Api.Tests.Timeline.Create.Infrastructure.Builders;
 using Portfolio.Api.Tests.Shared.Infrastructure;
+using Portfolio.Api.Tests.WaysOfWorking.Create.Infrastructure.Builders;
 using Shouldly;
 
 namespace Portfolio.Api.Tests.Languages.Delete.Infrastructure.Adapters;
@@ -64,6 +65,24 @@ public class EntityFrameworkLanguageUsageAdapterShould
         await _appDbContext.TimelineEntries.AddAsync(TimelineEntryEntityBuilder.Build(
             entryId,
             translations: [TimelineEntryTranslationEntityBuilder.Build(entryId, LanguageCodeInUse)]
+        ));
+        await _appDbContext.SaveChangesAsync();
+
+        var result = await _usage.EnsureIsNotInUse(ToLanguageCode(LanguageCodeInUse));
+
+        result.Match(
+            unit => unit.ShouldBeEquivalentTo(null),
+            error => error.ShouldBeOfType<ConflictError>()
+        );
+    }
+
+    [Fact]
+    public async Task RejectALanguageUsedByAWayOfWorkingTranslation()
+    {
+        var wayId = Guid.NewGuid();
+        await _appDbContext.WaysOfWorking.AddAsync(WayOfWorkingEntityBuilder.Build(
+            wayId,
+            translations: [WayOfWorkingTranslationEntityBuilder.Build(wayId, LanguageCodeInUse)]
         ));
         await _appDbContext.SaveChangesAsync();
 
