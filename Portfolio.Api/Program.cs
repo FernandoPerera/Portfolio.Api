@@ -15,6 +15,14 @@ using Portfolio.Api.Timeline.Create.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Delete.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Find.Infrastructure.Extensions;
 using Portfolio.Api.Timeline.Update.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Add.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Create.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Delete.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Find.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Reorder.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.Update.Infrastructure.Extensions;
+using Portfolio.Api.WaysOfWorking.UpdateTranslation.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +64,16 @@ builder.Services.AddTimelineTranslationAdd();
 builder.Services.AddTimelineDelete();
 builder.Services.AddTimelineFind();
 builder.Services.AddTimelineUpdate();
+
+// Ways of working
+builder.Services.AddWaysOfWorkingShared();
+builder.Services.AddWayOfWorkingCreate();
+builder.Services.AddWayOfWorkingFind();
+builder.Services.AddWayTranslationAdd();
+builder.Services.AddWayOfWorkingUpdate();
+builder.Services.AddWayTranslationUpdate();
+builder.Services.AddWayOrderUpdate();
+builder.Services.AddWayOfWorkingDelete();
 
 var app = builder.Build();
 

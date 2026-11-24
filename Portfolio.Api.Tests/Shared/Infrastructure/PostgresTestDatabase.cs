@@ -40,7 +40,9 @@ public static class PostgresTestDatabase
 
     private static PostgreSqlContainer StartContainer()
     {
-        var container = new PostgreSqlBuilder("postgres:17-alpine").Build();
+        var container = new PostgreSqlBuilder("postgres:17-alpine")
+            .WithCommand("-c", "max_connections=1000")
+            .Build();
         container.StartAsync().GetAwaiter().GetResult();
 
         var admin = container.GetConnectionString();

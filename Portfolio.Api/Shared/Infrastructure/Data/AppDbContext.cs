@@ -3,6 +3,7 @@ using Portfolio.Api.Auth.Shared.Infrastructure.Entities;
 using Portfolio.Api.Profiles.Create.Infrastructure.Entities;
 using Portfolio.Api.Profiles.Shared.Infrastructure.Entities;
 using Portfolio.Api.Timeline.Create.Infrastructure.Entities;
+using Portfolio.Api.WaysOfWorking.Shared.Infrastructure.Entities;
 
 namespace Portfolio.Api.Shared.Infrastructure.Data
 {
@@ -13,6 +14,8 @@ namespace Portfolio.Api.Shared.Infrastructure.Data
         public DbSet<LanguageEntity> Languages { get; set; }
         public DbSet<TimelineEntryEntity> TimelineEntries { get; set; }
         public DbSet<TimelineEntryTranslationEntity> TimelineEntryTranslations { get; set; }
+        public DbSet<WayOfWorkingEntity> WaysOfWorking { get; set; }
+        public DbSet<WayOfWorkingTranslationEntity> WayOfWorkingTranslations { get; set; }
         public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
     }
 }

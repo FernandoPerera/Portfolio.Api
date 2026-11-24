@@ -15,7 +15,8 @@ public class EntityFrameworkLanguageUsageAdapter(AppDbContext dbContext) : ILang
         {
             var code = languageCode.ToString();
             var isInUse = await dbContext.ProfileTranslations.AnyAsync(translation => translation.LanguageCode == code)
-                          || await dbContext.TimelineEntryTranslations.AnyAsync(translation => translation.LanguageCode == code);
+                          || await dbContext.TimelineEntryTranslations.AnyAsync(translation => translation.LanguageCode == code)
+                          || await dbContext.WayOfWorkingTranslations.AnyAsync(translation => translation.LanguageCode == code);
             if (isInUse)
             {
                 return new ConflictError($"Language '{code}' is used by existing translations");
