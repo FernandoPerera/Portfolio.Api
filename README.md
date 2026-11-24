@@ -68,8 +68,9 @@ The API stores its data in PostgreSQL. The API never changes the schema: it is c
 ```bash
 docker compose up -d
 docker compose exec -T postgres psql -U portfolio -d portfolio < database/mock-data/001_mock_data.sql
+docker compose exec -T postgres psql -U portfolio -d portfolio < database/mock-data/002_ways_of_working_mock_data.sql
 ```
-The first command starts PostgreSQL on `localhost:5432` (user, password and database `portfolio`) and runs the scripts of `database/migrations` when its volume is created. The second one loads sample data (languages, a profile and a timeline) and can be repeated. A script added later does not run on an existing volume: run it with `psql` the same way, or start from scratch with `docker compose down -v`.
+The first command starts PostgreSQL on `localhost:5432` (user, password and database `portfolio`) and runs the scripts of `database/migrations` when its volume is created. The next ones load sample data (`001`: languages, a profile and a timeline; `002`: ways of working, which needs the languages of `001`) and can be repeated. A script added later does not run on an existing volume: run it with `psql` the same way, or start from scratch with `docker compose down -v`.
 
 When an entity changes, add a new numbered script to `database/migrations`; do not edit the ones already applied. In production, run the scripts against the database before deploying the API.
 
